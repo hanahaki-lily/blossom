@@ -193,3 +193,73 @@ bot.command(:premium, description: 'View the benefits of Blossom Premium!', cate
   )
   nil
 end
+
+# =========================
+# GIVEAWAY SYSTEM
+# =========================
+
+bot.command(:giveaway, description: 'Start a giveaway (Admin only)', min_args: 3, usage: 'b!giveaway #channel 10m Prize Name', category: 'Admin') do |event, channel_mention, time_str, *prize_args|
+  unless event.user.permission?(:administrator, event.channel) || event.user.id == DEV_ID
+    send_embed(event, title: "❌ Permission Denied", description: 'You need Administrator permissions to start a giveaway!')
+    next
+  end
+
+  channel_id = channel_mention.gsub(/[^0-9]/, '').to_i
+  target_channel = event.bot.channel(channel_id, event.server)
+  unless target_channel
+    send_embed(event, title: "⚠️ Error", description: "I couldn't find that channel!")
+    next
+  end
+
+  duration = 0
+  if time_str =~ /^(\d+)(m|h|d)$/i
+    amount = $1.to_i
+    unit = $2.downcase
+    duration = amount * 60 if unit == 'm'
+    duration = amount * 3600 if unit == 'h'
+    duration = amount * 86400 if unit == 'd'
+  else
+    send_embed(event, title: "⚠️ Invalid Time Format", description: "Example: `10m` or `2d`")
+    next
+  end
+
+  prize = prize_args.join(' ')
+  expire_time = Time.now + duration
+  giveaway_id = "gw_#{expire_time.to_i}_#{rand(10000)}"
+  discord_timestamp = "<t:#{expire_time.to_i}:R>"
+
+  embed = Discordrb::Webhooks::Embed.new(
+    title: "🎉 **GIVEAWAY: #{prize}** 🎉",
+    description: "Hosted by: #{event.user.mention}\nEnds: **#{discord_timestamp}**\n\nClick the button below to enter!",
+    color: 0xFFD700 
+  )
+
+  view = Discordrb::Components::View.new do |v|
+    v.row { |r| r.button(custom_id: giveaway_id, label: 'Enter Giveaway', style: :success, emoji: '🎉') }
+  end
+
+  msg = target_channel.send_message(nil, false, embed, nil, nil, nil, view)
+  
+  DB.create_giveaway(giveaway_id, target_channel.id, msg.id, event.user.id, prize, expire_time.to_i)
+  
+  event.respond("✅ Giveaway successfully saved to the database and started in #{target_channel.mention}!")
+  nil
+end
+
+bot.button(custom_id: /^gw_/) do |event|
+  gw_id = event.custom_id
+  
+  active = DB.get_active_giveaways.any? { |gw| gw['id'] == gw_id }
+  unless active
+    event.respond(content: "This giveaway has already ended!", ephemeral: true)
+    next
+  end
+
+  success = DB.add_giveaway_entrant(gw_id, event.user.id)
+  
+  if success
+    event.respond(content: "You successfully entered the giveaway! 🎉", ephemeral: true)
+  else
+    event.respond(content: "You have already entered this giveaway! Good luck! 🍀", ephemeral: true)
+  end
+end

@@ -245,4 +245,42 @@ end
     !row.nil?
   end
 
+  # =========================
+  # GIVEAWAYS
+  # =========================
+  public
+
+  def setup_giveaways
+    @db.execute("CREATE TABLE IF NOT EXISTS giveaways (id TEXT PRIMARY KEY, channel_id INTEGER, message_id INTEGER, host_id INTEGER, prize TEXT, end_time INTEGER)")
+    @db.execute("CREATE TABLE IF NOT EXISTS giveaway_entrants (giveaway_id TEXT, user_id INTEGER, UNIQUE(giveaway_id, user_id))")
+  end
+
+  def create_giveaway(id, channel_id, message_id, host_id, prize, end_time)
+    setup_giveaways
+    @db.execute("INSERT INTO giveaways (id, channel_id, message_id, host_id, prize, end_time) VALUES (?, ?, ?, ?, ?, ?)", [id, channel_id, message_id, host_id, prize, end_time])
+  end
+
+  def add_giveaway_entrant(gw_id, user_id)
+    setup_giveaways
+    # INSERT OR IGNORE silently fails if they are already in the database for this giveaway
+    @db.execute("INSERT OR IGNORE INTO giveaway_entrants (giveaway_id, user_id) VALUES (?, ?)", [gw_id, user_id])
+    @db.changes > 0 # Returns true if they were added, false if they already existed
+  end
+
+  def get_giveaway_entrants(gw_id)
+    setup_giveaways
+    @db.execute("SELECT user_id FROM giveaway_entrants WHERE giveaway_id = ?", [gw_id]).map { |r| r['user_id'] }
+  end
+
+  def get_active_giveaways
+    setup_giveaways
+    @db.execute("SELECT * FROM giveaways")
+  end
+
+  def delete_giveaway(gw_id)
+    setup_giveaways
+    @db.execute("DELETE FROM giveaways WHERE id = ?", [gw_id])
+    @db.execute("DELETE FROM giveaway_entrants WHERE giveaway_id = ?", [gw_id])
+  end
+
 DB = BotDatabase.new

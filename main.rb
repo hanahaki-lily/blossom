@@ -411,7 +411,6 @@ bot.ready do
           if File.exist?(db_file)
             timestamp = Time.now.strftime('%Y-%m-%d %H:%M:%S')
             
-            # Send the file with a clear label
             storage_channel.send_message("📦 **Automated Daily Backup**\nTimestamp: `#{timestamp}`")
             File.open(db_file, 'rb') { |file| storage_channel.send_file(file) }
             
@@ -424,7 +423,6 @@ bot.ready do
         puts "[BACKUP ERROR] #{e.message}"
       end
 
-      # Wait exactly 24 hours (86,400 seconds)
       sleep 86400
     end
   end
@@ -437,6 +435,48 @@ bot.ready do
       total_members = bot.servers.values.sum { |server| server.member_count }
       bot.playing = "with #{total_members} chatters in #{server_count} servers 🔴| b!"
       sleep 15
+    end
+  end
+
+  Thread.new do
+    loop do
+      sleep 10 
+      now = Time.now.to_i
+      
+      DB.get_active_giveaways.each do |gw|
+        if now >= gw['end_time']
+          gw_id = gw['id']
+          channel = bot.channel(gw['channel_id'])
+          next unless channel
+
+          entrants = DB.get_giveaway_entrants(gw_id)
+          
+          begin
+            msg = channel.message(gw['message_id'])
+          rescue
+            msg = nil
+          end
+
+          ended_embed = Discordrb::Webhooks::Embed.new(
+            title: "🎉 **GIVEAWAY ENDED: #{gw['prize']}** 🎉",
+            color: 0x808080
+          )
+
+          if entrants.empty?
+            ended_embed.description = "Hosted by: <@#{gw['host_id']}>\n\nNobody entered the giveaway! 😢"
+            msg.edit(nil, ended_embed, Discordrb::Components::View.new) if msg
+            channel.send_message("The giveaway for **#{gw['prize']}** ended, but nobody entered!")
+          else
+            winner_id = entrants.sample
+            winner_mention = "<@#{winner_id}>"
+            ended_embed.description = "Hosted by: <@#{gw['host_id']}>\nWinner: #{winner_mention}\nTotal Entrants: **#{entrants.size}**"
+            msg.edit(nil, ended_embed, Discordrb::Components::View.new) if msg
+            channel.send_message("Congratulations #{winner_mention}! You won the **#{gw['prize']}**! 🎉")
+          end
+          
+          DB.delete_giveaway(gw_id)
+        end
+      end
     end
   end
 
