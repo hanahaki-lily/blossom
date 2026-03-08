@@ -2,13 +2,15 @@
 # LEVELING COMMANDS
 # =========================
 
-bot.command(:level, description: 'Show a user\'s level and XP for this server', category: 'Fun') do |event|
+def execute_level(event, target_user)
   unless event.server
-    event.respond("#{EMOJIS['x_']} This command can only be used in a server!")
-    next
+    if event.is_a?(Discordrb::Events::ApplicationCommandEvent)
+      return event.respond(content: "#{EMOJIS['x_']} This command can only be used in a server!", ephemeral: true)
+    else
+      return event.respond("#{EMOJIS['x_']} This command can only be used in a server!")
+    end
   end
 
-  target_user = event.message.mentions.first || event.user
   sid  = event.server.id
   uid  = target_user.id
   user = DB.get_user_xp(sid, uid)
@@ -26,13 +28,26 @@ bot.command(:level, description: 'Show a user\'s level and XP for this server', 
       { name: 'Coins', value: "#{DB.get_coins(uid)} #{EMOJIS['s_coin']}", inline: true }
     ]
   )
+end
+
+bot.command(:level, description: 'Show a user\'s level and XP for this server', category: 'Fun') do |event|
+  execute_level(event, event.message.mentions.first || event.user)
   nil
 end
 
-bot.command(:leaderboard, description: 'Show top users by level for this server', category: 'Fun') do |event|
+bot.application_command(:level) do |event|
+  target_id = event.options['user']
+  target = target_id ? event.bot.user(target_id.to_i) : event.user
+  execute_level(event, target)
+end
+
+def execute_leaderboard(event)
   unless event.server
-    event.respond("#{EMOJIS['x_']} This command can only be used in a server!")
-    next
+    if event.is_a?(Discordrb::Events::ApplicationCommandEvent)
+      return event.respond(content: "#{EMOJIS['x_']} This command can only be used in a server!", ephemeral: true)
+    else
+      return event.respond("#{EMOJIS['x_']} This command can only be used in a server!")
+    end
   end
 
   sid = event.server.id
@@ -58,36 +73,55 @@ bot.command(:leaderboard, description: 'Show top users by level for this server'
 
     send_embed(event, title: "#{EMOJIS['crown']} Level Leaderboard", description: desc)
   end
+end
+
+bot.command(:leaderboard, description: 'Show top users by level for this server', category: 'Fun') do |event|
+  execute_leaderboard(event)
   nil
 end
 
-bot.command(:levelup, description: 'Configure where level-up messages go (Admin Only)', category: 'Admin') do |event, arg|
+bot.application_command(:leaderboard) do |event|
+  execute_leaderboard(event)
+end
+
+def execute_levelup(event, state, channel_obj = nil)
   unless event.user.id == DEV_ID || event.user.permission?(:administrator, event.channel)
-    send_embed(event, title: "❌ Access Denied", description: "You need administrator permissions to configure this.")
-    next
+    return send_embed(event, title: "❌ Access Denied", description: "You need administrator permissions to configure this.")
   end
 
   config = DB.get_levelup_config(event.server.id)
   current_channel = config[:channel]
 
-  if arg.nil? || arg.downcase == 'on'
+  if channel_obj
+    DB.set_levelup_config(event.server.id, channel_obj.id, true)
+    send_embed(event, title: "📣 Level-Up Channel Set", description: "Level-up messages will now be automatically sent to #{channel_obj.mention}!")
+  elsif state.nil? || state.downcase == 'on'
     DB.set_levelup_config(event.server.id, current_channel, true)
     send_embed(event, title: "✅ Level-Ups Enabled", description: "Level-up messages are now turned ON.")
-  elsif arg.downcase == 'off'
+  elsif state.downcase == 'off'
     DB.set_levelup_config(event.server.id, current_channel, false)
     send_embed(event, title: "🔇 Level-Ups Disabled", description: "Level-up messages have been completely turned off for this server.")
-  elsif arg =~ /<#(\d+)>/
-    channel_id = $1.to_i
-    channel = event.bot.channel(channel_id, event.server)
-    
-    if channel
-      DB.set_levelup_config(event.server.id, channel_id, true)
-      send_embed(event, title: "📣 Level-Up Channel Set", description: "Level-up messages will now be automatically sent to #{channel.mention}!")
+  else
+    send_embed(event, title: "⚠️ Invalid Usage", description: "Usage:\n`#{PREFIX}levelup #channel` - Send to a specific channel\n`#{PREFIX}levelup off` - Turn off completely\n`#{PREFIX}levelup on` - Turn on")
+  end
+end
+
+bot.command(:levelup, description: 'Configure where level-up messages go (Admin Only)', category: 'Admin') do |event, arg|
+  if arg =~ /<#(\d+)>/
+    chan = event.bot.channel($1.to_i, event.server)
+    if chan
+      execute_levelup(event, nil, chan)
     else
       send_embed(event, title: "⚠️ Error", description: "I couldn't find that channel in this server.")
     end
   else
-    send_embed(event, title: "⚠️ Invalid Usage", description: "Usage:\n`#{PREFIX}levelup #channel` - Send to a specific channel\n`#{PREFIX}levelup off` - Turn off completely\n`#{PREFIX}levelup on` - Turn on")
+    execute_levelup(event, arg, nil)
   end
   nil
+end
+
+bot.application_command(:levelup) do |event|
+  chan_id = event.options['channel']
+  chan = chan_id ? event.bot.channel(chan_id.to_i, event.server) : nil
+  execute_levelup(event, event.options['state'], chan)
 end

@@ -1,20 +1,18 @@
-bot.command(:setlevel, description: 'Set a user\'s server level (Admin Only)', min_args: 2, category: 'Admin') do |event, mention, level|
+# =========================
+# DEVELOPER & ADMIN COMMANDS 
+# =========================
+
+def execute_setlevel(event, target_user, new_level)
   unless event.server
-    event.respond("#{EMOJIS['x_']} This command can only be used inside a server!")
-    next
+    return event.respond("#{EMOJIS['x_']} This command can only be used inside a server!")
   end
 
   unless event.user.permission?(:administrator, event.channel) || event.user.id == DEV_ID
-    event.respond("#{EMOJIS['x_']} You need Administrator permissions to use this command!")
-    next
+    return event.respond("#{EMOJIS['x_']} You need Administrator permissions to use this command!")
   end
 
-  target_user = event.message.mentions.first
-  new_level = level.to_i
-
   if target_user.nil? || new_level < 1
-    event.respond("Usage: `#{PREFIX}setlevel @user <level>`")
-    next
+    return event.respond("Usage: `#{PREFIX}setlevel @user <level>`")
   end
 
   sid = event.server.id
@@ -22,28 +20,30 @@ bot.command(:setlevel, description: 'Set a user\'s server level (Admin Only)', m
   user = DB.get_user_xp(sid, uid)
 
   DB.update_user_xp(sid, uid, user['xp'], new_level, user['last_xp_at'])
-
   send_embed(event, title: "#{EMOJIS['developer']} Admin Override", description: "Successfully set #{target_user.mention}'s level to **#{new_level}**.")
+end
+
+bot.command(:setlevel, description: 'Set a user\'s server level (Admin Only)', min_args: 2, category: 'Admin') do |event, mention, level|
+  execute_setlevel(event, event.message.mentions.first, level.to_i)
   nil
 end
 
-bot.command(:addxp, description: 'Add or remove server XP from a user (Admin Only)', min_args: 2, category: 'Admin') do |event, mention, amount|
+bot.application_command(:setlevel) do |event|
+  target = event.bot.user(event.options['user'].to_i)
+  execute_setlevel(event, target, event.options['level'])
+end
+
+def execute_addxp(event, target_user, amount)
   unless event.server
-    event.respond("#{EMOJIS['x_']} This command can only be used inside a server!")
-    next
+    return event.respond("#{EMOJIS['x_']} This command can only be used inside a server!")
   end
 
   unless event.user.permission?(:administrator, event.channel) || event.user.id == DEV_ID
-    event.respond("#{EMOJIS['x_']} You need Administrator permissions to use this command!")
-    next
+    return event.respond("#{EMOJIS['x_']} You need Administrator permissions to use this command!")
   end
 
-  target_user = event.message.mentions.first
-  amount = amount.to_i
-
   if target_user.nil?
-    event.respond("Usage: `#{PREFIX}addxp @user <amount>`\n*(Tip: Use a negative number to remove XP!)*")
-    next
+    return event.respond("Usage: `#{PREFIX}addxp @user <amount>`\n*(Tip: Use a negative number to remove XP!)*")
   end
 
   sid = event.server.id
@@ -62,65 +62,76 @@ bot.command(:addxp, description: 'Add or remove server XP from a user (Admin Onl
   end
 
   DB.update_user_xp(sid, uid, new_xp, new_level, user['last_xp_at'])
-
   send_embed(event, title: "#{EMOJIS['developer']} Admin Override", description: "Successfully added **#{amount}** XP to #{target_user.mention}.\nThey are now **Level #{new_level}** with **#{new_xp}** XP.")
+end
+
+bot.command(:addxp, description: 'Add or remove server XP from a user (Admin Only)', min_args: 2, category: 'Admin') do |event, mention, amount|
+  execute_addxp(event, event.message.mentions.first, amount.to_i)
   nil
 end
 
-bot.command(:addcoins, description: 'Add or remove coins from a user (Dev Only)', min_args: 2, category: 'Developer') do |event, mention, amount|
+bot.application_command(:addxp) do |event|
+  target = event.bot.user(event.options['user'].to_i)
+  execute_addxp(event, target, event.options['amount'])
+end
+
+def execute_addcoins(event, target_user, amount)
   unless event.user.id == DEV_ID
-    event.respond("#{EMOJIS['x_']} Only the bot developer can use this command!")
-    next
+    return event.respond("#{EMOJIS['x_']} Only the bot developer can use this command!")
   end
 
-  target_user = event.message.mentions.first
-  amount = amount.to_i
-
   if target_user.nil?
-    event.respond("Usage: `#{PREFIX}addcoins @user <amount>`\n*(Tip: Use a negative number to remove coins!)*")
-    next
+    return event.respond("Usage: `#{PREFIX}addcoins @user <amount>`\n*(Tip: Use a negative number to remove coins!)*")
   end
 
   uid = target_user.id
   DB.add_coins(uid, amount)
-
   send_embed(event, title: "#{EMOJIS['developer']} Developer Override", description: "Successfully added **#{amount}** #{EMOJIS['s_coin']} to #{target_user.mention}.\nTheir new balance is **#{DB.get_coins(uid)}**.")
+end
+
+bot.command(:addcoins, description: 'Add or remove coins from a user (Dev Only)', min_args: 2, category: 'Developer') do |event, mention, amount|
+  execute_addcoins(event, event.message.mentions.first, amount.to_i)
   nil
 end
 
-bot.command(:setcoins, description: 'Set a user\'s balance to an exact amount (Dev Only)', min_args: 2, category: 'Developer') do |event, mention, amount|
+bot.application_command(:addcoins) do |event|
+  target = event.bot.user(event.options['user'].to_i)
+  execute_addcoins(event, target, event.options['amount'])
+end
+
+def execute_setcoins(event, target_user, amount)
   unless event.user.id == DEV_ID
-    event.respond("#{EMOJIS['x_']} Only the bot developer can use this command!")
-    next
+    return event.respond("#{EMOJIS['x_']} Only the bot developer can use this command!")
   end
 
-  target_user = event.message.mentions.first
-  amount = amount.to_i
-
   if target_user.nil? || amount < 0
-    event.respond("Usage: `#{PREFIX}setcoins @user <amount>`")
-    next
+    return event.respond("Usage: `#{PREFIX}setcoins @user <amount>`")
   end
 
   uid = target_user.id
   DB.set_coins(uid, amount)
-
   send_embed(event, title: "#{EMOJIS['developer']} Developer Override", description: "#{target_user.mention}'s balance has been forcefully set to **#{DB.get_coins(uid)}** #{EMOJIS['s_coin']}.")
+end
+
+bot.command(:setcoins, description: 'Set a user\'s balance to an exact amount (Dev Only)', min_args: 2, category: 'Developer') do |event, mention, amount|
+  execute_setcoins(event, event.message.mentions.first, amount.to_i)
   nil
 end
 
-bot.command(:enablebombs, description: 'Enable random bomb drops in a specific channel (Admin Only)', min_args: 1, category: 'Admin') do |event, channel_mention|
+bot.application_command(:setcoins) do |event|
+  target = event.bot.user(event.options['user'].to_i)
+  execute_setcoins(event, target, event.options['amount'])
+end
+
+def execute_enablebombs(event, channel_id)
   unless event.user.permission?(:administrator, event.channel) || event.user.id == DEV_ID
-    event.respond("#{EMOJIS['x_']} You need Administrator permissions to set this up!")
-    next
+    return event.respond("#{EMOJIS['x_']} You need Administrator permissions to set this up!")
   end
 
-  channel_id = channel_mention.gsub(/[<#>]/, '').to_i
-  target_channel = bot.channel(channel_id, event.server)
+  target_channel = event.bot.channel(channel_id, event.server)
 
   if target_channel.nil?
-    event.respond("#{EMOJIS['x_']} Please mention a valid channel! Usage: `#{PREFIX}enablebombs #channel-name`")
-    next
+    return event.respond("#{EMOJIS['x_']} Please mention a valid channel! Usage: `#{PREFIX}enablebombs #channel-name`")
   end
 
   sid = event.server.id
@@ -135,12 +146,19 @@ bot.command(:enablebombs, description: 'Enable random bomb drops in a specific c
   }
 
   DB.save_bomb_config(sid, true, channel_id, threshold, 0)
-
   send_embed(event, title: "#{EMOJIS['bomb']} Bomb Drops Enabled!", description: "I will now randomly drop bombs in <##{channel_id}> as people chat!")
+end
+
+bot.command(:enablebombs, description: 'Enable random bomb drops in a specific channel (Admin Only)', min_args: 1, category: 'Admin') do |event, channel_mention|
+  execute_enablebombs(event, channel_mention.gsub(/[<#>]/, '').to_i)
   nil
 end
 
-bot.command(:disablebombs, category: 'Admin') do |event|
+bot.application_command(:enablebombs) do |event|
+  execute_enablebombs(event, event.options['channel'].to_i)
+end
+
+def execute_disablebombs(event)
   sid = event.server.id
   if server_bomb_configs[sid]
     server_bomb_configs[sid]['enabled'] = false
@@ -149,23 +167,28 @@ bot.command(:disablebombs, category: 'Admin') do |event|
   end
 end
 
-bot.command(:blacklist, description: 'Toggle blacklist for a user (Dev Only)', min_args: 1, category: 'Developer') do |event, mention|
+bot.command(:disablebombs, category: 'Admin') do |event|
+  execute_disablebombs(event)
+  nil
+end
+
+bot.application_command(:disablebombs) do |event|
+  execute_disablebombs(event)
+end
+
+def execute_blacklist(event, target_user)
   unless event.user.id == DEV_ID
-    event.respond("#{EMOJIS['x_']} Only the bot developer can use this command!")
-    next
+    return event.respond("#{EMOJIS['x_']} Only the bot developer can use this command!")
   end
 
-  target_user = event.message.mentions.first
   if target_user.nil?
-    event.respond("Usage: `#{PREFIX}blacklist @user`")
-    next
+    return event.respond("Usage: `#{PREFIX}blacklist @user`")
   end
 
   uid = target_user.id
   
   if uid == DEV_ID
-    event.respond("#{EMOJIS['x_']} You cannot blacklist yourself!")
-    next
+    return event.respond("#{EMOJIS['x_']} You cannot blacklist yourself!")
   end
 
   is_now_blacklisted = DB.toggle_blacklist(uid)
@@ -177,27 +200,30 @@ bot.command(:blacklist, description: 'Toggle blacklist for a user (Dev Only)', m
     event.bot.unignore_user(uid)
     send_embed(event, title: "✅ User Forgiven", description: "#{target_user.mention} has been removed from the blacklist. They are free to interact again.")
   end
+end
+
+bot.command(:blacklist, description: 'Toggle blacklist for a user (Dev Only)', min_args: 1, category: 'Developer') do |event, mention|
+  execute_blacklist(event, event.message.mentions.first)
   nil
 end
 
-bot.command(:card, min_args: 3, description: 'Manage user cards (Dev Only)', usage: '!card <add/remove/giveascended/takeascended> @user <Character Name>') do |event, action, target, *char_name|
+bot.application_command(:blacklist) do |event|
+  target = event.bot.user(event.options['user'].to_i)
+  execute_blacklist(event, target)
+end
+
+def execute_card(event, action, target_user, name_query)
   unless event.user.id == DEV_ID
-    send_embed(event, title: "❌ Access Denied", description: "This command is restricted to the Bot Developer.")
-    next
+    return send_embed(event, title: "❌ Access Denied", description: "This command is restricted to the Bot Developer.")
   end
 
-  target_user = event.message.mentions.first
-  name_query = char_name.join(' ')
-  
   unless target_user
-    send_embed(event, title: "⚠️ Error", description: "You must mention a user to modify their collection.")
-    next
+    return send_embed(event, title: "⚠️ Error", description: "You must mention a user to modify their collection.")
   end
 
   found_data = find_character_in_pools(name_query)
   unless found_data
-    send_embed(event, title: "⚠️ Character Not Found", description: "I couldn't find `#{name_query}` in the pools.")
-    next
+    return send_embed(event, title: "⚠️ Character Not Found", description: "I couldn't find `#{name_query}` in the pools.")
   end
 
   real_name = found_data[:char][:name]
@@ -221,11 +247,7 @@ bot.command(:card, min_args: 3, description: 'Manage user cards (Dev Only)', usa
        DO UPDATE SET ascended = ascended + 1", 
       [uid, real_name, rarity]
     )
-    send_embed(
-      event, 
-      title: "✨ Ascended Card Granted", 
-      description: "Successfully granted an **Ascended #{real_name}** to #{target_user.mention}!"
-    )
+    send_embed(event, title: "✨ Ascended Card Granted", description: "Successfully granted an **Ascended #{real_name}** to #{target_user.mention}!")
 
   when 'takeascended', 'take✨', 'removeascended'
     DB.instance_variable_get(:@db).execute(
@@ -238,13 +260,21 @@ bot.command(:card, min_args: 3, description: 'Manage user cards (Dev Only)', usa
   else
     send_embed(event, title: "⚠️ Invalid Action", description: "Use `add`, `remove`, `giveascended`, or `takeascended`.")
   end
+end
+
+bot.command(:card, min_args: 3, description: 'Manage user cards (Dev Only)', usage: '!card <add/remove/giveascended/takeascended> @user <Character Name>') do |event, action, target, *char_name|
+  execute_card(event, action, event.message.mentions.first, char_name.join(' '))
   nil
 end
 
-bot.command(:backup, description: 'Developer Only') do |event|
+bot.application_command(:card) do |event|
+  target = event.bot.user(event.options['user'].to_i)
+  execute_card(event, event.options['action'], target, event.options['character'])
+end
+
+def execute_backup(event)
   unless event.user.id == DEV_ID
-    send_embed(event, title: "❌ Access Denied", description: "This command is restricted to the Bot Developer.")
-    next
+    return send_embed(event, title: "❌ Access Denied", description: "This command is restricted to the Bot Developer.")
   end
 
   begin
@@ -266,36 +296,59 @@ bot.command(:backup, description: 'Developer Only') do |event|
     send_embed(event, title: "❌ Backup Failed", description: "An error occurred: #{e.message}")
     puts "Backup Error: #{e.message}\n#{e.backtrace.first}"
   end
+end
+
+bot.command(:backup, description: 'Developer Only') do |event|
+  execute_backup(event)
   nil
 end
 
-bot.command(:givepremium, description: 'Give a user lifetime premium (Dev only)', category: 'Developer') do |event|
-  # Stop anyone who isn't you from using this
-  break unless event.user.id == DEV_ID 
-  
-  target = event.message.mentions.first
+bot.application_command(:backup) do |event|
+  execute_backup(event)
+end
+
+def execute_givepremium(event, target)
+  unless event.user.id == DEV_ID 
+    return send_embed(event, title: "❌ Access Denied", description: "Only the bot developer can grant Lifetime Premium.")
+  end
+
   unless target
-    send_embed(event, title: "❌ Error", description: "Please mention a user to give lifetime premium to!")
-    break
+    return send_embed(event, title: "❌ Error", description: "Please mention a user to give lifetime premium to!")
   end
 
   DB.set_lifetime_premium(target.id, true)
-  send_embed(
-    event, 
-    title: "✨ Lifetime Premium Granted!", 
-    description: "**#{target.display_name}** has been permanently upgraded!\nThey will now receive the 10% coin boost, half cooldowns, and boosted gacha luck globally."
-  )
+  send_embed(event, title: "✨ Lifetime Premium Granted!", description: "**#{target.display_name}** has been permanently upgraded!\nThey will now receive the 10% coin boost, half cooldowns, and boosted gacha luck globally.")
 end
 
-bot.command(:removepremium, description: 'Remove lifetime premium (Dev only)', category: 'Developer') do |event|
-  break unless event.user.id == DEV_ID
-  
-  target = event.message.mentions.first
+bot.command(:givepremium, description: 'Give a user lifetime premium (Dev only)', category: 'Developer') do |event|
+  execute_givepremium(event, event.message.mentions.first)
+  nil
+end
+
+bot.application_command(:givepremium) do |event|
+  target = event.bot.user(event.options['user'].to_i)
+  execute_givepremium(event, target)
+end
+
+def execute_removepremium(event, target)
+  unless event.user.id == DEV_ID
+    return send_embed(event, title: "❌ Access Denied", description: "Only the bot developer can revoke Lifetime Premium.")
+  end
+
   unless target
-    send_embed(event, title: "❌ Error", description: "Please mention a user to remove lifetime premium from!")
-    break
+    return send_embed(event, title: "❌ Error", description: "Please mention a user to remove lifetime premium from!")
   end
 
   DB.set_lifetime_premium(target.id, false)
   send_embed(event, title: "🥀 Premium Revoked", description: "Lifetime Premium has been removed from **#{target.display_name}**.")
+end
+
+bot.command(:removepremium, description: 'Remove lifetime premium (Dev only)', category: 'Developer') do |event|
+  execute_removepremium(event, event.message.mentions.first)
+  nil
+end
+
+bot.application_command(:removepremium) do |event|
+  target = event.bot.user(event.options['user'].to_i)
+  execute_removepremium(event, target)
 end

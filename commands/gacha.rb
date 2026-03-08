@@ -1,5 +1,5 @@
 # =========================
-# GACHA COMMANDS
+# GACHA COMMANDS 
 # =========================
 
 def get_collection_pages(uid)
@@ -56,34 +56,26 @@ def get_collection_pages(uid)
   pages
 end
 
-bot.command(:summon, description: 'Roll the gacha!', category: 'Gacha') do |event|
+def execute_summon(event)
   uid = event.user.id
   now = Time.now
   last_used = DB.get_cooldown(uid, 'summon')
   inv = DB.get_inventory(uid)
-  
   is_sub = is_premium?(event.bot, uid)
-
   cooldown_duration = (inv['gacha pass'] && inv['gacha pass'] > 0) ? 300 : 600
 
   if last_used && (now - last_used) < cooldown_duration
     ready_time = (last_used + cooldown_duration).to_i
-    embed = Discordrb::Webhooks::Embed.new(
-      title: "#{EMOJIS['drink']} Portal Recharging",
-      description: "Your gacha energy is depleted!\nThe portal will be ready <t:#{ready_time}:R>.",
-      color: 0xFF0000 
-    )
-    event.channel.send_message(nil, false, embed, nil, nil, event.message)
-    next
+    embed = Discordrb::Webhooks::Embed.new(title: "#{EMOJIS['drink']} Portal Recharging", description: "Your gacha energy is depleted!\nThe portal will be ready <t:#{ready_time}:R>.", color: 0xFF0000)
+    if event.is_a?(Discordrb::Events::ApplicationCommandEvent)
+      return event.respond(embeds: [embed])
+    else
+      return event.channel.send_message(nil, false, embed, nil, nil, event.message)
+    end
   end
 
   if DB.get_coins(uid) < SUMMON_COST
-    send_embed(
-      event,
-      title: "#{EMOJIS['info']} Summon",
-      description: "You need **#{SUMMON_COST}** #{EMOJIS['s_coin']} to summon.\nYou currently have **#{DB.get_coins(uid)}**."
-    )
-    next
+    return send_embed(event, title: "#{EMOJIS['info']} Summon", description: "You need **#{SUMMON_COST}** #{EMOJIS['s_coin']} to summon.\nYou currently have **#{DB.get_coins(uid)}**.")
   end
 
   DB.add_coins(uid, -SUMMON_COST)
@@ -94,7 +86,6 @@ bot.command(:summon, description: 'Roll the gacha!', category: 'Gacha') do |even
   if inv['rng manipulator'] && inv['rng manipulator'] > 0
     DB.remove_inventory(uid, 'rng manipulator', 1)
     used_manipulator = true
-    
     roll = rand(31)
     if roll < 25
       rarity = :rare
@@ -112,9 +103,7 @@ bot.command(:summon, description: 'Roll the gacha!', category: 'Gacha') do |even
   gif_url = pulled_char[:gif]
   
   is_ascended = false
-  if is_sub && rand(100) < 1
-    is_ascended = true
-  end
+  is_ascended = true if is_sub && rand(100) < 1
 
   if is_ascended
     DB.add_character(uid, name, rarity.to_s, 5)
@@ -136,7 +125,6 @@ bot.command(:summon, description: 'Roll the gacha!', category: 'Gacha') do |even
           end
 
   buff_text = used_manipulator ? "\n\n*🔮 RNG Manipulator consumed! Common pulls bypassed.*" : ""
-  
   desc = "#{emoji} You summoned **#{name}** (#{rarity_label})!\n"
   
   if is_ascended
@@ -146,33 +134,21 @@ bot.command(:summon, description: 'Roll the gacha!', category: 'Gacha') do |even
     desc += "You now own **#{new_count}** of them.#{buff_text}"
   end
 
-  send_embed(
-    event,
-    title: "#{EMOJIS['sparkle']} Summon Result: #{active_banner[:name]}",
-    description: desc,
-    fields: [
-      { name: 'Remaining Balance', value: "#{DB.get_coins(uid)} #{EMOJIS['s_coin']}", inline: true }
-    ],
-    image: gif_url
-  )
-
+  send_embed(event, title: "#{EMOJIS['sparkle']} Summon Result: #{active_banner[:name]}", description: desc, fields: [{ name: 'Remaining Balance', value: "#{DB.get_coins(uid)} #{EMOJIS['s_coin']}", inline: true }], image: gif_url)
   DB.set_cooldown(uid, 'summon', now)
-  nil
 end
 
-bot.command(:collection, description: 'View all the characters you own', category: 'Gacha') do |event|
-  target_user = event.message.mentions.first || event.user
+bot.command(:summon, description: 'Roll the gacha!', category: 'Gacha') { |e| execute_summon(e); nil }
+bot.application_command(:summon) { |e| execute_summon(e) }
+
+def execute_collection(event, target_user)
   uid = target_user.id
   title = "📚 #{target_user.display_name}'s Character Collection"
-
   pages = get_collection_pages(uid)
-  
   rarity_names = ["Commons", "Rares", "Legendaries", "Goddess"]
 
   embed = Discordrb::Webhooks::Embed.new(
-    title: title,
-    description: pages[0],
-    color: NEON_COLORS.sample,
+    title: title, description: pages[0], color: NEON_COLORS.sample,
     footer: Discordrb::Webhooks::EmbedFooter.new(text: "#{rarity_names[0]} | Page 1 of #{pages.size}")
   )
 
@@ -182,14 +158,27 @@ bot.command(:collection, description: 'View all the characters you own', categor
     r.button(custom_id: "col_#{uid}_1", label: "Next ▶", style: :secondary, disabled: pages.size <= 1)
   end
 
-  event.channel.send_message(nil, false, embed, nil, { replied_user: false }, event.message, view)
+  if event.is_a?(Discordrb::Events::ApplicationCommandEvent)
+    event.respond(embeds: [embed], components: view)
+  else
+    event.channel.send_message(nil, false, embed, nil, { replied_user: false }, event.message, view)
+  end
+end
+
+bot.command(:collection, description: 'View all the characters you own', category: 'Gacha') do |event|
+  execute_collection(event, event.message.mentions.first || event.user)
   nil
 end
 
-bot.command(:banner, description: 'Check which characters are in the gacha pool this week!', category: 'Gacha') do |event|
+bot.application_command(:collection) do |event|
+  target_id = event.options['user']
+  target = target_id ? event.bot.user(target_id.to_i) : event.user
+  execute_collection(event, target)
+end
+
+def execute_banner(event)
   active_banner = get_current_banner
   chars = active_banner[:characters]
-
   week_number = Time.now.to_i / 604_800 
   available_pools = CHARACTER_POOLS.keys
   next_key = available_pools[(week_number + 1) % available_pools.size]
@@ -202,42 +191,40 @@ bot.command(:banner, description: 'Check which characters are in the gacha pool 
     { name: '⭐ Commons (69%)', value: chars[:common].map { |c| c[:name] }.join(', '), inline: false }
   ]
 
-  desc = "Here are the VTubers you can pull this week!\n\n"
-  desc += "**Next Rotation:** <t:#{next_rotation_time}:R>\n"
-  desc += "**Up Next:** #{next_banner[:name]}"
-
-  send_embed(
-    event,
-    title: "#{EMOJIS['neonsparkle']} Current Gacha: #{active_banner[:name]}",
-    description: desc,
-    fields: fields
-  )
-  nil
+  desc = "Here are the VTubers you can pull this week!\n\n**Next Rotation:** <t:#{next_rotation_time}:R>\n**Up Next:** #{next_banner[:name]}"
+  send_embed(event, title: "#{EMOJIS['neonsparkle']} Current Gacha: #{active_banner[:name]}", description: desc, fields: fields)
 end
 
-bot.command(:shop, description: 'View the character shop and direct-buy prices!', category: 'Gacha') do |event|
+bot.command(:banner, description: 'Check which characters are in the gacha pool this week!', category: 'Gacha') { |e| execute_banner(e); nil }
+bot.application_command(:banner) { |e| execute_banner(e) }
+
+def execute_shop(event)
   embed, view = build_shop_home(event.user.id)
-  event.channel.send_message(nil, false, embed, nil, { replied_user: false }, event.message, view)
-  nil
+  if event.is_a?(Discordrb::Events::ApplicationCommandEvent)
+    event.respond(embeds: [embed], components: view)
+  else
+    event.channel.send_message(nil, false, embed, nil, { replied_user: false }, event.message, view)
+  end
 end
 
-bot.command(:buy, description: 'Buy a character or tech upgrade (Usage: !buy <Name>)', min_args: 1, category: 'Gacha') do |event, *name_args|
+bot.command(:shop, description: 'View the character shop and direct-buy prices!', category: 'Gacha') { |e| execute_shop(e); nil }
+bot.application_command(:shop) { |e| execute_shop(e) }
+
+def execute_buy(event, search_name)
   uid = event.user.id
-  search_name = name_args.join(' ').downcase.strip
+  search_name = search_name.downcase.strip
 
   if BLACK_MARKET_ITEMS.key?(search_name)
     item_data = BLACK_MARKET_ITEMS[search_name]
     price = item_data[:price]
 
     if DB.get_coins(uid) < price
-      send_embed(event, title: "#{EMOJIS['nervous']} Insufficient Funds", description: "You need **#{price}** #{EMOJIS['s_coin']} to buy the #{item_data[:name]}.\nYou currently have **#{DB.get_coins(uid)}** #{EMOJIS['s_coin']}.")
-      next
+      return send_embed(event, title: "#{EMOJIS['nervous']} Insufficient Funds", description: "You need **#{price}** #{EMOJIS['s_coin']} to buy the #{item_data[:name]}.\nYou currently have **#{DB.get_coins(uid)}** #{EMOJIS['s_coin']}.")
     end
 
     inv = DB.get_inventory(uid)
     if item_data[:type] == 'upgrade' && inv[search_name] && inv[search_name] >= 1
-      send_embed(event, title: "#{EMOJIS['confused']} Already Owned", description: "You already have the **#{item_data[:name]}** equipped in your setup!")
-      next
+      return send_embed(event, title: "#{EMOJIS['confused']} Already Owned", description: "You already have the **#{item_data[:name]}** equipped in your setup!")
     end
 
     DB.add_coins(uid, -price)
@@ -248,30 +235,19 @@ bot.command(:buy, description: 'Buy a character or tech upgrade (Usage: !buy <Na
       DB.set_cooldown(uid, 'stream', nil)
       DB.set_cooldown(uid, 'post', nil)
       DB.set_cooldown(uid, 'collab', nil)
-      
-      send_embed(event, title: "🥫 Gamer Fuel Consumed!", description: "You cracked open a cold one and chugged it.\n**ALL your content creation cooldowns have been reset!** Get back to the grind.")
-      next
+      return send_embed(event, title: "🥫 Gamer Fuel Consumed!", description: "You cracked open a cold one and chugged it.\n**ALL your content creation cooldowns have been reset!** Get back to the grind.")
     elsif search_name == 'stamina pill'
       DB.remove_inventory(uid, search_name, 1)
       DB.set_cooldown(uid, 'summon', nil)
-      
-      send_embed(event, title: "💊 Stamina Pill Swallowed!", description: "You took a highly questionable Stamina Pill...\n**Your !summon cooldown has been instantly reset!** Get back to gambling.")
-      next
+      return send_embed(event, title: "💊 Stamina Pill Swallowed!", description: "You took a highly questionable Stamina Pill...\n**Your !summon cooldown has been instantly reset!** Get back to gambling.")
     end
 
-    send_embed(event, title: "🛒 Item Purchased!", description: "You successfully bought the **#{item_data[:name]}** for **#{price}** #{EMOJIS['s_coin']}!\nIt has been added to your inventory/setup.")
-    next
+    return send_embed(event, title: "🛒 Item Purchased!", description: "You successfully bought the **#{item_data[:name]}** for **#{price}** #{EMOJIS['s_coin']}!\nIt has been added to your inventory/setup.")
   end
 
   result = find_character_in_pools(search_name)
-  
   unless result
-    send_embed(
-      event,
-      title: "#{EMOJIS['error']} Shop Error",
-      description: "I couldn't find a character or item named **#{name_args.join(' ')}**. Check your spelling!"
-    )
-    next
+    return send_embed(event, title: "#{EMOJIS['error']} Shop Error", description: "I couldn't find a character or item named **#{search_name}**. Check your spelling!")
   end
 
   char_data = result[:char]
@@ -279,25 +255,14 @@ bot.command(:buy, description: 'Buy a character or tech upgrade (Usage: !buy <Na
   price     = SHOP_PRICES[rarity]
 
   if price.nil?
-    send_embed(
-      event,
-      title: "#{EMOJIS['x_']} Black Market Locked",
-      description: "You cannot directly purchase **#{char_data[:name]}**. She can only be obtained through the gacha portal."
-    )
-    next
+    return send_embed(event, title: "#{EMOJIS['x_']} Black Market Locked", description: "You cannot directly purchase **#{char_data[:name]}**. She can only be obtained through the gacha portal.")
   end
 
   if DB.get_coins(uid) < price
-    send_embed(
-      event,
-      title: "#{EMOJIS['nervous']} Insufficient Funds",
-      description: "You need **#{price}** #{EMOJIS['s_coin']} to buy a #{rarity.capitalize} character.\nYou currently have **#{DB.get_coins(uid)}** #{EMOJIS['s_coin']}."
-    )
-    next
+    return send_embed(event, title: "#{EMOJIS['nervous']} Insufficient Funds", description: "You need **#{price}** #{EMOJIS['s_coin']} to buy a #{rarity.capitalize} character.\nYou currently have **#{DB.get_coins(uid)}** #{EMOJIS['s_coin']}.")
   end
 
   DB.add_coins(uid, -price)
-  
   name = char_data[:name]
   gif_url = char_data[:gif]
 
@@ -311,32 +276,27 @@ bot.command(:buy, description: 'Buy a character or tech upgrade (Usage: !buy <Na
           else '⭐'
           end
 
-  send_embed(
-    event,
-    title: "#{EMOJIS['coins']} Purchase Successful!",
-    description: "#{emoji} You directly purchased **#{name}** for **#{price}** #{EMOJIS['s_coin']}!\nYou now own **#{new_count}** of them.",
-    fields: [
-      { name: 'Remaining Balance', value: "#{DB.get_coins(uid)} #{EMOJIS['s_coin']}", inline: true }
-    ],
-    image: gif_url
-  )
+  send_embed(event, title: "#{EMOJIS['coins']} Purchase Successful!", description: "#{emoji} You directly purchased **#{name}** for **#{price}** #{EMOJIS['s_coin']}!\nYou now own **#{new_count}** of them.", fields: [{ name: 'Remaining Balance', value: "#{DB.get_coins(uid)} #{EMOJIS['s_coin']}", inline: true }], image: gif_url)
+end
+
+bot.command(:buy, description: 'Buy a character or tech upgrade (Usage: !buy <Name>)', min_args: 1, category: 'Gacha') do |event, *name_args|
+  execute_buy(event, name_args.join(' '))
   nil
 end
 
-bot.command(:view, description: 'Look at a specific character you own', min_args: 1, category: 'Gacha') do |event, *name_args|
+bot.application_command(:buy) do |event|
+  execute_buy(event, event.options['item'])
+end
+
+def execute_view(event, search_name)
   uid = event.user.id
-  search_name = name_args.join(' ')
+  search_name = search_name.strip
   user_chars = DB.get_collection(uid)
   
   owned_name = user_chars.keys.find { |k| k.downcase == search_name.downcase }
   
   unless owned_name && (user_chars[owned_name]['count'] > 0 || user_chars[owned_name]['ascended'].to_i > 0)
-    send_embed(
-      event,
-      title: "#{EMOJIS['confused']} Character Not Found",
-      description: "You don't own **#{search_name}** yet!\nUse `#{PREFIX}summon` to roll for them, or `#{PREFIX}buy` to get them from the shop."
-    )
-    next
+    return send_embed(event, title: "#{EMOJIS['confused']} Character Not Found", description: "You don't own **#{search_name}** yet!\nUse `/summon` to roll for them, or `/buy` to get them from the shop.")
   end
   
   result = find_character_in_pools(owned_name)
@@ -355,45 +315,49 @@ bot.command(:view, description: 'Look at a specific character you own', min_args
   desc = "You currently own **#{count}** standard copies of this character.\n"
   desc += "#{EMOJIS['neonsparkle']} **You own #{ascended} Shiny Ascended copies!** #{EMOJIS['neonsparkle']}" if ascended > 0
 
-  send_embed(
-    event,
-    title: "#{emoji} #{owned_name} (#{rarity.capitalize})",
-    description: desc,
-    image: char_data[:gif]
-  )
+  send_embed(event, title: "#{emoji} #{owned_name} (#{rarity.capitalize})", description: desc, image: char_data[:gif])
+end
+
+bot.command(:view, description: 'Look at a specific character you own', min_args: 1, category: 'Gacha') do |event, *name_args|
+  execute_view(event, name_args.join(' '))
   nil
 end
 
-bot.command(:ascend, description: 'Fuse 5 duplicate characters into a Shiny Ascended version!', min_args: 1, category: 'Gacha') do |event, *name_args|
+bot.application_command(:view) do |event|
+  execute_view(event, event.options['character'])
+end
+
+def execute_ascend(event, search_name)
   uid = event.user.id
-  search_name = name_args.join(' ').downcase
+  search_name = search_name.downcase.strip
   user_chars = DB.get_collection(uid)
   
   owned_name = user_chars.keys.find { |k| k.downcase == search_name }
 
   unless owned_name
-    send_embed(event, title: "#{EMOJIS['error']} Ascension Failed", description: "You don't own any copies of **#{name_args.join(' ')}**!")
-    next
+    return send_embed(event, title: "#{EMOJIS['error']} Ascension Failed", description: "You don't own any copies of **#{search_name}**!")
   end
 
   if user_chars[owned_name]['count'] < 5
-    send_embed(event, title: "#{EMOJIS['nervous']} Not Enough Copies", description: "You need **5 copies** of #{owned_name} to ascend them. You only have **#{user_chars[owned_name]['count']}**.")
-    next
+    return send_embed(event, title: "#{EMOJIS['nervous']} Not Enough Copies", description: "You need **5 copies** of #{owned_name} to ascend them. You only have **#{user_chars[owned_name]['count']}**.")
   end
 
   ascension_cost = 5000
   if DB.get_coins(uid) < ascension_cost
-    send_embed(event, title: "#{EMOJIS['nervous']} Insufficient Funds", description: "The ritual costs **#{ascension_cost}** #{EMOJIS['s_coin']}. You currently have **#{DB.get_coins(uid)}** #{EMOJIS['s_coin']}.")
-    next
+    return send_embed(event, title: "#{EMOJIS['nervous']} Insufficient Funds", description: "The ritual costs **#{ascension_cost}** #{EMOJIS['s_coin']}. You currently have **#{DB.get_coins(uid)}** #{EMOJIS['s_coin']}.")
   end
 
   DB.add_coins(uid, -ascension_cost)
   DB.ascend_character(uid, owned_name)
 
-  send_embed(
-    event,
-    title: "#{EMOJIS['neonsparkle']} Ascension Complete! #{EMOJIS['neonsparkle']}",
-    description: "You paid **#{ascension_cost}** #{EMOJIS['s_coin']} and fused 5 copies of **#{owned_name}** together!\n\nThey have been reborn as a **Shiny Ascended** character. View them in your `!collection`!"
-  )
+  send_embed(event, title: "#{EMOJIS['neonsparkle']} Ascension Complete! #{EMOJIS['neonsparkle']}", description: "You paid **#{ascension_cost}** #{EMOJIS['s_coin']} and fused 5 copies of **#{owned_name}** together!\n\nThey have been reborn as a **Shiny Ascended** character. View them in your `/collection`!")
+end
+
+bot.command(:ascend, description: 'Fuse 5 duplicate characters into a Shiny Ascended version!', min_args: 1, category: 'Gacha') do |event, *name_args|
+  execute_ascend(event, name_args.join(' '))
   nil
+end
+
+bot.application_command(:ascend) do |event|
+  execute_ascend(event, event.options['character'])
 end
