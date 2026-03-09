@@ -343,7 +343,7 @@ def is_premium?(bot, user_id)
     server = bot.server(server_id)
     next unless server
 
-    member = server.member(user_id)
+    member = server.members.find { |m| m.id == user_id }
     next unless member
 
     return true if member.roles.any? { |role| role.id == role_id }
