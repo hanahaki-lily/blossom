@@ -16,7 +16,6 @@ Blossom is a custom-built, feature-rich Discord bot designed to turn your server
 * **Language:** Ruby 3.4
 * **Library:** `discordrb`
 * **Database:** SQLite3
-* **Process Manager:** PM2
 
 ## 👑 Developer
 Developed with 💖 by **Envvy** (Kyvrixon Dev). 
