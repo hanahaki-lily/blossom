@@ -1,17 +1,29 @@
 require 'pg'
 require 'time'
+require 'connection_pool'
+
+class PGPoolWrapper
+  def initialize(url)
+    @pool = ConnectionPool.new(size: 20, timeout: 5) { PG.connect(url) }
+  end
+
+  def exec(*args)
+    @pool.with { |conn| conn.exec(*args) }
+  end
+
+  def exec_params(*args)
+    @pool.with { |conn| conn.exec_params(*args) }
+  end
+end
 
 class BotDatabase
   def initialize
-    # Connect to Neon/Postgres using your .env variable
-    @db = PG.connect(ENV['DATABASE_URL'])
+    @db = PGPoolWrapper.new(ENV['DATABASE_URL'])
     
-    # Run all table creations ONCE when the bot boots up!
     setup_schema
   end
 
   def setup_schema
-    # Using BIGINT for all Discord IDs because standard integers are too small in Postgres
     @db.exec(<<-SQL)
       CREATE TABLE IF NOT EXISTS server_settings (
         server_id BIGINT PRIMARY KEY,

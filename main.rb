@@ -445,20 +445,23 @@ bot.ready do
   end
 
   Thread.new do
-    loop do
-      sleep 10 
-      now = Time.now.to_i
-      
-      DB.get_active_giveaways.each do |gw|
-        if now >= gw['end_time'].to_i
-          gw_id = gw['id']
-          channel = bot.channel(gw['channel_id'])
+  loop do
+    sleep 10 
+    now = Time.now.to_i
+    
+    DB.get_active_giveaways.each do |gw|
+      if now >= gw['end_time'].to_i
+        gw_id = gw['id']
+        
+        begin
+          # Postgres returns BIGINTs as strings, so we MUST .to_i the IDs!
+          channel = bot.channel(gw['channel_id'].to_i)
           next unless channel
 
           entrants = DB.get_giveaway_entrants(gw_id)
           
           begin
-            msg = channel.message(gw['message_id'])
+            msg = channel.message(gw['message_id'].to_i)
           rescue
             msg = nil
           end
@@ -481,10 +484,16 @@ bot.ready do
           end
           
           DB.delete_giveaway(gw_id)
+          
+        rescue StandardError => e
+          # This catches 403 Forbidden or any other weird Discord API crashes
+          puts "⚠️ Cleaned up broken giveaway #{gw_id} - #{e.message}"
+          DB.delete_giveaway(gw_id)
         end
       end
     end
   end
+end
 
   DB.get_blacklist.each do |uid|
     bot.ignore_user(uid)
