@@ -1,5 +1,7 @@
 require 'discordrb'
 require 'dotenv/load'
+require 'open-uri'
+require 'cgi'
 
 # =========================
 # BOT SETUP
@@ -629,8 +631,8 @@ puts "Registering slash commands to Discord API..."
  # end
 
  # Leveling Commands
-# bot.register_application_command(:level, 'Show a user\'s level and XP for this server') do |cmd|
- #  cmd.user('user', 'The user to check (optional)', required: false)
+ # bot.register_application_command(:level, 'Show a user\'s level and XP for this server') do |cmd|
+  # cmd.user('user', 'The user to check (optional)', required: false)
  # end
  # bot.register_application_command(:leaderboard, 'Show top users by level for this server')
 # bot.register_application_command(:levelup, 'Configure where level-up messages go (Admin Only)') do |cmd|
