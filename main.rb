@@ -450,7 +450,7 @@ bot.ready do
       now = Time.now.to_i
       
       DB.get_active_giveaways.each do |gw|
-        if now >= gw['end_time']
+        if now >= gw['end_time'].to_i
           gw_id = gw['id']
           channel = bot.channel(gw['channel_id'])
           next unless channel
