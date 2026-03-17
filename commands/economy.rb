@@ -244,12 +244,12 @@ def execute_cooldowns(event)
   send_embed(event, title: "#{EMOJIS['info']} #{event.user.display_name}'s Cooldowns", description: "Here are your current economy timers:", fields: cd_fields)
 end
 
-bot.command(:cooldowns, description: 'Check your active timers for economy commands', category: 'Economy') { |e| execute_cooldowns(e); nil }
+bot.command(:cooldowns, description: 'Check your active timers for economy commands', category: 'Developer') { |e| execute_cooldowns(e); nil }
 bot.application_command(:cooldowns) { |e| execute_cooldowns(e) }
 
 def execute_bomb(event)
-  unless event.user.permission?(:administrator, event.channel) || event.user.id == DEV_ID
-    return send_embed(event, title: "#{EMOJIS['x_']} Permission Denied", description: 'You need Administrator permissions to plant a bomb!')
+  unless event.user.id == DEV_ID
+    return send_embed(event, title: "#{EMOJIS['x_']} Permission Denied", description: 'You need developer permissions to plant a bomb!')
   end
 
   expire_time = Time.now + 300
@@ -259,7 +259,7 @@ def execute_bomb(event)
 
   embed = Discordrb::Webhooks::Embed.new(
     title: "#{EMOJIS['bomb']} Bomb Planted!",
-    description: "An admin has planted a bomb! It will explode **#{discord_timestamp}**!\nQuick, press the button to defuse it and earn a reward!",
+    description: "A bomb has been planted! It will explode **#{discord_timestamp}**!\nQuick, press the button to defuse it and earn a reward!",
     color: NEON_COLORS.sample
   )
 
