@@ -785,31 +785,31 @@ puts "Registering slash commands to Discord API..."
  #   cmd.user('user', 'The user you want to trade with', required: true)
   #  cmd.string('offer', 'The character you are giving', required: true)
    # cmd.string('request', 'The character you want from them', required: true)
-  #end
+ # end
 
-  #bot.register_application_command(:purge, 'Deletes a number of messages (Admin only)') do |cmd|
-  #cmd.integer('amount', 'Number of messages to delete (1-100)', required: true)
-#end
+  bot.register_application_command(:purge, 'Deletes a number of messages (Admin only)') do |cmd|
+  cmd.integer('amount', 'Number of messages to delete (1-100)', required: true)
+end
 
-#bot.register_application_command(:kick, 'Kicks a user from the server (Admin only)') do |cmd|
-  #cmd.user('user', 'The user to kick', required: true)
-  #cmd.string('reason', 'Why are they being kicked?', required: false)
-#end
+bot.register_application_command(:kick, 'Kicks a user from the server (Admin only)') do |cmd|
+  cmd.user('user', 'The user to kick', required: true)
+  cmd.string('reason', 'Why are they being kicked?', required: false)
+end
 
-#bot.register_application_command(:ban, 'Bans a user from the server (Admin only)') do |cmd|
-  #cmd.user('user', 'The user to ban', required: true)
-  #cmd.string('reason', 'Why are they being banned?', required: false)
-#end
+bot.register_application_command(:ban, 'Bans a user from the server (Admin only)') do |cmd|
+  cmd.user('user', 'The user to ban', required: true)
+  cmd.string('reason', 'Why are they being banned?', required: false)
+end
 
-#bot.register_application_command(:timeout, 'Timeouts a user for X minutes (Admin only)') do |cmd|
- # cmd.user('user', 'The user to timeout', required: true)
- # cmd.integer('minutes', 'How many minutes?', required: true)
- # cmd.string('reason', 'Why are they being timed out?', required: false)
-#end
+bot.register_application_command(:timeout, 'Timeouts a user for X minutes (Admin only)') do |cmd|
+  cmd.user('user', 'The user to timeout', required: true)
+  cmd.integer('minutes', 'How many minutes?', required: true)
+  cmd.string('reason', 'Why are they being timed out?', required: false)
+end
 
-#bot.register_application_command(:lottery, 'Enter the hourly global lottery!') do |cmd|
-  #cmd.integer('tickets', 'How many 1000-coin tickets to buy', required: false)
-#end
+bot.register_application_command(:lottery, 'Enter the hourly global lottery!') do |cmd|
+  cmd.integer('tickets', 'How many 1000-coin tickets to buy', required: false)
+end
 
 # ------------------------------------
 
