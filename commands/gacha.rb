@@ -141,24 +141,19 @@ end
 bot.command(:summon, description: 'Roll the gacha!', category: 'Gacha') { |e| execute_summon(e); nil }
 bot.application_command(:summon) { |e| execute_summon(e) }
 
-# This helper does all the heavy lifting for generating the UI
 def build_collection_page(event, target_user, col, current_rarity, page, is_edit: false)
   uid = target_user.id
   username = target_user.display_name
 
-  # Pre-sort to keep your exact market rarity order
   rarity_order = ['common', 'rare', 'legendary', 'goddess']
   
-  # Find which rarities the user actually owns, in the correct order
   owned_rarities = rarity_order.select { |r| col.values.any? { |d| d['rarity'].downcase == r } }
   other_rarities = col.values.map { |d| d['rarity'].downcase }.uniq - rarity_order
   all_owned_rarities = owned_rarities + other_rarities
 
-  # Grab only the VTubers for the currently selected rarity
   items_in_rarity = col.select { |_, data| data['rarity'].downcase == current_rarity }
   sorted_items = items_in_rarity.sort_by { |name, _| name }
 
-  # Math for the 10-per-page limit
   items_per_page = 10
   total_pages = (sorted_items.size / items_per_page.to_f).ceil
   total_pages = 1 if total_pages < 1
@@ -169,7 +164,6 @@ def build_collection_page(event, target_user, col, current_rarity, page, is_edit
   start_idx = (page - 1) * items_per_page
   page_items = sorted_items[start_idx, items_per_page]
 
-  # Build the beautiful embed
   embed = Discordrb::Webhooks::Embed.new(
     title: "🌟 #{username}'s VTubers: #{current_rarity.capitalize}",
     color: 0xFFB6C1
@@ -186,20 +180,16 @@ def build_collection_page(event, target_user, col, current_rarity, page, is_edit
   embed.description = desc.empty? ? "*No VTubers found.*" : desc
   embed.footer = Discordrb::Webhooks::EmbedFooter.new(text: "Page #{page}/#{total_pages} • Total #{current_rarity.capitalize}: #{items_in_rarity.size}")
 
-  # Build the Interactive Components
   view = Discordrb::Components::View.new
 
-  # 1. The Select Menu (Dropdown)
   view.row do |r|
     r.select_menu(custom_id: "colsel_#{uid}", placeholder: "Select Rarity...", max_values: 1) do |s|
       all_owned_rarities.each do |rarity|
-        # Marks the rarity they are currently looking at as the default/selected one
         s.option(label: rarity.capitalize, value: rarity, default: rarity == current_rarity)
       end
     end
   end
 
-  # 2. The Pagination Buttons (Only show if there are multiple pages!)
   if total_pages > 1
     view.row do |r|
       r.button(custom_id: "colbtn_#{uid}_#{page - 1}_#{current_rarity}", label: '◀ Prev', style: :secondary, disabled: page <= 1)
@@ -207,7 +197,6 @@ def build_collection_page(event, target_user, col, current_rarity, page, is_edit
     end
   end
 
-  # Send or Edit the message based on who called this method
   if is_edit
     event.update_message(embeds: [embed], components: view)
   elsif event.is_a?(Discordrb::Events::ApplicationCommandEvent)
@@ -217,7 +206,6 @@ def build_collection_page(event, target_user, col, current_rarity, page, is_edit
   end
 end
 
-# The actual command users type
 def execute_collection(event, target_user)
   uid = target_user.id
   col = DB.get_collection(uid)
@@ -227,7 +215,6 @@ def execute_collection(event, target_user)
     return event.is_a?(Discordrb::Events::ApplicationCommandEvent) ? event.respond(content: error_msg) : event.respond(error_msg)
   end
 
-  # Start them on the lowest rarity they actually own
   rarity_order = ['common', 'rare', 'legendary', 'goddess']
   owned_rarities = rarity_order.select { |r| col.values.any? { |d| d['rarity'].downcase == r } }
   other_rarities = col.values.map { |d| d['rarity'].downcase }.uniq - rarity_order
