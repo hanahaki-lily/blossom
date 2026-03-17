@@ -106,3 +106,39 @@ bot.button(custom_id: /^defuse_drop_(\d+)$/) do |event|
   )
   event.update_message(content: nil, embeds: [embed], components: [])
 end
+
+# =========================
+# GLOBAL HOURLY LOTTERY DRAW
+# =========================
+
+Thread.new do
+  loop do
+    now = Time.now.to_i
+    sleep_time = 3600 - (now % 3600)
+    sleep(sleep_time)
+
+    # Use the DB instance directly to ensure we have the data
+    entries = DB.get_lottery_entries
+    next if entries.nil? || entries.empty?
+
+    begin
+      winner_id = entries.sample
+      jackpot = 100 + (entries.size * 100)
+      
+      DB.add_coins(winner_id, jackpot)
+      
+      winner_user = bot.user(winner_id)
+      if winner_user
+        begin
+          winner_user.pm("✨ **JACKPOT!** You won **#{jackpot}** #{EMOJIS['s_coin']} in the Hourly Lottery! 🌸")
+        rescue
+          # Ignore if DMs are closed
+        end
+      end
+    rescue => e
+      puts "[LOTTERY ERROR] #{e.message}"
+    ensure
+      DB.clear_lottery
+    end
+  end
+end

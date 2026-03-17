@@ -494,15 +494,37 @@ bot.button(custom_id: /^menu_/) do |event|
 end
 
 # =========================
-# LOAD COMMANDS
+# SAFE LOAD COMMANDS
 # =========================
-eval(File.read(File.join(__dir__, 'commands/basic.rb')), binding)
-eval(File.read(File.join(__dir__, 'commands/economy.rb')), binding)
-eval(File.read(File.join(__dir__, 'commands/gacha.rb')), binding)
-eval(File.read(File.join(__dir__, 'commands/arcade.rb')), binding)
-eval(File.read(File.join(__dir__, 'commands/trade.rb')), binding)
-eval(File.read(File.join(__dir__, 'commands/developer.rb')), binding)
-eval(File.read(File.join(__dir__, 'commands/leveling.rb')), binding)
+def safe_load(file_path, context_binding)
+  begin
+    eval(File.read(file_path), context_binding)
+    puts "✅ Loaded: #{file_path}"
+  rescue StandardError => e
+    puts "❌ ERROR in #{file_path}!"
+    puts "   Line: #{e.backtrace.first}"
+    puts "   Message: #{e.message}"
+  rescue SyntaxError => e
+    puts "⚠️ SYNTAX ERROR in #{file_path}!"
+    puts "   Message: #{e.message}"
+  end
+end
+
+command_files = [
+  'commands/basic.rb', 'commands/economy.rb', 'commands/gacha.rb', 
+  'commands/arcade.rb', 'commands/trade.rb', 'commands/developer.rb', 
+  'commands/leveling.rb', 'commands/moderation.rb'
+]
+
+event_files = [
+  'events/leveling.rb', 'events/economy.rb', 'events/gacha.rb', 
+  'events/trade.rb', 'events/basic.rb'
+]
+
+command_files.each { |f| safe_load(File.join(__dir__, f), binding) }
+event_files.each { |f| safe_load(File.join(__dir__, f), binding) }
+
+bot.include!(Moderation)
 
 # =========================
 # LOAD EVENTS (Background Logic)
@@ -760,10 +782,34 @@ puts "Registering slash commands to Discord API..."
 # end
 
 # bot.register_application_command(:trade, 'Trade a character with someone') do |cmd|
-   # cmd.user('user', 'The user you want to trade with', required: true)
-   # cmd.string('offer', 'The character you are giving', required: true)
+ #   cmd.user('user', 'The user you want to trade with', required: true)
+  #  cmd.string('offer', 'The character you are giving', required: true)
    # cmd.string('request', 'The character you want from them', required: true)
- # end
+  #end
+
+  #bot.register_application_command(:purge, 'Deletes a number of messages (Admin only)') do |cmd|
+  #cmd.integer('amount', 'Number of messages to delete (1-100)', required: true)
+#end
+
+#bot.register_application_command(:kick, 'Kicks a user from the server (Admin only)') do |cmd|
+  #cmd.user('user', 'The user to kick', required: true)
+  #cmd.string('reason', 'Why are they being kicked?', required: false)
+#end
+
+#bot.register_application_command(:ban, 'Bans a user from the server (Admin only)') do |cmd|
+  #cmd.user('user', 'The user to ban', required: true)
+  #cmd.string('reason', 'Why are they being banned?', required: false)
+#end
+
+#bot.register_application_command(:timeout, 'Timeouts a user for X minutes (Admin only)') do |cmd|
+ # cmd.user('user', 'The user to timeout', required: true)
+ # cmd.integer('minutes', 'How many minutes?', required: true)
+ # cmd.string('reason', 'Why are they being timed out?', required: false)
+#end
+
+#bot.register_application_command(:lottery, 'Enter the hourly global lottery!') do |cmd|
+  #cmd.integer('tickets', 'How many 1000-coin tickets to buy', required: false)
+#end
 
 # ------------------------------------
 

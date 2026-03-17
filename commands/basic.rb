@@ -52,7 +52,7 @@ bot.command(:about, description: 'Learn more about Blossom!', category: 'Utility
 bot.application_command(:about) { |e| execute_about(e) }
 
 def execute_support(event)
-  send_embed(event, title: "🛠️ Support Server", description: "Need assistance, have questions, or want to report a bug?\nJoin the official Blossom Support Server here:\n\n**https://discord.gg/nGGcNS6gNW**")
+  send_embed(event, title: "🛠️ Support Server", description: "Need assistance, have questions, or want to report a bug?\nJoin the Tsukiyo Server here:\n\n**https://discord.gg/tsukiyo**")
 end
 
 bot.command(:support, description: 'Get a link to the official support server', category: 'Utility') { |e| execute_support(e); nil }
@@ -65,7 +65,7 @@ def execute_premium(event)
   desc += "💰 **+10% Coin Boost** from all sources (daily, work, streams, bombs, collabs!)\n"
   desc += "🍀 **Boosted Gacha Odds** (Much higher chance to pull Rares, Legendaries, and Goddesses)\n"
   desc += "✨ **1% Secret Chance** to instantly pull a Shiny Ascended character from the portal!\n\n"
-  desc += "To unlock these perks, join the Support Server and subscribe via the Server Shop:\n**https://discord.gg/nGGcNS6gNW**"
+  desc += "To unlock these perks, join the Tsukiyo Server and boost it!:\n**https://discord.gg/tsukiyo**"
   send_embed(event, title: "💎 Blossom Premium", description: desc)
 end
 

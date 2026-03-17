@@ -110,6 +110,11 @@ class BotDatabase
         user_id BIGINT, 
         UNIQUE(giveaway_id, user_id)
       );
+
+      CREATE TABLE IF NOT EXISTS lottery (
+        id SERIAL PRIMARY KEY,
+        user_id BIGINT
+      );
     SQL
   end
 
@@ -348,6 +353,31 @@ class BotDatabase
   def delete_giveaway(gw_id)
     @db.exec_params("DELETE FROM giveaways WHERE id = $1", [gw_id])
     @db.exec_params("DELETE FROM giveaway_entrants WHERE giveaway_id = $1", [gw_id])
+  end
+
+  # =========================
+  # GLOBAL LOTTERY
+  # =========================
+
+  def enter_lottery(uid, tickets)
+    # Since we need to insert multiple rows, we loop the insertion
+    tickets.times do
+      @db.exec_params("INSERT INTO lottery (user_id) VALUES ($1)", [uid])
+    end
+  end
+
+  def get_lottery_entries
+    @db.exec("SELECT user_id FROM lottery").map { |row| row['user_id'].to_i }
+  end
+
+  def clear_lottery
+    @db.exec("DELETE FROM lottery")
+  end
+
+  def get_lottery_stats(uid)
+    all_rows = @db.exec("SELECT user_id FROM lottery").to_a
+    user_tickets = all_rows.count { |r| r['user_id'].to_i == uid }
+    { total_tickets: all_rows.size, user_tickets: user_tickets }
   end
 
 end
