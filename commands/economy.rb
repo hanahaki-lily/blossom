@@ -315,7 +315,6 @@ end
 bot.command(:coinlb, description: 'Show the richest users globally', category: 'Economy') { |e| execute_coinlb(e); nil }
 bot.application_command(:coinlb) { |e| execute_coinlb(e) }
 
-# Paste this at the very bottom of commands/economy.rb
 def execute_lottery(event, amount)
   uid = event.user.id
   amount = amount.to_i
@@ -328,7 +327,6 @@ def execute_lottery(event, amount)
     return send_embed(event, title: "❌ Not Enough Coins", description: "You need **#{cost}** #{EMOJIS['s_coin']} for #{amount} tickets!\nYour Balance: **#{balance}**")
   end
 
-  # Deduct coins and save
   DB.add_coins(uid, -cost)
   DB.enter_lottery(uid, amount)
   
@@ -353,4 +351,33 @@ end
 
 bot.application_command(:lottery) do |event|
   execute_lottery(event, event.options['tickets'] || 1)
+end
+
+def execute_lotteryinfo(event)
+  uid = event.user.id
+  stats = DB.get_lottery_stats(uid)
+  
+  pool = 100 + (stats[:total_tickets] * 100)
+  
+  now = Time.now
+  next_hour = Time.new(now.year, now.month, now.day, now.hour) + 3600
+  
+  send_embed(
+    event,
+    title: "🎟️ Global Lottery Status",
+    description: "The winning ticket will be drawn **<t:#{next_hour.to_i}:R>**!\n\n" \
+                 "💰 **Current Prize Pool:** #{pool} #{EMOJIS['s_coin']}\n" \
+                 "🎫 **Total Tickets Sold:** #{stats[:total_tickets]}\n" \
+                 "🌸 **Your Tickets:** #{stats[:user_tickets]}\n\n" \
+                 "*Want to increase your odds? Use `b!lottery <amount>`!*"
+  )
+end
+
+bot.command(:lotteryinfo, description: 'View current lottery stats and your tickets', category: 'Economy') do |event|
+  execute_lotteryinfo(event)
+  nil
+end
+
+bot.application_command(:lotteryinfo) do |event|
+  execute_lotteryinfo(event)
 end

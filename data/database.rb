@@ -360,9 +360,15 @@ class BotDatabase
   # =========================
 
   def enter_lottery(uid, tickets)
-    # Since we need to insert multiple rows, we loop the insertion
-    tickets.times do
-      @db.exec_params("INSERT INTO lottery (user_id) VALUES ($1)", [uid])
+    @db.exec("BEGIN")
+    begin
+      tickets.times do
+        @db.exec_params("INSERT INTO lottery (user_id) VALUES ($1)", [uid])
+      end
+      @db.exec("COMMIT")
+    rescue => e
+      @db.exec("ROLLBACK")
+      puts "[DB ERROR] Failed to insert tickets: #{e.message}"
     end
   end
 

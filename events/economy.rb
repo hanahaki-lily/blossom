@@ -117,9 +117,9 @@ Thread.new do
     sleep_time = 3600 - (now % 3600)
     sleep(sleep_time)
 
-    # Use the DB instance directly to ensure we have the data
     entries = DB.get_lottery_entries
     next if entries.nil? || entries.empty?
+    DB.clear_lottery
 
     begin
       winner_id = entries.sample
@@ -132,13 +132,10 @@ Thread.new do
         begin
           winner_user.pm("✨ **JACKPOT!** You won **#{jackpot}** #{EMOJIS['s_coin']} in the Hourly Lottery! 🌸")
         rescue
-          # Ignore if DMs are closed
         end
       end
     rescue => e
       puts "[LOTTERY ERROR] #{e.message}"
-    ensure
-      DB.clear_lottery
     end
   end
 end

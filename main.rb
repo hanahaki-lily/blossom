@@ -408,7 +408,6 @@ bot.button(custom_id: /^menu_/) do |event|
       upgrades = []
       consumables = []
 
-      # Exact matches from your Stream Upgrades market list
       upgrade_keywords = ['headset', 'keyboard', 'mic', 'neon sign', 'gacha pass']
 
       inv.each do |item, count|
@@ -437,7 +436,7 @@ bot.button(custom_id: /^menu_/) do |event|
       r.button(custom_id: "menu_vtubers_#{uid}", label: 'VTuber Totals', style: :success, emoji: '🌟')
     end
 
-  when 'vtubers', 'cards' # Catches 'cards' just in case old buttons are still in chat!
+  when 'vtubers', 'cards'
     col = DB.get_collection(uid)
     new_embed.title = "🌟 #{username}'s VTuber Collection"
 
@@ -462,10 +461,8 @@ bot.button(custom_id: /^menu_/) do |event|
         end
       end
 
-      # THE FIX: This array forces Ruby to sort in this exact order!
       rarity_order = ['common', 'rare', 'legendary', 'goddess']
       
-      # Any rarity not in the list gets pushed to the bottom (index 99)
       sorted_rarity = rarity_counts.sort_by { |r, _| rarity_order.index(r.downcase) || 99 }
       sorted_ascended = ascended_rarity_counts.sort_by { |r, _| rarity_order.index(r.downcase) || 99 }
 
@@ -525,15 +522,6 @@ command_files.each { |f| safe_load(File.join(__dir__, f), binding) }
 event_files.each { |f| safe_load(File.join(__dir__, f), binding) }
 
 bot.include!(Moderation)
-
-# =========================
-# LOAD EVENTS (Background Logic)
-# =========================
-eval(File.read(File.join(__dir__, 'events/leveling.rb')), binding)
-eval(File.read(File.join(__dir__, 'events/economy.rb')), binding)
-eval(File.read(File.join(__dir__, 'events/gacha.rb')), binding)
-eval(File.read(File.join(__dir__, 'events/trade.rb')), binding)
-eval(File.read(File.join(__dir__, 'events/basic.rb')), binding)
 
 # =========================
 # RUN
@@ -810,6 +798,8 @@ puts "Registering slash commands to Discord API..."
 #bot.register_application_command(:lottery, 'Enter the hourly global lottery!') do |cmd|
  # cmd.integer('tickets', 'How many 1000-coin tickets to buy', required: false)
 #end
+
+bot.register_application_command(:lotteryinfo, 'View current lottery stats and your tickets')
 
 # ------------------------------------
 
