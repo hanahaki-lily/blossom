@@ -536,6 +536,9 @@ bot.include!(Moderation)
 # RUN
 # =========================
 
+bot.ready do
+  puts "Blossom is connected and live!"
+
   Thread.new do
     loop do
       begin
