@@ -105,6 +105,14 @@ class BotDatabase
         end_time BIGINT
       );
 
+      CREATE TABLE IF NOT EXISTS server_logs (
+        server_id BIGINT PRIMARY KEY,
+        log_channel BIGINT,
+        log_deletes INTEGER DEFAULT 0,
+        log_edits INTEGER DEFAULT 0,
+        log_mod INTEGER DEFAULT 0
+      );
+
       CREATE TABLE IF NOT EXISTS giveaway_entrants (
         giveaway_id VARCHAR(255), 
         user_id BIGINT, 
@@ -117,12 +125,10 @@ class BotDatabase
       );
     SQL
 
-  begin
-      @db.exec("ALTER TABLE global_users ADD COLUMN daily_streak INTEGER DEFAULT 0")
-      @db.exec("ALTER TABLE global_users ADD COLUMN reminder_channel BIGINT")
-      @db.exec("ALTER TABLE global_users ADD COLUMN reminder_sent INTEGER DEFAULT 0")
-    rescue PG::DuplicateColumn, PG::Error
-    end
+    begin; @db.exec("ALTER TABLE global_users ADD COLUMN daily_streak INTEGER DEFAULT 0"); rescue PG::Error; end
+    begin; @db.exec("ALTER TABLE global_users ADD COLUMN reminder_channel BIGINT"); rescue PG::Error; end
+    begin; @db.exec("ALTER TABLE global_users ADD COLUMN reminder_sent INTEGER DEFAULT 0"); rescue PG::Error; end
+    begin; @db.exec("ALTER TABLE server_logs ADD COLUMN dm_mods INTEGER DEFAULT 1"); rescue PG::Error; end
   end
 
   # =========================
@@ -149,6 +155,23 @@ class BotDatabase
 
   def get_top_coins(limit = 10)
     @db.exec_params("SELECT user_id, coins FROM global_users ORDER BY coins DESC LIMIT $1", [limit]).to_a
+  end
+
+  def give_card(from_uid, to_uid, char_name, rarity)
+    @db.exec_params("INSERT INTO global_users (user_id, coins) VALUES ($1, 0) ON CONFLICT DO NOTHING", [to_uid])
+    
+    @db.exec_params(
+      "UPDATE collections SET count = count - 1 WHERE user_id = $1 AND character_name = $2", 
+      [from_uid, char_name]
+    )
+    
+    @db.exec_params(
+      "INSERT INTO collections (user_id, character_name, rarity, count, ascended) 
+       VALUES ($1, $2, $3, 1, 0) 
+       ON CONFLICT (user_id, character_name) 
+       DO UPDATE SET count = collections.count + 1", 
+      [to_uid, char_name, rarity]
+    )
   end
 
   # =========================
@@ -261,6 +284,13 @@ class BotDatabase
     @db.exec_params("UPDATE collections SET count = count - 5, ascended = ascended + 1 WHERE user_id = $1 AND character_name = $2", [uid, name])
   end
 
+  def set_card_count(uid, char_name, new_count)
+    @db.exec_params(
+      "UPDATE collections SET count = $1 WHERE user_id = $2 AND character_name = $3", 
+      [new_count, uid, char_name]
+    )
+  end
+
   # =========================
   # LEVELING & XP
   # =========================
@@ -324,6 +354,41 @@ class BotDatabase
   def set_levelup_config(server_id, channel_id, enabled)
     val = enabled ? 1 : 0
     @db.exec_params("INSERT INTO server_configs (server_id, levelup_channel, levelup_enabled) VALUES ($1, $2, $3) ON CONFLICT (server_id) DO UPDATE SET levelup_channel = $4, levelup_enabled = $5", [server_id, channel_id, val, channel_id, val])
+  end
+
+  def get_log_config(server_id)
+    row = @db.exec_params("SELECT * FROM server_logs WHERE server_id = $1", [server_id]).first
+    if row
+      {
+        channel: row['log_channel'] ? row['log_channel'].to_i : nil,
+        deletes: row['log_deletes'].to_i == 1,
+        edits: row['log_edits'].to_i == 1,
+        mod: row['log_mod'].to_i == 1,
+        dm_mods: row['dm_mods'].to_i == 1
+      }
+    else
+      @db.exec_params("INSERT INTO server_logs (server_id) VALUES ($1) ON CONFLICT DO NOTHING", [server_id])
+      { channel: nil, deletes: false, edits: false, mod: false, dm_mods: true } # <--- And add dm_mods here!
+    end
+  end
+
+  def set_log_channel(server_id, channel_id)
+    @db.exec_params(
+      "INSERT INTO server_logs (server_id, log_channel) VALUES ($1, $2) 
+       ON CONFLICT (server_id) DO UPDATE SET log_channel = $2", 
+      [server_id, channel_id]
+    )
+  end
+
+  def toggle_log_setting(server_id, setting)
+    current = @db.exec_params("SELECT #{setting} FROM server_logs WHERE server_id = $1", [server_id]).first
+    
+    if current
+      new_val = current[setting].to_i == 1 ? 0 : 1
+      @db.exec_params("UPDATE server_logs SET #{setting} = $1 WHERE server_id = $2", [new_val, server_id])
+      return new_val == 1
+    end
+    false
   end
 
   # =========================

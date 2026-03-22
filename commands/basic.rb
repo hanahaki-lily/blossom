@@ -209,3 +209,31 @@ bot.application_command(:giveaway) do |event|
   prize = event.options['prize']
   execute_giveaway(event, channel_id, time_str, prize)
 end
+
+def execute_serverinfo(event)
+  unless event.server
+    return send_embed(event, title: "⚠️ Error", description: "This command can only be used inside a server!")
+  end
+
+  server = event.server
+  owner = server.owner
+  
+  created_time = server.creation_time.to_i
+
+  fields = [
+    { name: '👑 Server Owner', value: owner ? owner.mention : "Unknown", inline: true },
+    { name: '👥 Total Members', value: server.member_count.to_s, inline: true },
+    { name: '📅 Created On', value: "<t:#{created_time}:D> (<t:#{created_time}:R>)", inline: false }
+  ]
+
+  send_embed(
+    event, 
+    title: "📊 #{server.name} - Server Info", 
+    description: "Here are the stats for **#{server.name}**:", 
+    fields: fields,
+    image: server.icon_url
+  )
+end
+
+bot.command(:serverinfo, description: 'Displays information about the current server', category: 'Utility') { |e| execute_serverinfo(e); nil }
+bot.application_command(:serverinfo) { |e| execute_serverinfo(e) }

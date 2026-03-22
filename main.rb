@@ -193,11 +193,12 @@ end
 
 def generate_help_page(bot, user_obj, page_number)
   grouped_commands = bot.commands.values.group_by { |cmd| get_cmd_category(cmd.name) }
-  category_order = COMMAND_CATEGORIES.keys + ['Uncategorized']
+  
+  category_order = (COMMAND_CATEGORIES.keys + ['Uncategorized']) - ['Developer']
   
   pages = []
   category_order.each do |category|
-    next unless grouped_commands[category] 
+    next unless grouped_commands[category]
     cmds = grouped_commands[category].sort_by(&:name)
     cmds.each_slice(10).with_index do |slice, index|
       pages << { category: category, commands: slice, part: index + 1, total_parts: (cmds.size / 10.0).ceil }
@@ -324,6 +325,26 @@ def build_blackmarket_page(user_id)
     end
   end
   [embed, view]
+end
+
+def log_mod_action(bot, server_id, title, description, color = 0x800080)
+  config = DB.get_log_config(server_id)
+  return unless config[:mod] && config[:channel]
+
+  log_channel = bot.channel(config[:channel])
+  return unless log_channel
+
+  embed = Discordrb::Webhooks::Embed.new(
+    title: title,
+    description: description,
+    color: color,
+    timestamp: Time.now
+  )
+  
+  begin
+    log_channel.send_message(nil, false, embed)
+  rescue
+  end
 end
 
 # =========================
@@ -524,7 +545,7 @@ command_files = [
 
 event_files = [
   'events/leveling.rb', 'events/economy.rb', 'events/gacha.rb', 
-  'events/trade.rb', 'events/basic.rb'
+  'events/trade.rb', 'events/basic.rb', 'events/moderation.rb'
 ]
 
 command_files.each { |f| safe_load(File.join(__dir__, f), binding) }
@@ -780,7 +801,53 @@ puts "Registering slash commands to Discord API..."
 
 #bot.register_application_command(:lotteryinfo, 'View current lottery stats and your tickets')
 
-bot.register_application_command(:remindme, 'Toggle your daily reward reminder ping')
+#bot.register_application_command(:remindme, 'Toggle your daily reward reminder ping')
+
+# NOT LIVE YET
+
+#bot.register_application_command(:givecoins, 'Give your coins to another user') do |cmd|
+ # cmd.user('user', 'Who?', required: true)
+ # cmd.integer('amount', 'How much?', required: true)
+#end
+
+#bot.register_application_command(:serverinfo, 'Displays information about the current server')
+
+#bot.register_application_command(:givecard, 'Give a VTuber card to another user') do |cmd|
+ # cmd.user('user', 'The user you want to give the card to', required: true)
+ # cmd.string('character', 'The name of the character', required: true)
+#end
+
+#bot.register_application_command(:sell, 'Sell your duplicate VTuber cards for coins') do |cmd|
+  #cmd.string('filter', 'How do you want to sell?', required: true, choices: { 
+  #  'All Dupes (Keep 1 of each)' => 'all', 
+  #  'Over 5 (Save copies for ascending)' => 'over5', 
+  #  'Specific Rarity' => 'rarity' 
+  #})
+  #cmd.string('rarity', 'If filtering by rarity, which one?', required: false, choices: { 
+  #  'Common' => 'common', 
+  #  'Rare' => 'rare', 
+  #  'Legendary' => 'legendary', 
+  #  'Goddess' => 'goddess' 
+ # })
+#end
+
+#bot.register_application_command(:logsetup, 'Set the channel for server logs (Admin Only)') do |cmd|
+ # cmd.channel('channel', 'The channel to send logs to', required: true)
+#end
+
+#bot.register_application_command(:logtoggle, 'Toggle logging for specific events (Admin Only)') do |cmd|
+ # cmd.string('type', 'What to toggle', required: true, choices: { 'Message Deletes' => 'deletes', 'Message Edits' => 'edits', 'Mod Actions' => 'mod' })
+#end
+
+#bot.register_application_command(:kick, 'Kicks a user from the server (Admin only)') do |cmd|
+ # cmd.user('user', 'The user to kick', required: true)
+ # cmd.string('reason', 'Why are they being kicked?', required: false)
+#end
+
+bot.register_application_command(:removecoins, 'Remove coins from a user (Dev Only)') do |cmd|
+  cmd.user('user', 'Who?', required: true)
+  cmd.integer('amount', 'How much?', required: true)
+end
 
 # ------------------------------------
 
