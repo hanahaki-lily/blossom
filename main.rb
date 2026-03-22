@@ -332,8 +332,8 @@ end
 
 # Server IDs => Role IDs 
 PREMIUM_SERVERS = {
-  1475696989059420162 => 1477110574419808306,
-  1472509438010065070 => 1477179978004041788  
+  1125196330646638592 => 1125222184533639338,
+  1472509438010065070 => 1477179978004041788
 }
 
 def is_premium?(bot, user_id)
@@ -536,38 +536,6 @@ bot.include!(Moderation)
 # RUN
 # =========================
 
-bot.ready do
-  puts "Blossom is connected and live!"
-  
-  Thread.new do
-    storage_server_id  = 1475696989059420162
-    storage_channel_id = 1476943608702832680
-    
-    loop do
-      begin
-        storage_channel = bot.channel(storage_channel_id, storage_server_id)
-        
-        if storage_channel
-          db_file = "blossom.db"
-          if File.exist?(db_file)
-            timestamp = Time.now.strftime('%Y-%m-%d %H:%M:%S')
-            
-            storage_channel.send_message("📦 **Automated Daily Backup**\nTimestamp: `#{timestamp}`")
-            File.open(db_file, 'rb') { |file| storage_channel.send_file(file) }
-            
-            puts "[SYSTEM] Daily backup sent to storage channel."
-          end
-        else
-          puts "[ERROR] Backup failed: Could not find storage channel."
-        end
-      rescue => e
-        puts "[BACKUP ERROR] #{e.message}"
-      end
-
-      sleep 86400
-    end
-  end
-
   Thread.new do
     loop do
       begin
@@ -594,7 +562,6 @@ bot.ready do
         gw_id = gw['id']
         
         begin
-          # Postgres returns BIGINTs as strings, so we MUST .to_i the IDs!
           channel = bot.channel(gw['channel_id'].to_i)
           next unless channel
 
