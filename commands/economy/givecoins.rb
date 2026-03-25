@@ -53,7 +53,7 @@ end
 # ------------------------------------------
 # TRIGGER: Prefix Command (b!givecoins)
 # ------------------------------------------
-bot.command(:givecoins, 
+$bot.command(:givecoins, 
   description: 'Give your coins to another user', 
   category: 'Economy'
 ) do |event, mention, amount|
@@ -65,7 +65,7 @@ end
 # ------------------------------------------
 # TRIGGER: Slash Command (/givecoins)
 # ------------------------------------------
-bot.application_command(:givecoins) do |event|
+$bot.application_command(:givecoins) do |event|
   # Fetch target user from options and pass Slash data to the executor
   target = event.bot.user(event.options['user'].to_i)
   execute_givecoins(event, target, event.options['amount'])

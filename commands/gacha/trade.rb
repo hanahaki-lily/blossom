@@ -100,7 +100,7 @@ end
 # ------------------------------------------
 # TRIGGER: Prefix Command (b!trade)
 # ------------------------------------------
-bot.command(:trade, 
+$bot.command(:trade, 
   description: 'Trade a character with someone (Usage: !trade @user <My Char> for <Their Char>)', 
   category: 'Gacha'
 ) do |event, *args|
@@ -126,7 +126,7 @@ end
 # ------------------------------------------
 # TRIGGER: Slash Command (/trade)
 # ------------------------------------------
-bot.application_command(:trade) do |event|
+$bot.application_command(:trade) do |event|
   target_id = event.options['user']
   target = target_id ? event.bot.user(target_id.to_i) : nil
   execute_trade(event, target, event.options['offer'], event.options['request'])

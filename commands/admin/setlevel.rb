@@ -42,7 +42,7 @@ end
 # ------------------------------------------
 # TRIGGER: Prefix Command (b!setlevel)
 # ------------------------------------------
-bot.command(:setlevel, 
+$bot.command(:setlevel, 
   description: 'Set a user\'s server level (Admin Only)', 
   min_args: 2, 
   category: 'Admin'
@@ -55,7 +55,7 @@ end
 # ------------------------------------------
 # TRIGGER: Slash Command (/setlevel)
 # ------------------------------------------
-bot.application_command(:setlevel) do |event|
+$bot.application_command(:setlevel) do |event|
   # Fetch target user object from the Slash option ID
   target = event.bot.user(event.options['user'].to_i)
   execute_setlevel(event, target, event.options['level'])

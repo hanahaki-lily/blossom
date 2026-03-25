@@ -56,7 +56,7 @@ end
 # ------------------------------------------
 # TRIGGER: Prefix Command (b!levelup)
 # ------------------------------------------
-bot.command(:levelup, 
+$bot.command(:levelup, 
   description: 'Configure where level-up messages go (Admin Only)', 
   category: 'Admin'
 ) do |event, arg|
@@ -78,7 +78,7 @@ end
 # ------------------------------------------
 # TRIGGER: Slash Command (/levelup)
 # ------------------------------------------
-bot.application_command(:levelup) do |event|
+$bot.application_command(:levelup) do |event|
   # Resolve the channel object if an option was provided
   chan_id = event.options['channel']
   chan = chan_id ? event.bot.channel(chan_id.to_i, event.server) : nil

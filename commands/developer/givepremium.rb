@@ -37,7 +37,7 @@ end
 # ------------------------------------------
 # TRIGGER: Prefix Command (b!givepremium)
 # ------------------------------------------
-bot.command(:givepremium, 
+$bot.command(:givepremium, 
   description: 'Give a user lifetime premium (Dev only)', 
   category: 'Developer'
 ) do |event|
@@ -49,7 +49,7 @@ end
 # ------------------------------------------
 # TRIGGER: Slash Command (/givepremium)
 # ------------------------------------------
-bot.application_command(:givepremium) do |event|
+$bot.application_command(:givepremium) do |event|
   # Fetch target user object from the provided Slash option ID
   target = event.bot.user(event.options['user'].to_i)
   execute_givepremium(event, target)

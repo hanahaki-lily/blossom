@@ -37,7 +37,7 @@ end
 # ------------------------------------------
 # TRIGGER: Prefix Command (b!removepremium)
 # ------------------------------------------
-bot.command(:removepremium, 
+$bot.command(:removepremium, 
   description: 'Remove lifetime premium (Dev only)', 
   category: 'Developer'
 ) do |event|
@@ -49,7 +49,7 @@ end
 # ------------------------------------------
 # TRIGGER: Slash Command (/removepremium)
 # ------------------------------------------
-bot.application_command(:removepremium) do |event|
+$bot.application_command(:removepremium) do |event|
   # Fetch target user object from the provided Slash option ID
   target = event.bot.user(event.options['user'].to_i)
   execute_removepremium(event, target)

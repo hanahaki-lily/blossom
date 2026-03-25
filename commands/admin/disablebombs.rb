@@ -32,7 +32,7 @@ end
 # ------------------------------------------
 # TRIGGER: Prefix Command (b!disablebombs)
 # ------------------------------------------
-bot.command(:disablebombs, 
+$bot.command(:disablebombs, 
   description: 'Disable message bomb drops in this server.',
   category: 'Admin'
 ) do |event|
@@ -43,6 +43,6 @@ end
 # ------------------------------------------
 # TRIGGER: Slash Command (/disablebombs)
 # ------------------------------------------
-bot.application_command(:disablebombs) do |event|
+$bot.application_command(:disablebombs) do |event|
   execute_disablebombs(event)
 end

@@ -53,7 +53,7 @@ end
 # ------------------------------------------
 # TRIGGER: Prefix Command (b!kick)
 # ------------------------------------------
-bot.command(:kick, 
+$bot.command(:kick, 
   description: 'Kicks a user', 
   required_permissions: [:kick_members]
 ) do |event, user_input, *reason_array|
@@ -68,7 +68,7 @@ end
 # ------------------------------------------
 # TRIGGER: Slash Command (/kick)
 # ------------------------------------------
-bot.application_command(:kick) do |event|
+$bot.application_command(:kick) do |event|
   # Resolve the member from the Slash interaction options
   member = parse_member(event, event.options['user'])
   execute_kick(event, member, event.options['reason'])

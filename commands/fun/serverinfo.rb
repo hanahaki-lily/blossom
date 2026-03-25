@@ -52,7 +52,7 @@ end
 # ------------------------------------------
 # TRIGGER: Prefix Command (b!serverinfo)
 # ------------------------------------------
-bot.command(:serverinfo, 
+$bot.command(:serverinfo, 
   description: 'Displays information about the current server', 
   category: 'Utility'
 ) do |event|
@@ -63,6 +63,6 @@ end
 # ------------------------------------------
 # TRIGGER: Slash Command (/serverinfo)
 # ------------------------------------------
-bot.application_command(:serverinfo) do |event|
+$bot.application_command(:serverinfo) do |event|
   execute_serverinfo(event)
 end

@@ -33,7 +33,7 @@ end
 # ------------------------------------------
 # TRIGGER: Prefix Command (b!premium)
 # ------------------------------------------
-bot.command(:premium, 
+$bot.command(:premium, 
   description: 'View the benefits of Blossom Premium!', 
   category: 'Utility'
 ) do |event|
@@ -44,6 +44,6 @@ end
 # ------------------------------------------
 # TRIGGER: Slash Command (/premium)
 # ------------------------------------------
-bot.application_command(:premium) do |event|
+$bot.application_command(:premium) do |event|
   execute_premium(event)
 end

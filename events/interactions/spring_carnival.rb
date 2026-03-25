@@ -5,7 +5,7 @@
 # ==========================================
 
 # 1. Main Hub Entrance
-bot.select_menu(custom_id: /^event_hub_/) do |event|
+$bot.select_menu(custom_id: /^event_hub_/) do |event|
   owner_id = event.custom_id.split('_').last
   next event.respond(content: "🌸 *Run your own `#{PREFIX}event` command!*", ephemeral: true) if event.user.id.to_s != owner_id
 
@@ -42,7 +42,7 @@ bot.select_menu(custom_id: /^event_hub_/) do |event|
 end
 
 # 2. Minigame: Ring Toss
-bot.button(custom_id: /^carnival_ringtoss_/) do |event|
+$bot.button(custom_id: /^carnival_ringtoss_/) do |event|
   owner_id = event.custom_id.split('_').last
   next event.respond(content: "🌸 *Not your menu!*", ephemeral: true) if event.user.id.to_s != owner_id
 
@@ -78,7 +78,7 @@ bot.button(custom_id: /^carnival_ringtoss_/) do |event|
 end
 
 # 3. Minigame: Balloon Pop
-bot.button(custom_id: /^carnival_game2_/) do |event|
+$bot.button(custom_id: /^carnival_game2_/) do |event|
   owner_id = event.custom_id.split('_').last
   next event.respond(content: "🌸 *Not your menu!*", ephemeral: true) if event.user.id.to_s != owner_id
 
@@ -117,7 +117,7 @@ bot.button(custom_id: /^carnival_game2_/) do |event|
 end
 
 # 4. Item & Character Shops
-bot.button(custom_id: /^carnival_shop_/) do |event|
+$bot.button(custom_id: /^carnival_shop_/) do |event|
   owner_id = event.custom_id.split('_').last
   next event.respond(content: "🌸 *Not your menu!*", ephemeral: true) if event.user.id.to_s != owner_id
 
@@ -144,7 +144,7 @@ bot.button(custom_id: /^carnival_shop_/) do |event|
   event.update_message(content: nil, embeds: [embed], components: view)
 end
 
-bot.button(custom_id: /^carnival_chars_/) do |event|
+$bot.button(custom_id: /^carnival_chars_/) do |event|
   owner_id = event.custom_id.split('_').last
   next event.respond(content: "🌸 *Not your menu!*", ephemeral: true) if event.user.id.to_s != owner_id
 
@@ -175,7 +175,7 @@ bot.button(custom_id: /^carnival_chars_/) do |event|
 end
 
 # 5. Purchasing Routers
-bot.button(custom_id: /^carnbuy_item_/) do |event|
+$bot.button(custom_id: /^carnbuy_item_/) do |event|
   parts = event.custom_id.split('_')
   owner_id = parts.last
   next event.respond(content: "🌸 *Not your menu!*", ephemeral: true) if event.user.id.to_s != owner_id
@@ -196,7 +196,7 @@ bot.button(custom_id: /^carnbuy_item_/) do |event|
   event.respond(content: "✅ You bought **1x #{real_name}** for #{data[:price]} #{SPRING_CARNIVAL[:emoji]}!", ephemeral: true)
 end
 
-bot.select_menu(custom_id: /^carnbuy_char_/) do |event|
+$bot.select_menu(custom_id: /^carnbuy_char_/) do |event|
   owner_id = event.custom_id.split('_').last
   next event.respond(content: "🌸 *Not your menu!*", ephemeral: true) if event.user.id.to_s != owner_id
 
@@ -225,7 +225,7 @@ bot.select_menu(custom_id: /^carnbuy_char_/) do |event|
 end
 
 # 6. Back to Hub Navigation
-bot.button(custom_id: /^carnival_hub_/) do |event|
+$bot.button(custom_id: /^carnival_hub_/) do |event|
   owner_id = event.custom_id.split('_').last
   next event.respond(content: "🌸 *Not your menu!*", ephemeral: true) if event.user.id.to_s != owner_id
   

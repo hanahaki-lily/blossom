@@ -68,7 +68,7 @@ end
 # ------------------------------------------
 # TRIGGER: Prefix Command (b!bomb)
 # ------------------------------------------
-bot.command(:bomb, 
+$bot.command(:bomb, 
   description: 'Plant a bomb that explodes in 5 minutes (Developer only)', 
   category: 'Fun'
 ) do |event|
@@ -79,6 +79,6 @@ end
 # ------------------------------------------
 # TRIGGER: Slash Command (/bomb)
 # ------------------------------------------
-bot.application_command(:bomb) do |event|
+$bot.application_command(:bomb) do |event|
   execute_bomb(event)
 end

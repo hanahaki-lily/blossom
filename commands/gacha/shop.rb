@@ -34,7 +34,7 @@ end
 # ------------------------------------------
 # TRIGGER: Prefix Command (b!shop)
 # ------------------------------------------
-bot.command(:shop, 
+$bot.command(:shop, 
   description: 'View the character shop and direct-buy prices!', 
   category: 'Economy'
 ) do |event|
@@ -45,6 +45,6 @@ end
 # ------------------------------------------
 # TRIGGER: Slash Command (/shop)
 # ------------------------------------------
-bot.application_command(:shop) do |event|
+$bot.application_command(:shop) do |event|
   execute_shop(event)
 end

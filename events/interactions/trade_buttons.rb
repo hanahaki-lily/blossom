@@ -5,7 +5,7 @@
 # to prevent duplication exploits.
 # ==========================================
 
-bot.button(custom_id: /^trade_\d+_\d+_(accept|decline)$/) do |event|
+$bot.button(custom_id: /^trade_\d+_\d+_(accept|decline)$/) do |event|
   # Extract the trade ID and the action (accept/decline) from the button
   match_data = event.custom_id.match(/^(trade_\d+_\d+)_(accept|decline)$/)
   trade_id = match_data[1]

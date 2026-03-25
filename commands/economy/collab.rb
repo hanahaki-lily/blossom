@@ -78,7 +78,7 @@ end
 # ------------------------------------------
 # TRIGGER: Prefix Command (b!collab)
 # ------------------------------------------
-bot.command(:collab, 
+$bot.command(:collab, 
   description: 'Ask the server to do a collab stream! (30m cooldown)', 
   category: 'Economy'
 ) do |event|
@@ -89,6 +89,6 @@ end
 # ------------------------------------------
 # TRIGGER: Slash Command (/collab)
 # ------------------------------------------
-bot.application_command(:collab) do |event|
+$bot.application_command(:collab) do |event|
   execute_collab(event)
 end

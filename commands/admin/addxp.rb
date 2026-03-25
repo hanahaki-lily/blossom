@@ -54,7 +54,7 @@ end
 # ------------------------------------------
 # TRIGGER: Prefix Command (b!addxp)
 # ------------------------------------------
-bot.command(:addxp, 
+$bot.command(:addxp, 
   description: 'Add or remove server XP from a user (Admin Only)', 
   min_args: 2, 
   category: 'Admin'
@@ -66,7 +66,7 @@ end
 # ------------------------------------------
 # TRIGGER: Slash Command (/addxp)
 # ------------------------------------------
-bot.application_command(:addxp) do |event|
+$bot.application_command(:addxp) do |event|
   # Fetch target user object from the option ID
   target = event.bot.user(event.options['user'].to_i)
   execute_addxp(event, target, event.options['amount'])

@@ -98,7 +98,7 @@ end
 # ------------------------------------------
 # TRIGGER: Prefix Command (b!card)
 # ------------------------------------------
-bot.command(:card, 
+$bot.command(:card, 
   min_args: 3, 
   description: 'Manage user cards (Dev Only)', 
   usage: '!card <add/remove/giveascended/takeascended> @user <Character Name>'
@@ -111,7 +111,7 @@ end
 # ------------------------------------------
 # TRIGGER: Slash Command (/card)
 # ------------------------------------------
-bot.application_command(:card) do |event|
+$bot.application_command(:card) do |event|
   # Fetch target user object and pass the Slash options to the executor
   target = event.bot.user(event.options['user'].to_i)
   execute_card(event, event.options['action'], target, event.options['character'])

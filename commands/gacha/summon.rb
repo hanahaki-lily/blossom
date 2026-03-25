@@ -11,7 +11,8 @@ def execute_summon(event)
   # 1. Initialization: Get user context and check for "Gacha Pass" perk
   uid = event.user.id
   now = Time.now
-  inv = DB.get_inventory(uid)
+  inv_array = DB.get_inventory(uid)
+  inv = inv_array.each_with_object({}) { |item, h| h[item['item_id']] = item['quantity'] }
   is_sub = is_premium?(event.bot, uid)
   
   # Cooldown is 10 minutes (600s) unless they have the Gacha Pass (5 mins / 300s)
@@ -110,5 +111,5 @@ end
 # ------------------------------------------
 # TRIGGERS: Prefix & Slash Support
 # ------------------------------------------
-bot.command(:summon, description: 'Roll the gacha!', category: 'Gacha') { |e| execute_summon(e); nil }
-bot.application_command(:summon) { |e| execute_summon(e) }
+$bot.command(:summon, description: 'Roll the gacha!', category: 'Gacha') { |e| execute_summon(e); nil }
+$bot.application_command(:summon) { |e| execute_summon(e) }

@@ -28,7 +28,8 @@ def execute_work(event)
     # 4. Calculation: Roll for the base reward range
     amount = rand(WORK_REWARD_RANGE)
     bonus_text = ""
-    inv = DB.get_inventory(uid)
+    inv_array = DB.get_inventory(uid)
+    inv = inv_array.each_with_object({}) { |item, h| h[item['item_id']] = item['quantity'] }
 
     # 5. Item Buffs: Check for 'Keyboard' (+25% reward boost)
     if inv['keyboard'] && inv['keyboard'] > 0
@@ -56,7 +57,7 @@ end
 # ------------------------------------------
 # TRIGGER: Prefix Command (b!work)
 # ------------------------------------------
-bot.command(:work, 
+$bot.command(:work, 
   description: 'Work for some coins', 
   category: 'Economy'
 ) do |event|
@@ -67,6 +68,6 @@ end
 # ------------------------------------------
 # TRIGGER: Slash Command (/work)
 # ------------------------------------------
-bot.application_command(:work) do |event|
+$bot.application_command(:work) do |event|
   execute_work(event)
 end

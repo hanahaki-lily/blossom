@@ -25,7 +25,7 @@ end
 # ------------------------------------------
 # TRIGGER: Prefix Command (b!kettle)
 # ------------------------------------------
-bot.command(:kettle, 
+$bot.command(:kettle, 
   description: 'Pings a specific user with a yay emoji', 
   category: 'Fun'
 ) do |event|
@@ -36,6 +36,6 @@ end
 # ------------------------------------------
 # TRIGGER: Slash Command (/kettle)
 # ------------------------------------------
-bot.application_command(:kettle) do |event|
+$bot.application_command(:kettle) do |event|
   execute_kettle(event)
 end

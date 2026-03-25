@@ -39,7 +39,8 @@ def execute_buy(event, search_name)
     end
 
     # B. Ownership Check: Prevent duplicate upgrades (Mic, Keyboard, etc.)
-    inv = DB.get_inventory(uid)
+    inv_array = DB.get_inventory(uid)
+    inv = inv_array.each_with_object({}) { |item, h| h[item['item_id']] = item['quantity'] }
     if item_data[:type] == 'upgrade' && inv[search_name] && inv[search_name] >= 1
       return send_embed(event, title: "#{EMOJIS['confused']} Already Owned", description: "You already have the **#{item_data[:name]}** equipped in your setup!")
     end
@@ -109,11 +110,11 @@ end
 # ------------------------------------------
 # TRIGGERS: Prefix & Slash
 # ------------------------------------------
-bot.command(:buy, description: 'Buy a character or tech upgrade', min_args: 1, category: 'Economy') do |event, *name_args|
+$bot.command(:buy, description: 'Buy a character or tech upgrade', min_args: 1, category: 'Economy') do |event, *name_args|
   execute_buy(event, name_args.join(' '))
   nil
 end
 
-bot.application_command(:buy) do |event|
+$bot.application_command(:buy) do |event|
   execute_buy(event, event.options['item'])
 end

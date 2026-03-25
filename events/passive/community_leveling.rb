@@ -14,7 +14,7 @@ end
 # This resets every time Blossom reboots, which is perfectly fine for a simple 30s cooldown.
 USER_XP_COOLDOWNS = {}
 
-bot.message do |event|
+$bot.message do |event|
   # Ignore other bots and messages sent in private DMs
   next if event.author.bot_account? || event.server.nil?
 

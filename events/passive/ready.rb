@@ -4,7 +4,7 @@
 # Handles presence updates, active giveaway polling, and blacklists.
 # ==========================================
 
-bot.ready do |event|
+$bot.ready do |event|
   puts "🌸 Blossom is connected and live!"
 
   # --- TEMPORARY COMMAND CLEANUP ---

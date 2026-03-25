@@ -29,7 +29,8 @@ def execute_stream(event)
     reward = rand(STREAM_REWARD_RANGE)
     game = STREAM_GAMES.sample
     bonus_text = ""
-    inv = DB.get_inventory(uid)
+    inv_array = DB.get_inventory(uid)
+    inv = inv_array.each_with_object({}) { |item, h| h[item['item_id']] = item['quantity'] }
     
     # 5. Item Buffs: Check for 'Studio Mic' (+10% reward boost)
     if inv['mic'] && inv['mic'] > 0
@@ -58,7 +59,7 @@ end
 # ------------------------------------------
 # TRIGGER: Prefix Command (b!stream)
 # ------------------------------------------
-bot.command(:stream, 
+$bot.command(:stream, 
   description: 'Go live and earn some coins!', 
   category: 'Economy'
 ) do |event|
@@ -69,6 +70,6 @@ end
 # ------------------------------------------
 # TRIGGER: Slash Command (/stream)
 # ------------------------------------------
-bot.application_command(:stream) do |event|
+$bot.application_command(:stream) do |event|
   execute_stream(event)
 end

@@ -5,7 +5,7 @@
 # routes level-up announcements.
 # ==========================================
 
-bot.message do |event|
+$bot.message do |event|
   next if event.user.bot_account?
   next unless event.server 
 

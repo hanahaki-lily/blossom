@@ -13,7 +13,7 @@ MAX_CACHE_SIZE = 1000
 # ------------------------------------------
 # 1. THE MEMORY CACHE
 # ------------------------------------------
-bot.message do |event|
+$bot.message do |event|
   next unless event.server
 
   # Save the message details to Blossom's short-term memory
@@ -33,7 +33,7 @@ end
 # ------------------------------------------
 # 2. DELETE TRACKER
 # ------------------------------------------
-bot.message_delete do |event|
+$bot.message_delete do |event|
   next unless event.server
   
   # Check if the server actually has logging enabled
@@ -71,7 +71,7 @@ end
 # ------------------------------------------
 # 3. EDIT TRACKER
 # ------------------------------------------
-bot.message_edit do |event|
+$bot.message_edit do |event|
   next unless event.server
   next if event.message.author.bot_account?
 

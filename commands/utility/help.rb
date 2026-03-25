@@ -30,7 +30,7 @@ end
 # ------------------------------------------
 # TRIGGER: Prefix Command (b!help)
 # ------------------------------------------
-bot.command(:help, 
+$bot.command(:help, 
   description: 'Shows the interactive help menu', 
   category: 'Utility'
 ) do |event|
@@ -41,6 +41,6 @@ end
 # ------------------------------------------
 # TRIGGER: Slash Command (/help)
 # ------------------------------------------
-bot.application_command(:help) do |event|
+$bot.application_command(:help) do |event|
   execute_help(event)
 end

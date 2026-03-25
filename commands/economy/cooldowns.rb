@@ -10,7 +10,8 @@
 def execute_cooldowns(event)
   # 1. Initialization: Fetch user ID and their current status/inventory
   uid = event.user.id
-  inv = DB.get_inventory(uid)
+  inv_array = DB.get_inventory(uid)
+  inv = inv_array.each_with_object({}) { |item, h| h[item['item_id']] = item['quantity'] }
   is_sub = is_premium?(event.bot, uid)
   daily_info = DB.get_daily_info(uid)
   
@@ -60,7 +61,7 @@ end
 # ------------------------------------------
 # TRIGGER: Prefix Command (b!cooldowns)
 # ------------------------------------------
-bot.command(:cooldowns, 
+$bot.command(:cooldowns, 
   description: 'Check your active timers for economy commands', 
   category: 'Economy'
 ) do |event|
@@ -71,6 +72,6 @@ end
 # ------------------------------------------
 # TRIGGER: Slash Command (/cooldowns)
 # ------------------------------------------
-bot.application_command(:cooldowns) do |event|
+$bot.application_command(:cooldowns) do |event|
   execute_cooldowns(event)
 end

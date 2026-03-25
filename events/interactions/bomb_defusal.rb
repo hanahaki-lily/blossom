@@ -5,7 +5,7 @@
 # ==========================================
 
 # Handler for spawned/command bombs
-bot.button(custom_id: /^bomb_/) do |event|
+$bot.button(custom_id: /^bomb_/) do |event|
   bomb_id = event.custom_id
 
   if ACTIVE_BOMBS[bomb_id]
@@ -25,7 +25,7 @@ bot.button(custom_id: /^bomb_/) do |event|
 end
 
 # Handler for random passive drop bombs
-bot.button(custom_id: /^defuse_drop_(\d+)$/) do |event|
+$bot.button(custom_id: /^defuse_drop_(\d+)$/) do |event|
   uid = event.user.id
   reward = rand(100..500) # Random drops give more coins!
   final_reward = award_coins(event.bot, uid, reward)

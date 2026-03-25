@@ -89,7 +89,7 @@ end
 # ------------------------------------------
 # TRIGGER: Prefix Command (b!sell)
 # ------------------------------------------
-bot.command(:sell, 
+$bot.command(:sell, 
   description: 'Mass sell duplicates based on filters', 
   category: 'Economy'
 ) do |event, filter, rarity_opt|
@@ -100,7 +100,7 @@ end
 # ------------------------------------------
 # TRIGGER: Slash Command (/sell)
 # ------------------------------------------
-bot.application_command(:sell) do |event|
+$bot.application_command(:sell) do |event|
   # Capture Slash options and pass to executor
   filter = event.options['filter']
   rarity_opt = event.options['rarity']

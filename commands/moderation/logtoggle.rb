@@ -47,7 +47,7 @@ end
 # ------------------------------------------
 # TRIGGER: Prefix Command (b!logtoggle)
 # ------------------------------------------
-bot.command(:logtoggle, 
+$bot.command(:logtoggle, 
   description: 'Toggle logging for deletes, edits, or mod actions',
   category: 'Moderation'
 ) do |event, type|
@@ -58,7 +58,7 @@ end
 # ------------------------------------------
 # TRIGGER: Slash Command (/logtoggle)
 # ------------------------------------------
-bot.application_command(:logtoggle) do |event|
+$bot.application_command(:logtoggle) do |event|
   # Capture the 'type' option from the Slash interaction
   execute_logtoggle(event, event.options['type'])
 end

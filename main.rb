@@ -46,7 +46,7 @@ require_relative 'data/database/base' # DB Connection & Query Methods
 SERVER_BOMB_CONFIGS = DB.load_all_bomb_configs
 
 # 2. Initialize Bot Instance
-bot = Discordrb::Commands::CommandBot.new(
+$bot = Discordrb::Commands::CommandBot.new(
   token: ENV['TOKEN'],
   prefix: PREFIX,
   intents: [:servers, :server_messages, :server_members, :server_voice_states]
@@ -62,8 +62,8 @@ end
 
 # 4. Load System Components
 require_relative 'components/loader'
-load_blossom_modules(binding) # Pass the 'bot' variable context to the loader
+load_blossom_modules # Pass the 'bot' variable context to the loader
 
 # 5. Connect to Discord
 puts "\n🌸 Blossom is starting with prefix #{PREFIX.inspect}..."
-bot.run
+$bot.run

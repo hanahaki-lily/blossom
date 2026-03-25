@@ -4,7 +4,7 @@
 # daily reminders. Wrapped in bot.ready so they don't crash on boot.
 # ==========================================
 
-bot.ready do |event|
+$bot.ready do |event|
   
   # --- GLOBAL HOURLY LOTTERY DRAW ---
   Thread.new do

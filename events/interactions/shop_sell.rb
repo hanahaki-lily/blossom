@@ -4,7 +4,7 @@
 # of all copies beyond the 1st one, removes them, and grants coins.
 # ==========================================
 
-bot.button(custom_id: /^shop_sell_(\d+)$/) do |event|
+$bot.button(custom_id: /^shop_sell_(\d+)$/) do |event|
   uid = event.custom_id.match(/^shop_sell_(\d+)$/)[1].to_i
   
   if event.user.id != uid

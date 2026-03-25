@@ -37,7 +37,7 @@ end
 # ------------------------------------------
 # TRIGGER: Prefix Command (b!interactions)
 # ------------------------------------------
-bot.command(:interactions, 
+$bot.command(:interactions, 
   description: 'Show your hug/slap stats', 
   category: 'Fun'
 ) do |event|
@@ -48,6 +48,6 @@ end
 # ------------------------------------------
 # TRIGGER: Slash Command (/interactions)
 # ------------------------------------------
-bot.application_command(:interactions) do |event|
+$bot.application_command(:interactions) do |event|
   execute_interactions(event)
 end

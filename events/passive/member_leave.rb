@@ -4,7 +4,7 @@
 # when they leave the server to prevent database bloat.
 # ==========================================
 
-bot.member_leave do |event|
+$bot.member_leave do |event|
   # Completely wipe their footprint for this specific server
   DB.remove_user_xp(event.server.id, event.user.id)
 end

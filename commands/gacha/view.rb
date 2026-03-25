@@ -58,7 +58,7 @@ end
 # ------------------------------------------
 # TRIGGERS: Prefix & Slash Support
 # ------------------------------------------
-bot.command(:view, 
+$bot.command(:view, 
   description: 'Look at a specific character you own', 
   min_args: 1, 
   category: 'Gacha'
@@ -68,6 +68,6 @@ bot.command(:view,
   nil # Suppress default return
 end
 
-bot.application_command(:view) do |event|
+$bot.application_command(:view) do |event|
   execute_view(event, event.options['character'])
 end

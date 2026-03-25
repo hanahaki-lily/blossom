@@ -50,7 +50,7 @@ end
 # ------------------------------------------
 # TRIGGER: Prefix Command (b!about)
 # ------------------------------------------
-bot.command(:about, 
+$bot.command(:about, 
   description: 'Learn more about Blossom!', 
   category: 'Utility'
 ) do |event|
@@ -61,6 +61,6 @@ end
 # ------------------------------------------
 # TRIGGER: Slash Command (/about)
 # ------------------------------------------
-bot.application_command(:about) do |event|
+$bot.application_command(:about) do |event|
   execute_about(event)
 end

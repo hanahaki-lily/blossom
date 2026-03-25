@@ -64,7 +64,7 @@ end
 # ------------------------------------------
 # TRIGGER: Prefix Command (b!timeout)
 # ------------------------------------------
-bot.command(:timeout, 
+$bot.command(:timeout, 
   description: 'Timeouts a user', 
   required_permissions: [:moderate_members]
 ) do |event, user_input, duration, *reason_array|
@@ -77,7 +77,7 @@ end
 # ------------------------------------------
 # TRIGGER: Slash Command (/timeout)
 # ------------------------------------------
-bot.application_command(:timeout) do |event|
+$bot.application_command(:timeout) do |event|
   member = parse_member(event, event.options['user'])
   # Supports either 'duration' or 'minutes' option naming
   execute_timeout(event, member, event.options['duration'] || event.options['minutes'], event.options['reason'])

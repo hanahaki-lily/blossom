@@ -56,7 +56,7 @@ end
 # ------------------------------------------
 # TRIGGER: Prefix Command (b!cups)
 # ------------------------------------------
-bot.command(:cups, 
+$bot.command(:cups, 
   description: 'Guess which cup hides the coin (1, 2, or 3)!', 
   category: 'Arcade'
 ) do |event, amount_str, guess_str|
@@ -77,7 +77,7 @@ end
 # ------------------------------------------
 # TRIGGER: Slash Command (/cups)
 # ------------------------------------------
-bot.application_command(:cups) do |event|
+$bot.application_command(:cups) do |event|
   # Slash commands handle integer casting automatically based on the command definition
   execute_cups(event, event.options['amount'], event.options['guess'])
 end

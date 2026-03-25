@@ -4,7 +4,7 @@
 # and updates the original message with the requested page.
 # ==========================================
 
-bot.button(custom_id: /^helpnav_(\d+)_(\d+)$/) do |event|
+$bot.button(custom_id: /^helpnav_(\d+)_(\d+)$/) do |event|
   # Extract the owner's user ID and the requested page number from the button's custom_id
   match_data = event.custom_id.match(/^helpnav_(\d+)_(\d+)$/)
   target_uid  = match_data[1].to_i

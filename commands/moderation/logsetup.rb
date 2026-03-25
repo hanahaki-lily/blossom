@@ -31,7 +31,7 @@ end
 # ------------------------------------------
 # TRIGGER: Prefix Command (b!logsetup)
 # ------------------------------------------
-bot.command(:logsetup, 
+$bot.command(:logsetup, 
   description: 'Set the channel for server logs (Admin)', 
   category: 'Moderation'
 ) do |event, channel_mention|
@@ -50,7 +50,7 @@ end
 # ------------------------------------------
 # TRIGGER: Slash Command (/logsetup)
 # ------------------------------------------
-bot.application_command(:logsetup) do |event|
+$bot.application_command(:logsetup) do |event|
   # Fetch the channel object directly from the Slash interaction ID
   channel_id = event.options['channel'].to_i
   channel = event.bot.channel(channel_id)

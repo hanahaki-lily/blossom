@@ -74,7 +74,7 @@ end
 # ------------------------------------------
 # TRIGGERS: Prefix & Slash Support
 # ------------------------------------------
-bot.command(:givecard, 
+$bot.command(:givecard, 
   description: 'Give a VTuber card to another user', 
   category: 'Gacha'
 ) do |event, mention, *char_parts|
@@ -84,7 +84,7 @@ bot.command(:givecard,
   nil # Suppress default return
 end
 
-bot.application_command(:givecard) do |event|
+$bot.application_command(:givecard) do |event|
   target = event.bot.user(event.options['user'].to_i)
   char_name = event.options['character']
   execute_givecard(event, target, char_name)

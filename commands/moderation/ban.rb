@@ -59,7 +59,7 @@ end
 # ------------------------------------------
 # TRIGGER: Prefix Command (b!ban)
 # ------------------------------------------
-bot.command(:ban, 
+$bot.command(:ban, 
   description: 'Bans a user (or ID)', 
   required_permissions: [:ban_members]
 ) do |event, user_input, *reason_array|
@@ -72,6 +72,6 @@ end
 # ------------------------------------------
 # TRIGGER: Slash Command (/ban)
 # ------------------------------------------
-bot.application_command(:ban) do |event|
+$bot.application_command(:ban) do |event|
   execute_ban(event, event.options['user'], event.options['reason'])
 end

@@ -50,7 +50,7 @@ end
 # ------------------------------------------
 # TRIGGER: Prefix Command (b!lottery)
 # ------------------------------------------
-bot.command(:lottery, 
+$bot.command(:lottery, 
   description: 'Buy tickets for the hourly global lottery!',
   category: 'Economy'
 ) do |event, amount|
@@ -62,7 +62,7 @@ end
 # ------------------------------------------
 # TRIGGER: Slash Command (/lottery)
 # ------------------------------------------
-bot.application_command(:lottery) do |event|
+$bot.application_command(:lottery) do |event|
   # Capture Slash option for tickets or default to 1
   execute_lottery(event, event.options['tickets'] || 1)
 end

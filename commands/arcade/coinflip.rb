@@ -63,7 +63,7 @@ end
 # ------------------------------------------
 # TRIGGER: Prefix Command (b!coinflip)
 # ------------------------------------------
-bot.command(:coinflip, 
+$bot.command(:coinflip, 
   description: 'Bet your stream revenue on a coinflip!', 
   category: 'Arcade'
 ) do |event, amount_str, choice|
@@ -83,7 +83,7 @@ end
 # ------------------------------------------
 # TRIGGER: Slash Command (/coinflip)
 # ------------------------------------------
-bot.application_command(:coinflip) do |event|
+$bot.application_command(:coinflip) do |event|
   # Options are automatically cast to the correct type by discordrb for Slash
   execute_coinflip(event, event.options['amount'], event.options['choice'])
 end

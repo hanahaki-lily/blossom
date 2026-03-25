@@ -60,7 +60,7 @@ end
 # ------------------------------------------
 # TRIGGER: Prefix Command (b!slots)
 # ------------------------------------------
-bot.command(:slots, 
+$bot.command(:slots, 
   description: 'Spin the neon slots!', 
   category: 'Arcade'
 ) do |event, amount_str|
@@ -81,7 +81,7 @@ end
 # ------------------------------------------
 # TRIGGER: Slash Command (/slots)
 # ------------------------------------------
-bot.application_command(:slots) do |event|
+$bot.application_command(:slots) do |event|
   # Slash commands handle integer conversion automatically
   execute_slots(event, event.options['amount'])
 end

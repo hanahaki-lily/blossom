@@ -82,7 +82,7 @@ end
 # ------------------------------------------
 # TRIGGER: Prefix Command (b!daily)
 # ------------------------------------------
-bot.command(:daily, 
+$bot.command(:daily, 
   description: 'Claim your daily coin reward', 
   category: 'Economy'
 ) do |event|
@@ -93,6 +93,6 @@ end
 # ------------------------------------------
 # TRIGGER: Slash Command (/daily)
 # ------------------------------------------
-bot.application_command(:daily) do |event|
+$bot.application_command(:daily) do |event|
   execute_daily(event)
 end

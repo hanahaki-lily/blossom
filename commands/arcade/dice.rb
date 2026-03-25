@@ -61,7 +61,7 @@ end
 # ------------------------------------------
 # TRIGGER: Prefix Command (b!dice)
 # ------------------------------------------
-bot.command(:dice, 
+$bot.command(:dice, 
   description: 'Roll 2d6! Bet on high (8-12), low (2-6), or 7.', 
   category: 'Arcade'
 ) do |event, amount_str, bet|
@@ -81,7 +81,7 @@ end
 # ------------------------------------------
 # TRIGGER: Slash Command (/dice)
 # ------------------------------------------
-bot.application_command(:dice) do |event|
+$bot.application_command(:dice) do |event|
   # Slash commands handle data types automatically
   execute_dice(event, event.options['amount'], event.options['bet'])
 end

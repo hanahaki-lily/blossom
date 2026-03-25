@@ -63,7 +63,7 @@ end
 # ------------------------------------------
 # TRIGGER: Prefix Command (b!hug)
 # ------------------------------------------
-bot.command(:hug, 
+$bot.command(:hug, 
   description: 'Send a hug with a random GIF', 
   category: 'Fun'
 ) do |event|
@@ -75,7 +75,7 @@ end
 # ------------------------------------------
 # TRIGGER: Slash Command (/hug)
 # ------------------------------------------
-bot.application_command(:hug) do |event|
+$bot.application_command(:hug) do |event|
   # Fetch target user from the Slash option 'user'
   target_id = event.options['user']
   target = event.bot.user(target_id.to_i) if target_id

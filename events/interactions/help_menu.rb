@@ -3,7 +3,7 @@
 # DESCRIPTION: Listens for category selections on the /help dropdown.
 # ==========================================
 
-bot.select_menu(custom_id: /^help_menu_/) do |event|
+$bot.select_menu(custom_id: /^help_menu_/) do |event|
   owner_id = event.custom_id.split('_').last
 
   if event.user.id.to_s != owner_id

@@ -25,7 +25,7 @@ end
 # ------------------------------------------
 # TRIGGER: Prefix Command (b!ping)
 # ------------------------------------------
-bot.command(:ping, 
+$bot.command(:ping, 
   description: 'Check bot latency', 
   category: 'Utility'
 ) do |event|
@@ -37,7 +37,7 @@ end
 # ------------------------------------------
 # TRIGGER: Slash Command (/ping)
 # ------------------------------------------
-bot.application_command(:ping) do |event|
+$bot.application_command(:ping) do |event|
   # Uses the interaction creation time with a safety fallback to current time
   execute_ping(event, (event.interaction.creation_time rescue Time.now))
 end

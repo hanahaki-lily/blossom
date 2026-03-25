@@ -2,7 +2,7 @@
 # COMMAND: join
 # DESCRIPTION: Summon Blossom to your current voice channel.
 # ==========================================
-bot.command(:join, 
+$bot.command(:join, 
   description: 'Make Blossom join your voice channel', 
   category: 'Voice'
 ) do |event|
@@ -24,7 +24,7 @@ end
 # COMMAND: leave
 # DESCRIPTION: Disconnect Blossom and clear the voice state.
 # ==========================================
-bot.command(:leave, 
+$bot.command(:leave, 
   description: 'Make Blossom leave the voice channel', 
   category: 'Voice'
 ) do |event|
@@ -38,7 +38,7 @@ end
 # COMMAND: play
 # DESCRIPTION: Plays a specific MP3 file located in the bot's /music directory.
 # ==========================================
-bot.command(:play, 
+$bot.command(:play, 
   description: 'Play an MP3 file (Usage: b!play <filename>)', 
   min_args: 1, 
   category: 'Voice'
@@ -77,7 +77,7 @@ end
 # COMMAND: stop
 # DESCRIPTION: Immediately halts the current audio stream.
 # ==========================================
-bot.command(:stop, 
+$bot.command(:stop, 
   description: 'Stop the currently playing audio', 
   category: 'Voice'
 ) do |event|

@@ -56,7 +56,7 @@ end
 # ------------------------------------------
 # TRIGGER: Prefix Command (b!level)
 # ------------------------------------------
-bot.command(:level, 
+$bot.command(:level, 
   description: 'Show a user\'s level and XP for this server', 
   category: 'Fun'
 ) do |event|
@@ -68,7 +68,7 @@ end
 # ------------------------------------------
 # TRIGGER: Slash Command (/level)
 # ------------------------------------------
-bot.application_command(:level) do |event|
+$bot.application_command(:level) do |event|
   # Fetch target user from options or default to the command runner
   target_id = event.options['user']
   target = target_id ? event.bot.user(target_id.to_i) : event.user

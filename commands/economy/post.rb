@@ -29,7 +29,8 @@ def execute_post(event)
     reward = rand(POST_REWARD_RANGE)
     platform = POST_PLATFORMS.sample
     bonus_text = ""
-    inv = DB.get_inventory(uid)
+    inv_array = DB.get_inventory(uid)
+    inv = inv_array.each_with_object({}) { |item, h| h[item['item_id']] = item['quantity'] }
 
     # 5. Item Buffs: Check for 'Headset' (+25% reward boost)
     if inv['headset'] && inv['headset'] > 0
@@ -57,7 +58,7 @@ end
 # ------------------------------------------
 # TRIGGER: Prefix Command (b!post)
 # ------------------------------------------
-bot.command(:post, 
+$bot.command(:post, 
   description: 'Post on social media for some quick coins!', 
   category: 'Economy'
 ) do |event|
@@ -68,6 +69,6 @@ end
 # ------------------------------------------
 # TRIGGER: Slash Command (/post)
 # ------------------------------------------
-bot.application_command(:post) do |event|
+$bot.application_command(:post) do |event|
   execute_post(event)
 end

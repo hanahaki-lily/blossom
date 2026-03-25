@@ -46,7 +46,7 @@ end
 # ------------------------------------------
 # TRIGGER: Prefix Command (b!enablebombs)
 # ------------------------------------------
-bot.command(:enablebombs, 
+$bot.command(:enablebombs, 
   description: 'Enable random bomb drops in a specific channel (Admin Only)', 
   min_args: 1, 
   category: 'Admin'
@@ -59,6 +59,6 @@ end
 # ------------------------------------------
 # TRIGGER: Slash Command (/enablebombs)
 # ------------------------------------------
-bot.application_command(:enablebombs) do |event|
+$bot.application_command(:enablebombs) do |event|
   execute_enablebombs(event, event.options['channel'].to_i)
 end

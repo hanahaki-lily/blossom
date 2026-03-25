@@ -4,7 +4,7 @@
 # that grants the verified role upon success.
 # ==========================================
 
-bot.button(custom_id: 'verify_start') do |event|
+$bot.button(custom_id: 'verify_start') do |event|
   role_id = DB.get_verify_role(event.server.id)
   
   if role_id.nil?
@@ -32,7 +32,7 @@ bot.button(custom_id: 'verify_start') do |event|
   event.respond(content: "🤖 **Human Check!**\nTo gain access to the server, please click on the **#{correct_emoji}** from the buttons below!", ephemeral: true, components: view)
 end
 
-bot.button(custom_id: /^verify_pass_/) do |event|
+$bot.button(custom_id: /^verify_pass_/) do |event|
   role_id = event.custom_id.split('_').last.to_i
   role = event.server.role(role_id)
   
@@ -48,6 +48,6 @@ bot.button(custom_id: /^verify_pass_/) do |event|
   end
 end
 
-bot.button(custom_id: /^verify_fail_/) do |event|
+$bot.button(custom_id: /^verify_fail_/) do |event|
   event.update_message(content: "❌ **Incorrect!** That was the wrong emoji. Please dismiss this message and click the 'Start Verification' button to try again.", components: [])
 end

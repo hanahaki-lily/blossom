@@ -4,7 +4,7 @@
 # drops a "bomb" of coins when the threshold is reached.
 # ==========================================
 
-bot.message do |event|
+$bot.message do |event|
   next unless event.server
   next if event.author.bot_account?
 

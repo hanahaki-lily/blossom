@@ -60,7 +60,7 @@ end
 # ------------------------------------------
 # TRIGGER: Prefix Command (b!ascend)
 # ------------------------------------------
-bot.command(:ascend, 
+$bot.command(:ascend, 
   description: 'Fuse 5 duplicate characters into a Shiny Ascended version!', 
   min_args: 1, 
   category: 'Gacha'
@@ -73,7 +73,7 @@ end
 # ------------------------------------------
 # TRIGGER: Slash Command (/ascend)
 # ------------------------------------------
-bot.application_command(:ascend) do |event|
+$bot.application_command(:ascend) do |event|
   # Capture the character name from the Slash option
   execute_ascend(event, event.options['character'])
 end

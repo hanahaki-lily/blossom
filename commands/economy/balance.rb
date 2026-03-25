@@ -52,7 +52,7 @@ end
 # ------------------------------------------
 # TRIGGER: Prefix Command (b!balance)
 # ------------------------------------------
-bot.command(:balance, 
+$bot.command(:balance, 
   description: 'Show a user\'s coin balance, gacha stats, and inventory', 
   category: 'Economy'
 ) do |event|
@@ -64,7 +64,7 @@ end
 # ------------------------------------------
 # TRIGGER: Slash Command (/balance)
 # ------------------------------------------
-bot.application_command(:balance) do |event|
+$bot.application_command(:balance) do |event|
   # Fetch target user from options or default to the command runner
   target_id = event.options['user']
   target = target_id ? event.bot.user(target_id.to_i) : event.user

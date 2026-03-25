@@ -48,7 +48,7 @@ end
 # ------------------------------------------
 # TRIGGER: Prefix Command (b!event)
 # ------------------------------------------
-bot.command(:event, 
+$bot.command(:event, 
   description: 'Open the Limited Time Event Hub!', 
   category: 'Economy'
 ) do |event|
@@ -59,6 +59,6 @@ end
 # ------------------------------------------
 # TRIGGER: Slash Command (/event)
 # ------------------------------------------
-bot.application_command(:event) do |event|
+$bot.application_command(:event) do |event|
   execute_event_hub(event)
 end

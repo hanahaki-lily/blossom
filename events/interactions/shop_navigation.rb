@@ -5,7 +5,7 @@
 # ==========================================
 
 # Handler for flipping pages in the Shop Catalog
-bot.button(custom_id: /^shop_catalog_(\d+)_(\d+)$/) do |event|
+$bot.button(custom_id: /^shop_catalog_(\d+)_(\d+)$/) do |event|
   match_data = event.custom_id.match(/^shop_catalog_(\d+)_(\d+)$/)
   uid  = match_data[1].to_i
   page = match_data[2].to_i
@@ -22,7 +22,7 @@ bot.button(custom_id: /^shop_catalog_(\d+)_(\d+)$/) do |event|
 end
 
 # Handler for returning to the main Shop Home screen
-bot.button(custom_id: /^shop_home_(\d+)$/) do |event|
+$bot.button(custom_id: /^shop_home_(\d+)$/) do |event|
   uid = event.custom_id.match(/^shop_home_(\d+)$/)[1].to_i
   
   if event.user.id != uid
@@ -35,7 +35,7 @@ bot.button(custom_id: /^shop_home_(\d+)$/) do |event|
 end
 
 # Handler for opening the secretive Black Market page
-bot.button(custom_id: /^shop_blackmarket_(\d+)$/) do |event|
+$bot.button(custom_id: /^shop_blackmarket_(\d+)$/) do |event|
   begin
     uid = event.custom_id.match(/^shop_blackmarket_(\d+)$/)[1].to_i
     

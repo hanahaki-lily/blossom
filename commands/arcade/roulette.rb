@@ -86,7 +86,7 @@ end
 # ------------------------------------------
 # TRIGGER: Prefix Command (b!roulette)
 # ------------------------------------------
-bot.command(:roulette, 
+$bot.command(:roulette, 
   description: 'Bet on the roulette wheel!', 
   category: 'Arcade'
 ) do |event, amount_str, bet_str|
@@ -106,7 +106,7 @@ end
 # ------------------------------------------
 # TRIGGER: Slash Command (/roulette)
 # ------------------------------------------
-bot.application_command(:roulette) do |event|
+$bot.application_command(:roulette) do |event|
   # Execute logic using Slash Command options
   execute_roulette(event, event.options['amount'], event.options['bet'])
 end

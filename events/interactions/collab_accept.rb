@@ -4,7 +4,7 @@
 # Distributes coins to both players and triggers achievements.
 # ==========================================
 
-bot.button(custom_id: /^collab_/) do |event|
+$bot.button(custom_id: /^collab_/) do |event|
   collab_id = event.custom_id
 
   # Check if the collab is still active in our memory cache

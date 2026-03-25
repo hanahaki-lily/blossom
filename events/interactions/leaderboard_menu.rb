@@ -4,7 +4,7 @@
 # command and handles the 3-second Discord deferment.
 # ==========================================
 
-bot.select_menu(custom_id: /^lb_menu_/) do |event|
+$bot.select_menu(custom_id: /^lb_menu_/) do |event|
   owner_id = event.custom_id.split('_').last.to_i
 
   if event.user.id != owner_id

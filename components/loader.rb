@@ -1,36 +1,29 @@
 # ==========================================
-# SYSTEM: Module Loader
-# DESCRIPTION: Dynamically requires all Ruby files in the project.
+# SYSTEM: Module Loader (Refined)
 # ==========================================
 
-def safe_load(file_path, context_binding)
-  begin
-    eval(File.read(file_path), context_binding)
-    puts "✅ Loaded: #{File.basename(file_path)}"
-  rescue StandardError => e
-    puts "❌ ERROR in #{File.basename(file_path)}!"
-    puts "   Line: #{e.backtrace.first}"
-    puts "   Message: #{e.message}"
-  rescue SyntaxError => e
-    puts "⚠️ SYNTAX ERROR in #{File.basename(file_path)}!"
-    puts "   Message: #{e.message}"
-  end
-end
-
-def load_blossom_modules(bot_binding)
+def load_blossom_modules
   puts "\n[SYSTEM] Booting Blossom Modules..."
 
-  # 1. Load Helpers first (Foundation)
-  Dir.glob(File.join(__dir__, '..', 'helpers', '**', '*.rb')).each do |file|
-    safe_load(file, bot_binding)
-  end
+  # Define the order of importance
+  load_paths = [
+    '../data/database', # Load DB first!
+    '../helpers',
+    '../components',
+    '../commands',
+    '../events'
+  ]
 
-  # 2. Load logic folders
-  ['commands', 'events', 'components'].each do |folder|
-    Dir.glob(File.join(__dir__, '..', folder, '**', '*.rb')).each do |file|
-      # Skip this loader file itself to avoid infinite loops!
-      next if file.include?('loader.rb') 
-      safe_load(file, bot_binding)
+  load_paths.each do |folder|
+    path = File.expand_path(File.join(__dir__, folder))
+    Dir.glob("#{path}/**/*.rb").each do |file|
+      begin
+        # Use require instead of eval for proper Ruby scoping
+        require file
+        puts "✅ Loaded: #{File.basename(file)}"
+      rescue LoadError => e
+        puts "❌ FAILED TO LOAD: #{file} - #{e.message}"
+      end
     end
   end
 end

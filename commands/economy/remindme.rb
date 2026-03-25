@@ -42,7 +42,7 @@ end
 # ------------------------------------------
 # TRIGGER: Prefix Command (b!remindme)
 # ------------------------------------------
-bot.command(:remindme, 
+$bot.command(:remindme, 
   description: 'Toggle your daily reward reminder', 
   category: 'Economy'
 ) do |event|
@@ -53,6 +53,6 @@ end
 # ------------------------------------------
 # TRIGGER: Slash Command (/remindme)
 # ------------------------------------------
-bot.application_command(:remindme) do |event|
+$bot.application_command(:remindme) do |event|
   execute_remindme(event)
 end

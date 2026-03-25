@@ -34,7 +34,7 @@ end
 # ------------------------------------------
 # TRIGGER: Prefix Command (b!lotteryinfo)
 # ------------------------------------------
-bot.command(:lotteryinfo, 
+$bot.command(:lotteryinfo, 
   description: 'View current lottery stats and your tickets', 
   category: 'Economy'
 ) do |event|
@@ -45,6 +45,6 @@ end
 # ------------------------------------------
 # TRIGGER: Slash Command (/lotteryinfo)
 # ------------------------------------------
-bot.application_command(:lotteryinfo) do |event|
+$bot.application_command(:lotteryinfo) do |event|
   execute_lotteryinfo(event)
 end

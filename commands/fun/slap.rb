@@ -63,7 +63,7 @@ end
 # ------------------------------------------
 # TRIGGER: Prefix Command (b!slap)
 # ------------------------------------------
-bot.command(:slap, 
+$bot.command(:slap, 
   description: 'Send a playful slap with a random GIF', 
   category: 'Fun'
 ) do |event|
@@ -74,7 +74,7 @@ end
 # ------------------------------------------
 # TRIGGER: Slash Command (/slap)
 # ------------------------------------------
-bot.application_command(:slap) do |event|
+$bot.application_command(:slap) do |event|
   target_id = event.options['user']
   target = event.bot.user(target_id.to_i) if target_id
   execute_slap(event, target)

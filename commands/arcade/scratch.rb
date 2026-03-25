@@ -59,7 +59,7 @@ end
 # ------------------------------------------
 # TRIGGER: Prefix Command (b!scratch)
 # ------------------------------------------
-bot.command(:scratch, 
+$bot.command(:scratch, 
   description: 'Buy a neon scratch-off ticket for 500 coins!', 
   category: 'Arcade'
 ) do |event|
@@ -70,6 +70,6 @@ end
 # ------------------------------------------
 # TRIGGER: Slash Command (/scratch)
 # ------------------------------------------
-bot.application_command(:scratch) do |event|
+$bot.application_command(:scratch) do |event|
   execute_scratch(event)
 end

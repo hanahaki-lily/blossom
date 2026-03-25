@@ -26,7 +26,7 @@ end
 # ------------------------------------------
 # TRIGGER: Prefix Command (b!support)
 # ------------------------------------------
-bot.command(:support, 
+$bot.command(:support, 
   description: 'Get a link to the official support server', 
   category: 'Utility'
 ) do |event|
@@ -37,6 +37,6 @@ end
 # ------------------------------------------
 # TRIGGER: Slash Command (/support)
 # ------------------------------------------
-bot.application_command(:support) do |event|
+$bot.application_command(:support) do |event|
   execute_support(event)
 end

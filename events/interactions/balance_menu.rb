@@ -4,7 +4,7 @@
 # command and handles achievement pagination.
 # ==========================================
 
-bot.select_menu(custom_id: /^bal_menu_/) do |event|
+$bot.select_menu(custom_id: /^bal_menu_/) do |event|
   owner_id = event.custom_id.split('_').last
 
   if event.user.id.to_s != owner_id
@@ -108,7 +108,7 @@ bot.select_menu(custom_id: /^bal_menu_/) do |event|
 end
 
 # Handler for Achievement Pagination Buttons
-bot.button(custom_id: /^achpage_/) do |event|
+$bot.button(custom_id: /^achpage_/) do |event|
   parts = event.custom_id.split('_')
   owner_id = parts[1]
   target_page = parts[2].to_i

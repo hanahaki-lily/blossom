@@ -66,7 +66,7 @@ end
 # ------------------------------------------
 # TRIGGER: Prefix Command (b!syncachievements)
 # ------------------------------------------
-bot.command(:syncachievements, 
+$bot.command(:syncachievements, 
   description: 'Retroactively grant achievements to everyone (Dev Only)', 
   category: 'Developer'
 ) do |event|
@@ -80,7 +80,7 @@ end
 # ------------------------------------------
 # TRIGGER: Slash Command (/syncachievements)
 # ------------------------------------------
-bot.application_command(:syncachievements) do |event|
+$bot.application_command(:syncachievements) do |event|
   # Security: Direct response for non-developers
   return event.respond(content: "❌ Developer only!", ephemeral: true) unless event.user.id == DEV_ID
   

@@ -42,7 +42,7 @@ end
 # ------------------------------------------
 # TRIGGER: Prefix Command (b!leaderboard)
 # ------------------------------------------
-bot.command(:leaderboard, 
+$bot.command(:leaderboard, 
   description: 'View the local and global leaderboards!', 
   category: 'Economy'
 ) do |event|
@@ -53,6 +53,6 @@ end
 # ------------------------------------------
 # TRIGGER: Slash Command (/leaderboard)
 # ------------------------------------------
-bot.application_command(:leaderboard) do |event|
+$bot.application_command(:leaderboard) do |event|
   execute_leaderboard(event)
 end

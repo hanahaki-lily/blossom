@@ -60,7 +60,7 @@ end
 # ------------------------------------------
 # TRIGGER: Prefix Command (b!verifysetup)
 # ------------------------------------------
-bot.command(:verifysetup, 
+$bot.command(:verifysetup, 
   description: 'Set up the verification panel', 
   required_permissions: [:manage_server]
 ) do |event, channel_mention, role_mention|
@@ -71,7 +71,7 @@ end
 # ------------------------------------------
 # TRIGGER: Slash Command (/verifysetup)
 # ------------------------------------------
-bot.application_command(:verifysetup) do |event|
+$bot.application_command(:verifysetup) do |event|
   # Fetch channel and role directly from interaction options
   channel = event.bot.channel(event.options['channel'].to_i)
   execute_verifysetup(event, channel, event.options['role'])

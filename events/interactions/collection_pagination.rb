@@ -5,7 +5,7 @@
 # ==========================================
 
 # Handler for the Dropdown Menu (Sorting by Rarity)
-bot.select_menu(custom_id: /^colsel_/) do |event|
+$bot.select_menu(custom_id: /^colsel_/) do |event|
   # Split the custom ID. Expected format: colsel_123456789
   _, owner_id = event.custom_id.split('_')
 
@@ -22,7 +22,7 @@ bot.select_menu(custom_id: /^colsel_/) do |event|
 end
 
 # Handler for the Next/Prev Buttons (Page Flipping)
-bot.button(custom_id: /^colbtn_/) do |event|
+$bot.button(custom_id: /^colbtn_/) do |event|
   # Split the custom ID. Expected format: colbtn_123456789_2_rare
   _, owner_id, page_str, rarity = event.custom_id.split('_', 4)
 

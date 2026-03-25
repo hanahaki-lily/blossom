@@ -65,7 +65,7 @@ end
 # ------------------------------------------
 # TRIGGER: Prefix Command (b!prisma)
 # ------------------------------------------
-bot.command(:prisma, 
+$bot.command(:prisma, 
   description: 'Manage user Prisma (Dev Only)', 
   category: 'Developer'
 ) do |event, action, user_mention, amount|
@@ -86,7 +86,7 @@ end
 # ------------------------------------------
 # TRIGGER: Slash Command (/prisma)
 # ------------------------------------------
-bot.application_command(:prisma) do |event|
+$bot.application_command(:prisma) do |event|
   # Security: Direct response for non-developers
   unless event.user.id == DEV_ID
     return event.respond(content: "❌ Developer only!", ephemeral: true) 

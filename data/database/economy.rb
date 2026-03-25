@@ -13,6 +13,20 @@ module DatabaseEconomy
     @db.exec_params("INSERT INTO global_users (user_id, coins) VALUES ($1, $2) ON CONFLICT (user_id) DO UPDATE SET coins = $3", [uid, amount, amount])
   end
 
+  def get_inventory(uid)
+  # Ensure the query matches your table: inventory
+  # Ensure the columns match: item_name, count
+  results = @db.exec_params("SELECT item_name, count FROM inventory WHERE user_id = $1", [uid])
+
+  # We use .map to safely convert the database rows
+  results.map do |row|
+    {
+      'item_id' => row['item_name'], 
+      'quantity' => row['count'].to_i # .to_i ensures the 'count' string becomes a number
+    }
+  end
+end
+
   # --- TICKETS (Event Currency) ---
   def get_tickets(uid)
     row = @db.exec_params("SELECT tickets FROM global_users WHERE user_id = $1", [uid]).first

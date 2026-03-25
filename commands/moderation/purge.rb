@@ -56,7 +56,7 @@ end
 # ------------------------------------------
 # TRIGGER: Prefix Command (b!purge)
 # ------------------------------------------
-bot.command(:purge, 
+$bot.command(:purge, 
   description: 'Deletes a number of messages', 
   required_permissions: [:manage_messages]
 ) do |event, amount|
@@ -67,6 +67,6 @@ end
 # ------------------------------------------
 # TRIGGER: Slash Command (/purge)
 # ------------------------------------------
-bot.application_command(:purge) do |event|
+$bot.application_command(:purge) do |event|
   execute_purge(event, event.options['amount'])
 end

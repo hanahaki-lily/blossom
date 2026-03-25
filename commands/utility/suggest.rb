@@ -67,7 +67,7 @@ end
 # ------------------------------------------
 # TRIGGER: Prefix Command (b!suggest)
 # ------------------------------------------
-bot.command(:suggest, 
+$bot.command(:suggest, 
   description: 'Send a suggestion directly to the developer!', 
   category: 'Utility'
 ) do |event, *args|
@@ -79,6 +79,6 @@ end
 # ------------------------------------------
 # TRIGGER: Slash Command (/suggest)
 # ------------------------------------------
-bot.application_command(:suggest) do |event|
+$bot.application_command(:suggest) do |event|
   execute_suggest(event, event.options['suggestion'])
 end

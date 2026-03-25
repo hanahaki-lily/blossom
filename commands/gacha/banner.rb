@@ -64,7 +64,7 @@ end
 # ------------------------------------------
 # TRIGGER: Prefix Command (b!banner)
 # ------------------------------------------
-bot.command(:banner, 
+$bot.command(:banner, 
   description: 'Check which characters are in the gacha pool this week!', 
   category: 'Gacha'
 ) do |event|
@@ -75,6 +75,6 @@ end
 # ------------------------------------------
 # TRIGGER: Slash Command (/banner)
 # ------------------------------------------
-bot.application_command(:banner) do |event|
+$bot.application_command(:banner) do |event|
   execute_banner(event)
 end

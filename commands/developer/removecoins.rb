@@ -52,7 +52,7 @@ end
 # ------------------------------------------
 # TRIGGER: Prefix Command (b!removecoins)
 # ------------------------------------------
-bot.command(:removecoins, 
+$bot.command(:removecoins, 
   description: 'Remove coins from a user (Dev Only)', 
   category: 'Developer'
 ) do |event, mention, amount|
@@ -64,7 +64,7 @@ end
 # ------------------------------------------
 # TRIGGER: Slash Command (/removecoins)
 # ------------------------------------------
-bot.application_command(:removecoins) do |event|
+$bot.application_command(:removecoins) do |event|
   # Fetch target user and pass Slash options to the executor
   target = event.bot.user(event.options['user'].to_i)
   execute_removecoins(event, target, event.options['amount'])

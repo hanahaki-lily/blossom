@@ -75,7 +75,7 @@ end
 # ------------------------------------------
 # TRIGGER: Prefix Command (b!giveaway)
 # ------------------------------------------
-bot.command(:giveaway, 
+$bot.command(:giveaway, 
   description: 'Start a giveaway (Admin only)', 
   min_args: 3, 
   usage: 'b!giveaway #channel 10m Prize Name', 
@@ -92,7 +92,7 @@ end
 # ------------------------------------------
 # TRIGGER: Slash Command (/giveaway)
 # ------------------------------------------
-bot.application_command(:giveaway) do |event|
+$bot.application_command(:giveaway) do |event|
   # Fetch options directly from the Slash interaction
   channel_id = event.options['channel'].to_i
   time_str = event.options['time']

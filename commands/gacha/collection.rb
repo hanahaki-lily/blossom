@@ -107,12 +107,12 @@ end
 # ------------------------------------------
 # TRIGGERS: Prefix & Slash
 # ------------------------------------------
-bot.command(:collection, description: 'View all the characters you own', category: 'Gacha') do |event|
+$bot.command(:collection, description: 'View all the characters you own', category: 'Gacha') do |event|
   execute_collection(event, event.message.mentions.first || event.user)
   nil
 end
 
-bot.application_command(:collection) do |event|
+$bot.application_command(:collection) do |event|
   target_id = event.options['user']
   target = target_id ? event.bot.user(target_id.to_i) : event.user
   execute_collection(event, target)

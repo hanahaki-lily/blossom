@@ -4,7 +4,7 @@
 # and safely adds them to the database pool, preventing duplicates.
 # ==========================================
 
-bot.button(custom_id: /^gw_/) do |event|
+$bot.button(custom_id: /^gw_/) do |event|
   # The custom_id acts as the unique identifier for the specific giveaway
   gw_id = event.custom_id
   

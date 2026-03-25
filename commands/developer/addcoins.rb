@@ -32,7 +32,7 @@ end
 # ------------------------------------------
 # TRIGGER: Prefix Command (b!addcoins)
 # ------------------------------------------
-bot.command(:addcoins, 
+$bot.command(:addcoins, 
   description: 'Add or remove coins from a user (Dev Only)', 
   min_args: 2, 
   category: 'Developer'
@@ -45,7 +45,7 @@ end
 # ------------------------------------------
 # TRIGGER: Slash Command (/addcoins)
 # ------------------------------------------
-bot.application_command(:addcoins) do |event|
+$bot.application_command(:addcoins) do |event|
   # Fetch target user object from the provided Slash option ID
   target = event.bot.user(event.options['user'].to_i)
   execute_addcoins(event, target, event.options['amount'])
