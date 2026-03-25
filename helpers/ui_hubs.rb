@@ -121,9 +121,11 @@ def generate_leaderboard_page(bot, server, action)
       embed.description = "*No communities have earned XP yet!*"
     else
       desc = top_servers.each_with_index.map do |row, index|
+        # We pull the name directly from the database row!
+        # If for some reason it's missing (from old data), fallback to "Unknown"
+        name = row['server_name'] || "Unknown Arcade"
+        
         sid = row['server_id'].to_i
-        server_obj = bot.server(sid)
-        name = server_obj ? server_obj.name : "Unknown Server"
         medal = ["🏆", "🥈", "🥉"][index] || "🏅"
         bolding = (server.id == sid) ? "**" : "" 
         

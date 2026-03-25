@@ -56,7 +56,7 @@ bot.message do |event|
       event.channel.send_message(nil, false, embed)
     end
 
-    # Save the new XP and Level back to the database
-    DB.update_community_level(server_id, new_xp, new_level)
+    # Pass event.server.name to the database
+    DB.update_community_level(server_id, event.server.name, new_xp, new_level)
   end
 end

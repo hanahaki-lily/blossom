@@ -150,7 +150,7 @@ class BotDatabase
     begin; @db.exec("ALTER TABLE server_logs ADD COLUMN dm_mods INTEGER DEFAULT 1"); rescue PG::Error; end
     begin; @db.exec("ALTER TABLE server_configs ADD COLUMN verify_channel BIGINT"); rescue PG::Error; end
     begin; @db.exec("ALTER TABLE server_configs ADD COLUMN verify_role BIGINT"); rescue PG::Error; end
-    
+    begin; @db.exec("ALTER TABLE community_levels ADD COLUMN IF NOT EXISTS server_name TEXT DEFAULT 'Unknown Arcade'"); rescue PG::Error; end
     begin; @db.exec("ALTER TABLE global_users ADD COLUMN tickets INTEGER DEFAULT 0"); rescue PG::Error; end
   end
 
@@ -330,16 +330,19 @@ class BotDatabase
     end
   end
 
-  def update_community_level(server_id, new_xp, new_level)
+  def update_community_level(server_id, server_name, new_xp, new_level)
     @db.exec_params(
-      "INSERT INTO community_levels (server_id, xp, level) VALUES ($1, $2, $3) 
-       ON CONFLICT (server_id) DO UPDATE SET xp = EXCLUDED.xp, level = EXCLUDED.level",
-      [server_id, new_xp, new_level]
+      "INSERT INTO community_levels (server_id, server_name, xp, level) VALUES ($1, $2, $3, $4) 
+       ON CONFLICT (server_id) DO UPDATE SET 
+       server_name = EXCLUDED.server_name, 
+       xp = EXCLUDED.xp, 
+       level = EXCLUDED.level",
+      [server_id, server_name, new_xp, new_level]
     )
   end
 
   def get_global_server_leaderboard(limit = 10)
-    @db.exec_params("SELECT server_id, xp, level FROM community_levels ORDER BY xp DESC LIMIT $1", [limit]).to_a
+    @db.exec_params("SELECT server_id, server_name, xp, level FROM community_levels ORDER BY xp DESC LIMIT $1", [limit]).to_a
   end
 
   # =========================

@@ -15,6 +15,16 @@ bot.ready do |event|
       puts "🗑️ Successfully deleted the ghost 'coinlb' command from Discord!"
     end
   end
+
+  puts "📡 Syncing server names to database..."
+  event.bot.servers.each do |id, server|
+    # Fetch current XP/Level so we don't reset them to 0
+    stats = DB.get_community_level(id)
+    # Update the name without changing the XP/Level
+    DB.update_community_level(id, server.name, stats['xp'], stats['level'])
+  end
+  puts "✅ Sync complete!"
+  
   # ---------------------------------
 
   # ------------------------------------------
