@@ -43,17 +43,28 @@ $bot.message do |event|
     # Check if this new XP pushes them over the threshold for the next level
     needed_xp = community_xp_needed(current_level)
     
+
     if new_xp >= needed_xp
       new_level += 1 # Level up!
-      
-      # Announce the community milestone to the channel where it happened
-      embed = Discordrb::Webhooks::Embed.new(
-        title: "🎊 Community Level Up!",
-        description: "Incredible teamwork! **#{event.server.name}** has reached **Server Level #{new_level}**!",
-        color: 0x00FF00,
-        image: Discordrb::Webhooks::EmbedImage.new(url: "https://media.discordapp.net/attachments/1475890017443516476/1483149362832871424/Retro-Arcade-Twitch-Overlay-OBS.webp")
-      )
-      event.channel.send_message(nil, false, embed)
+
+      # Only announce if enabled (default: off)
+      announce_enabled = false
+      begin
+        row = DB.instance_variable_get(:@db).exec_params("SELECT announce_enabled FROM community_levels WHERE server_id = $1", [server_id]).first
+        announce_enabled = row && row['announce_enabled'].to_i == 1
+      rescue
+        announce_enabled = false
+      end
+
+      if announce_enabled
+        embed = Discordrb::Webhooks::Embed.new(
+          title: "🎊 Community Level Up!",
+          description: "Incredible teamwork! **#{event.server.name}** has reached **Server Level #{new_level}**!",
+          color: 0x00FF00,
+          image: Discordrb::Webhooks::EmbedImage.new(url: "https://media.discordapp.net/attachments/1475890017443516476/1483149362832871424/Retro-Arcade-Twitch-Overlay-OBS.webp")
+        )
+        event.channel.send_message(nil, false, embed)
+      end
     end
 
     # Pass event.server.name to the database

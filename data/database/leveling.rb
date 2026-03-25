@@ -11,6 +11,26 @@
 
   public :get_top_users
 module DatabaseLeveling
+    # --- COMMUNITY LEVEL-UP ANNOUNCEMENT TOGGLE ---
+    def toggle_community_levelup(server_id)
+      # Add the column if it doesn't exist (migration safety)
+      begin
+        @db.exec("ALTER TABLE community_levels ADD COLUMN IF NOT EXISTS announce_enabled INTEGER DEFAULT 0")
+      rescue PG::Error
+      end
+
+      # Ensure the row exists
+      @db.exec_params("INSERT INTO community_levels (server_id) VALUES ($1) ON CONFLICT (server_id) DO NOTHING", [server_id])
+
+      # Flip the value
+      @db.exec_params("UPDATE community_levels SET announce_enabled = 1 - COALESCE(announce_enabled, 0) WHERE server_id = $1", [server_id])
+
+      # Return the new value
+      row = @db.exec_params("SELECT announce_enabled FROM community_levels WHERE server_id = $1", [server_id]).first
+      row && row['announce_enabled'].to_i == 1
+    end
+
+    public :toggle_community_levelup
   # --- USER LEVELING ---
   def get_user_xp(sid, uid)
     row = @db.exec_params("SELECT xp, level, last_xp_at FROM server_xp WHERE server_id = $1 AND user_id = $2", [sid, uid]).first
