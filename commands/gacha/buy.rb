@@ -13,7 +13,7 @@ def execute_buy(event, search_name)
     return send_cv2(event, [{ type: 17, accent_color: NEON_COLORS.sample, components: [
       { type: 10, content: "## ⚠️ Missing Name" },
       { type: 14, spacing: 1 },
-      { type: 10, content: "Who or what do you want to buy?" }
+      { type: 10, content: "Buy WHAT, chat?? You gotta tell me what you want." }
     ]}])
   end
 
@@ -28,7 +28,7 @@ def execute_buy(event, search_name)
     return send_cv2(event, [{ type: 17, accent_color: NEON_COLORS.sample, components: [
       { type: 10, content: "## 🎪 Event Exclusive!" },
       { type: 14, spacing: 1 },
-      { type: 10, content: "**#{display_name}** is a limited-time event character!\n\nYou can only purchase them from the Event Hub using #{SPRING_CARNIVAL[:emoji]}." }
+      { type: 10, content: "Nice try, but **#{display_name}** is event-locked, bestie.\n\nYou can only snag them from the Event Hub using #{SPRING_CARNIVAL[:emoji]}." }
     ]}])
   end
 
@@ -40,9 +40,9 @@ def execute_buy(event, search_name)
     # A. Funds Check
     if DB.get_coins(uid) < price
       return send_cv2(event, [{ type: 17, accent_color: NEON_COLORS.sample, components: [
-        { type: 10, content: "## 😰 Insufficient Funds" },
+        { type: 10, content: "## 😰 Broke Alert" },
         { type: 14, spacing: 1 },
-        { type: 10, content: "You need **#{price}** coins to buy the #{item_data[:name]}.\nYou currently have **#{DB.get_coins(uid)}** coins." }
+        { type: 10, content: "The #{item_data[:name]} costs **#{price}** coins. You've got **#{DB.get_coins(uid)}**. That's not gonna work, chief." }
       ]}])
     end
 
@@ -53,7 +53,7 @@ def execute_buy(event, search_name)
       return send_cv2(event, [{ type: 17, accent_color: NEON_COLORS.sample, components: [
         { type: 10, content: "## 😕 Already Owned" },
         { type: 14, spacing: 1 },
-        { type: 10, content: "You already have the **#{item_data[:name]}** equipped in your setup!" }
+        { type: 10, content: "You already have the **#{item_data[:name]}** in your setup, galaxy brain. No dupes." }
       ]}])
     end
 
@@ -76,7 +76,7 @@ def execute_buy(event, search_name)
       return send_cv2(event, [{ type: 17, accent_color: NEON_COLORS.sample, components: [
         { type: 10, content: "## 🥫 Gamer Fuel Consumed!" },
         { type: 14, spacing: 1 },
-        { type: 10, content: "You cracked open a cold one and chugged it.\n**ALL your content creation cooldowns have been reset!** Get back to the grind." }
+        { type: 10, content: "You cracked one open and CHUGGED it. Pog.\n**ALL your content cooldowns are reset!** Now get back to grinding, no excuses." }
       ]}])
 
     elsif search_name == 'stamina pill'
@@ -86,7 +86,7 @@ def execute_buy(event, search_name)
       return send_cv2(event, [{ type: 17, accent_color: NEON_COLORS.sample, components: [
         { type: 10, content: "## 💊 Stamina Pill Swallowed!" },
         { type: 14, spacing: 1 },
-        { type: 10, content: "You took a highly questionable Stamina Pill...\n**Your !summon cooldown has been instantly reset!** Get back to gambling." }
+        { type: 10, content: "You popped that sus pill like a champ.\n**Your !summon cooldown is reset!** Back to the gacha mines, degenerate." }
       ]}])
 
     elsif search_name == 'rng manipulator'
@@ -94,9 +94,9 @@ def execute_buy(event, search_name)
     end
 
     return send_cv2(event, [{ type: 17, accent_color: NEON_COLORS.sample, components: [
-      { type: 10, content: "## 🛒 Item Purchased!" },
+      { type: 10, content: "## 🛒 Sold!" },
       { type: 14, spacing: 1 },
-      { type: 10, content: "You successfully bought the **#{item_data[:name]}** for **#{price}** coins!\nIt has been added to your inventory/setup." }
+      { type: 10, content: "Cha-ching! You copped the **#{item_data[:name]}** for **#{price}** coins.\nIt's in your inventory now. Use it wisely~ or don't, I'm not your mom." }
     ]}])
   end
 
@@ -104,9 +104,9 @@ def execute_buy(event, search_name)
   result = find_character_in_pools(search_name)
   unless result
     return send_cv2(event, [{ type: 17, accent_color: NEON_COLORS.sample, components: [
-      { type: 10, content: "## ❌ Shop Error" },
+      { type: 10, content: "## #{EMOJI_STRINGS['x_']} Who??" },
       { type: 14, spacing: 1 },
-      { type: 10, content: "I couldn't find a character or item named **#{search_name}**. Check your spelling!" }
+      { type: 10, content: "I don't have anything called **#{search_name}** in stock. Check your spelling, chat." }
     ]}])
   end
 
@@ -123,7 +123,7 @@ def execute_buy(event, search_name)
       return send_cv2(event, [{ type: 17, accent_color: NEON_COLORS.sample, components: [
         { type: 10, content: "## 💎 Not Enough Prisma" },
         { type: 14, spacing: 1 },
-        { type: 10, content: "**#{char_data[:name]}** is a Goddess-tier character and costs **#{prisma_price}** Prisma.\nYou currently have **#{prisma_bal}** Prisma.\n\n*Earn Prisma through premium rewards and special events!*" }
+        { type: 10, content: "**#{char_data[:name]}** is Goddess-tier and costs **#{prisma_price}** Prisma. You've got **#{prisma_bal}**.\n\nThat's pure copium, bestie. Farm more Prisma from premium rewards and events!" }
       ]}])
     end
 
@@ -136,27 +136,27 @@ def execute_buy(event, search_name)
     return send_cv2(event, [{ type: 17, accent_color: NEON_COLORS.sample, components: [
       { type: 10, content: "## 💎 Goddess Acquired!" },
       { type: 14, spacing: 1 },
-      { type: 10, content: "💎 You purchased **#{name}** for **#{prisma_price}** Prisma!\nYou now own **#{new_count}** of them." },
+      { type: 10, content: "💎 WHALE ALERT!! You bought **#{name}** for **#{prisma_price}** Prisma!\nYou now own **#{new_count}** of them. Absolute baller move." },
       { type: 14, spacing: 1 },
-      { type: 10, content: "**Remaining Prisma:** #{DB.get_prisma(uid)} Prisma" }
+      { type: 10, content: "**Prisma Left:** #{DB.get_prisma(uid)} Prisma" }
     ]}])
   end
 
   # B. Pricing Check: Some rarities may not be directly purchasable
   if price.nil?
     return send_cv2(event, [{ type: 17, accent_color: NEON_COLORS.sample, components: [
-      { type: 10, content: "## ❌ Black Market Locked" },
+      { type: 10, content: "## #{EMOJI_STRINGS['x_']} Nah, Portal Only" },
       { type: 14, spacing: 1 },
-      { type: 10, content: "You cannot directly purchase **#{char_data[:name]}**. She can only be obtained through the gacha portal." }
+      { type: 10, content: "**#{char_data[:name]}** isn't for sale. You want her? Hit the gacha portal like everyone else." }
     ]}])
   end
 
   # C. Funds Check
   if DB.get_coins(uid) < price
     return send_cv2(event, [{ type: 17, accent_color: NEON_COLORS.sample, components: [
-      { type: 10, content: "## 😰 Insufficient Funds" },
+      { type: 10, content: "## 😰 Broke Alert" },
       { type: 14, spacing: 1 },
-      { type: 10, content: "You need **#{price}** coins to buy a #{rarity.capitalize} character.\nYou currently have **#{DB.get_coins(uid)}** coins." }
+      { type: 10, content: "A #{rarity.capitalize} character costs **#{price}** coins. You've got **#{DB.get_coins(uid)}**. L." }
     ]}])
   end
 
@@ -166,14 +166,14 @@ def execute_buy(event, search_name)
   DB.add_character(uid, name, rarity.to_s, 1)
   new_count = DB.get_collection(uid)[name]['count']
 
-  emoji = { 'goddess' => '💎', 'legendary' => '🌟', 'rare' => '✨' }.fetch(rarity, '⭐')
+  emoji = { 'goddess' => '💎', 'legendary' => '🌟', 'rare' => EMOJI_STRINGS['neonsparkle'] }.fetch(rarity, '⭐')
 
   send_cv2(event, [{ type: 17, accent_color: NEON_COLORS.sample, components: [
-    { type: 10, content: "## 🪙 Purchase Successful!" },
+    { type: 10, content: "## #{EMOJI_STRINGS['s_coin']} Bag Secured!" },
     { type: 14, spacing: 1 },
-    { type: 10, content: "#{emoji} You directly purchased **#{name}** for **#{price}** coins!\nYou now own **#{new_count}** of them." },
+    { type: 10, content: "#{emoji} You bought **#{name}** straight up for **#{price}** coins. No RNG needed.\nYou now own **#{new_count}** of them." },
     { type: 14, spacing: 1 },
-    { type: 10, content: "**Remaining Balance:** #{DB.get_coins(uid)} coins" }
+    { type: 10, content: "**Wallet Damage:** #{DB.get_coins(uid)} coins left" }
   ]}])
 end
 

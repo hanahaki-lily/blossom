@@ -27,9 +27,9 @@ def execute_daily(event)
         type: 17,
         accent_color: 0xFF0000,
         components: [
-          { type: 10, content: "## 🪙 Daily Reward" },
+          { type: 10, content: "## #{EMOJI_STRINGS['s_coin']} Daily Reward" },
           { type: 14, spacing: 1 },
-          { type: 10, content: "You already claimed your daily revenue! 😩\nTry again in **#{format_time_delta(remaining)}**." }
+          { type: 10, content: "You already grabbed your bag today, chill! Come back in **#{format_time_delta(remaining)}**." }
         ]
       }
     ]
@@ -39,7 +39,7 @@ def execute_daily(event)
   # 4. Logic: Streak Calculation (Reset if > 48 hours since last claim)
   if last_used.nil? || (now - last_used) > (DAILY_COOLDOWN * 2)
     new_streak = 1
-    streak_msg = "\n*(Streak reset! Claim within 48h to build it up!)*"
+    streak_msg = "\n*(Streak gone, skill issue. Claim within 48h next time!)*"
   else
     new_streak = current_streak + 1
     streak_msg = "\n🔥 **Streak:** #{new_streak} days!"
@@ -56,7 +56,7 @@ def execute_daily(event)
     prisma_reward = base_prisma * streak_multiplier
     
     DB.add_prisma(uid, prisma_reward)
-    bonus_text += "\n*(<:prisma:1486142162805723196> Subscriber Bonus: +10% Coins & +#{prisma_reward} Prisma!)*"
+    bonus_text += "\n*(#{EMOJI_STRINGS['prisma']} Subscriber Bonus: +10% Coins & +#{prisma_reward} Prisma!)*"
   end
   
   # 7. Logic: Inventory Boosts (Check for active Neon Sign)
@@ -64,7 +64,7 @@ def execute_daily(event)
   inv = inv_array.each_with_object({}) { |item, h| h[item['item_id']] = item['quantity'] }
   if inv['neon sign'] && inv['neon sign'] > 0
     reward *= 2
-    bonus_text += "\n*(✨ Neon Sign Boost: x2 Payout!)*"
+    bonus_text += "\n*(#{EMOJI_STRINGS['neonsparkle']} Neon Sign Boost: x2 Payout!)*"
   end
 
   # 8. Database: Final Coin Granting & Streak Persistence
@@ -85,9 +85,9 @@ def execute_daily(event)
       type: 17,
       accent_color: 0x00FF00,
       components: [
-        { type: 10, content: "## 🪙 Daily Reward" },
+        { type: 10, content: "## #{EMOJI_STRINGS['s_coin']} Daily Reward" },
         { type: 14, spacing: 1 },
-        { type: 10, content: "You claimed **#{final_reward}** 🪙!#{streak_msg}#{bonus_text}\n\nNew balance: **#{DB.get_coins(uid)}** 🪙." }
+        { type: 10, content: "GG, chat! You snagged **#{final_reward}** #{EMOJI_STRINGS['s_coin']}!#{streak_msg}#{bonus_text}\n\nBalance: **#{DB.get_coins(uid)}** #{EMOJI_STRINGS['s_coin']}." }
       ]
     }
   ]

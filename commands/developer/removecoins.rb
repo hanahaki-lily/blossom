@@ -11,7 +11,7 @@ def execute_removecoins(event, target, amount_str)
   # 1. Security: Strict Developer-Only Check
   unless event.user.id == DEV_ID
     return send_embed(event, 
-      title: "❌ Permission Denied", 
+      title: "#{EMOJI_STRINGS['x_']} Permission Denied", 
       description: "Only the bot developer can use this command."
     )
   end
@@ -45,7 +45,7 @@ def execute_removecoins(event, target, amount_str)
   send_embed(
     event, 
     title: "💸 Coins Removed", 
-    description: "Successfully removed **#{actual_removal}** #{EMOJIS['s_coin']} from #{target.mention}.\n\nNew balance: **#{DB.get_coins(target.id)}** #{EMOJIS['s_coin']}"
+    description: "Successfully removed **#{actual_removal}** #{EMOJI_STRINGS['s_coin']} from #{target.mention}.\n\nNew balance: **#{DB.get_coins(target.id)}** #{EMOJI_STRINGS['s_coin']}"
   )
 end
 

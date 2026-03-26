@@ -7,7 +7,7 @@
 def execute_commleveltoggle(event)
   # Only allow server admins or developer to toggle
   unless event.user.permission?(:manage_server) || event.user.id == DEV_ID
-    return mod_reply(event, "❌ *You need the Manage Server permission or be the developer to do this!*", is_ephemeral: true)
+    return mod_reply(event, "#{EMOJI_STRINGS['x_']} *You need the Manage Server permission or be the developer to do this!*", is_ephemeral: true)
   end
 
   server_id = event.server.id

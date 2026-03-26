@@ -19,9 +19,9 @@ def execute_view(event, search_name)
   
   unless owned_name && (user_chars[owned_name]['count'] > 0 || user_chars[owned_name]['ascended'].to_i > 0)
     return send_embed(event, 
-      title: "#{EMOJIS['confused']} Character Not Found", 
-      description: "You don't own **#{search_name}** yet!\n" \
-                   "Use `/summon` to roll for them, or `/buy` to get them from the shop."
+      title: "#{EMOJI_STRINGS['confused']} Who??",
+      description: "You don't have **#{search_name}** in your collection.\n" \
+                   "Hit `/summon` to try your luck or `/buy` if you're feeling rich."
     )
   end
   
@@ -36,15 +36,17 @@ def execute_view(event, search_name)
   emoji = case rarity
           when 'goddess'   then '💎'
           when 'legendary' then '🌟'
-          when 'rare'      then '✨'
+          when 'rare'      then EMOJI_STRINGS['neonsparkle']
           else '⭐'
           end
           
   # 5. UI: Construct the description based on ownership levels
-  desc = "You currently own **#{count}** standard copies of this character.\n"
+  desc = "You've got **#{count}** standard copies of this one.\n"
   if ascended > 0
-    desc += "#{EMOJIS['neonsparkle']} **You own #{ascended} Shiny Ascended copies!** #{EMOJIS['neonsparkle']}"
+    desc += "#{EMOJI_STRINGS['neonsparkle']} **Plus #{ascended} Shiny Ascended copies!! Flexing on chat rn.** #{EMOJI_STRINGS['neonsparkle']}"
   end
+  # Easter egg: Envvy is Blossom's creator (mom)
+  desc += "\n\n*That's my mom, by the way. Yeah, THE Envvy. She literally made me. So like... be normal about it.*" if owned_name == 'Envvy'
 
   # 6. Messaging: Send the finalized spotlight Embed
   send_embed(

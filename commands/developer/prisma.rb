@@ -10,7 +10,7 @@
 def execute_prisma(event, action, target, amount)
   # 0. Security: Ensure only the developer can execute this
   unless event.user.id == DEV_ID
-    return event.respond(content: "❌ *This command is restricted to the bot developer.*", ephemeral: true) if event.is_a?(Discordrb::Events::ApplicationCommandEvent)
+    return event.respond(content: "#{EMOJI_STRINGS['x_']} *This command is restricted to the bot developer.*", ephemeral: true) if event.is_a?(Discordrb::Events::ApplicationCommandEvent)
     return
   end
 
@@ -42,7 +42,7 @@ def execute_prisma(event, action, target, amount)
 
   else
     # 4. Error Handling: Respond if the action string is unrecognized
-    error_msg = "❌ Invalid action! Use `add`, `remove`, or `set`."
+    error_msg = "#{EMOJI_STRINGS['x_']} Invalid action! Use `add`, `remove`, or `set`."
     if event.is_a?(Discordrb::Events::ApplicationCommandEvent)
       return event.respond(content: error_msg, ephemeral: true)
     else
@@ -55,8 +55,8 @@ def execute_prisma(event, action, target, amount)
   
   # 6. UI: Construct the confirmation Embed
   embed = Discordrb::Webhooks::Embed.new(
-    title: "<:prisma:1486142162805723196> Prisma Updated",
-    description: "#{action_word} #{target.mention}!\n\n**New Balance:** #{new_bal} <:prisma:1486142162805723196>",
+    title: "#{EMOJI_STRINGS['prisma']} Prisma Updated",
+    description: "#{action_word} #{target.mention}!\n\n**New Balance:** #{new_bal} #{EMOJI_STRINGS['prisma']}",
     color: 0x9370DB # Deep purple/Prisma theme
   )
 

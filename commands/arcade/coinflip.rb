@@ -17,9 +17,9 @@ def execute_coinflip(event, amount, choice)
     return send_cv2(event, [{
       type: 17, accent_color: 0xFF0000,
       components: [
-        { type: 10, content: "## ❌ Invalid Bet" },
+        { type: 10, content: "## #{EMOJI_STRINGS['x_']} Invalid Bet" },
         { type: 14, spacing: 1 },
-        { type: 10, content: "You must bet at least 1 🪙." }
+        { type: 10, content: "You gotta put SOMETHING on the line. Bet at least 1 #{EMOJI_STRINGS['s_coin']}, cheapskate." }
       ]
     }])
   end
@@ -31,7 +31,7 @@ def execute_coinflip(event, amount, choice)
       components: [
         { type: 10, content: "## 😰 Insufficient Funds" },
         { type: 14, spacing: 1 },
-        { type: 10, content: "You don't have enough coins to cover that bet!\nYou currently have **#{DB.get_coins(uid)}** 🪙." }
+        { type: 10, content: "You're broke, chat. You can't afford that.\nYou've got **#{DB.get_coins(uid)}** #{EMOJI_STRINGS['s_coin']}. Work with what you have." }
       ]
     }])
   end
@@ -41,9 +41,9 @@ def execute_coinflip(event, amount, choice)
     return send_cv2(event, [{
       type: 17, accent_color: 0xFF0000,
       components: [
-        { type: 10, content: "## ❌ Invalid Choice" },
+        { type: 10, content: "## #{EMOJI_STRINGS['x_']} Invalid Choice" },
         { type: 14, spacing: 1 },
-        { type: 10, content: "Please pick either `heads` or `tails`." }
+        { type: 10, content: "It's heads or tails. That's literally it. Pick one." }
       ]
     }])
   end
@@ -59,9 +59,9 @@ def execute_coinflip(event, amount, choice)
     send_cv2(event, [{
       type: 17, accent_color: 0x00FF00,
       components: [
-        { type: 10, content: "## 🪙 Coinflip: #{result.capitalize}!" },
+        { type: 10, content: "## #{EMOJI_STRINGS['s_coin']} Coinflip: #{result.capitalize}!" },
         { type: 14, spacing: 1 },
-        { type: 10, content: "You won! You doubled your bet and earned **#{amount}** 🪙.\nNew Balance: **#{DB.get_coins(uid)}** 🪙" }
+        { type: 10, content: "Okay wait, you actually hit?? GG, you doubled up and snagged **#{amount}** #{EMOJI_STRINGS['s_coin']}.\nNew Balance: **#{DB.get_coins(uid)}** #{EMOJI_STRINGS['s_coin']}" }
       ]
     }])
     check_achievement(event.channel, uid, 'gamble_win')
@@ -70,9 +70,9 @@ def execute_coinflip(event, amount, choice)
     send_cv2(event, [{
       type: 17, accent_color: 0xFF0000,
       components: [
-        { type: 10, content: "## 🪙 Coinflip: #{result.capitalize}!" },
+        { type: 10, content: "## #{EMOJI_STRINGS['s_coin']} Coinflip: #{result.capitalize}!" },
         { type: 14, spacing: 1 },
-        { type: 10, content: "You lost... **#{amount}** 🪙 down the drain.\nNew Balance: **#{DB.get_coins(uid)}** 🪙" }
+        { type: 10, content: "Tragic. Absolutely tragic. **#{amount}** #{EMOJI_STRINGS['s_coin']} gone, just like that.\nNew Balance: **#{DB.get_coins(uid)}** #{EMOJI_STRINGS['s_coin']}" }
       ]
     }])
   end
@@ -92,7 +92,7 @@ $bot.command(:coinflip,
       components: [
         { type: 10, content: "## 😕 Missing Arguments" },
         { type: 14, spacing: 1 },
-        { type: 10, content: "You need to tell me how much to bet and what side you want!\n\n**Usage:** `#{PREFIX}coinflip <amount> <heads/tails>`" }
+        { type: 10, content: "Did you forget how to type? I need an amount AND a side, chat.\n\n**Usage:** `#{PREFIX}coinflip <amount> <heads/tails>`" }
       ]
     }])
     next

@@ -40,7 +40,7 @@ def execute_global_sync(event)
       # 6. UI: Construct the final report summary
       desc = "Successfully scanned the database footprints of **#{all_user_ids.size}** users.\n\n" \
               "🏆 **#{users_affected}** users received missing achievements.\n" \
-              "✨ **#{total_unlocked}** total achievements were retroactively unlocked!\n\n" \
+              "#{EMOJI_STRINGS['neonsparkle']} **#{total_unlocked}** total achievements were retroactively unlocked!\n\n" \
               "*(All coin rewards have been automatically deposited into their accounts!)*"
 
       embed = Discordrb::Webhooks::Embed.new(

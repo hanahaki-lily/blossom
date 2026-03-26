@@ -29,7 +29,7 @@ $bot.ready do |event|
         winner_user = event.bot.user(winner_id)
         if winner_user
           begin
-            winner_user.pm("✨ **JACKPOT!** You won **#{jackpot}** #{EMOJIS['s_coin']} in the Hourly Lottery! 🌸")
+            winner_user.pm("#{EMOJI_STRINGS['neonsparkle']} **NO WAY — JACKPOT!** You just pulled **#{jackpot}** #{EMOJI_STRINGS['s_coin']} from the Hourly Lottery! Lucky you~ 🌸")
           rescue
             # Ignore if their DMs are closed
           end
@@ -55,7 +55,7 @@ $bot.ready do |event|
           channel = event.bot.channel(chan_id)
           if channel
             begin
-              channel.send_message("🔔 <@#{uid}>, your `#{PREFIX}daily` is ready! Don't lose your streak! 🌸")
+              channel.send_message("🔔 <@#{uid}>, your `#{PREFIX}daily` is up! Don't break the streak or I WILL judge you. 🌸")
             rescue
               # Ignore if bot lacks permission to type in that channel
             end

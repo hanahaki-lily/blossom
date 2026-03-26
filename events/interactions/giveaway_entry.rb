@@ -11,7 +11,7 @@ $bot.button(custom_id: /^gw_/) do |event|
   # Verification: Check if the giveaway is still actively running in the database
   active = DB.get_active_giveaways.any? { |gw| gw['id'] == gw_id }
   unless active
-    event.respond(content: "⚠️ *This giveaway has already ended!*", ephemeral: true)
+    event.respond(content: "⚠️ *That giveaway is over! You missed it, bestie.*", ephemeral: true)
     next
   end
 
@@ -21,8 +21,8 @@ $bot.button(custom_id: /^gw_/) do |event|
   
   # Provide private feedback based on the database result
   if success
-    event.respond(content: "🎉 *You successfully entered the giveaway!*", ephemeral: true)
+    event.respond(content: "#{EMOJI_STRINGS['surprise']} *You're in! Good luck, you'll need it~*", ephemeral: true)
   else
-    event.respond(content: "🍀 *You have already entered this giveaway! Good luck!*", ephemeral: true)
+    event.respond(content: "🍀 *Chill, you already entered! Spamming won't help~*", ephemeral: true)
   end
 end

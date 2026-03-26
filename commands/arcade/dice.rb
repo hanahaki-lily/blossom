@@ -17,9 +17,9 @@ def execute_dice(event, amount, bet)
     return send_cv2(event, [{
       type: 17, accent_color: 0xFF0000,
       components: [
-        { type: 10, content: "## ❌ Invalid Bet" },
+        { type: 10, content: "## #{EMOJI_STRINGS['x_']} Invalid Bet" },
         { type: 14, spacing: 1 },
-        { type: 10, content: "You don't have enough coins or entered an invalid amount!" }
+        { type: 10, content: "You're broke or you typed something unhinged. Check your balance and try again." }
       ]
     }])
   end
@@ -29,9 +29,9 @@ def execute_dice(event, amount, bet)
     return send_cv2(event, [{
       type: 17, accent_color: 0xFF0000,
       components: [
-        { type: 10, content: "## ❌ Invalid Bet Type" },
+        { type: 10, content: "## #{EMOJI_STRINGS['x_']} Invalid Bet Type" },
         { type: 14, spacing: 1 },
-        { type: 10, content: "You can only bet on `high`, `low`, or `7`." }
+        { type: 10, content: "That's not how this works. Pick `high`, `low`, or `7`. Reading is free, chat." }
       ]
     }])
   end
@@ -62,7 +62,7 @@ def execute_dice(event, amount, bet)
       components: [
         { type: 10, content: "## 🎲 High Roller Dice" },
         { type: 14, spacing: 1 },
-        { type: 10, content: "The dice roll... **#{die1}** and **#{die2}**! (Total: **#{total}**)\n\nYou correctly bet on **#{bet}** and won **#{payout}** 🪙!\nNew Balance: **#{DB.get_coins(uid)}** 🪙" }
+        { type: 10, content: "The dice roll... **#{die1}** and **#{die2}**! (Total: **#{total}**)\n\nOkay not bad, chat. You called **#{bet}** and walked away with **#{payout}** #{EMOJI_STRINGS['s_coin']}.\nNew Balance: **#{DB.get_coins(uid)}** #{EMOJI_STRINGS['s_coin']}" }
       ]
     }])
   else
@@ -72,7 +72,7 @@ def execute_dice(event, amount, bet)
       components: [
         { type: 10, content: "## 🎲 High Roller Dice" },
         { type: 14, spacing: 1 },
-        { type: 10, content: "The dice roll... **#{die1}** and **#{die2}**! (Total: **#{total}**)\n\nYou bet on **#{bet}** and lost **#{amount}** 🪙.\nNew Balance: **#{DB.get_coins(uid)}** 🪙" }
+        { type: 10, content: "The dice roll... **#{die1}** and **#{die2}**! (Total: **#{total}**)\n\nYou bet **#{bet}** and ate it HARD. **#{amount}** #{EMOJI_STRINGS['s_coin']} gone. Tragic.\nNew Balance: **#{DB.get_coins(uid)}** #{EMOJI_STRINGS['s_coin']}" }
       ]
     }])
   end
@@ -92,7 +92,7 @@ $bot.command(:dice,
       components: [
         { type: 10, content: "## 😕 Missing Arguments" },
         { type: 14, spacing: 1 },
-        { type: 10, content: "Place your bets on the dice!\n\n**Usage:** `#{PREFIX}dice <amount> <high/low/7>`" }
+        { type: 10, content: "You forgot like... half the command. I need an amount and a call, chat.\n\n**Usage:** `#{PREFIX}dice <amount> <high/low/7>`" }
       ]
     }])
     next

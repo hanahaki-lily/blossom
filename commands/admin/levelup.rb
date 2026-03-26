@@ -11,7 +11,7 @@ def execute_levelup(event, state, channel_obj = nil)
   # 1. Security: Permission Check (Admins or Developer Only)
   unless event.user.id == DEV_ID || event.user.permission?(:administrator, event.channel)
     return send_embed(event, 
-      title: "❌ Access Denied", 
+      title: "#{EMOJI_STRINGS['x_']} Access Denied", 
       description: "You need administrator permissions to configure this."
     )
   end

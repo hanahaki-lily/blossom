@@ -12,10 +12,10 @@ def execute_trade(event, target_user, offer_str, request_str)
   if target_user.nil? || target_user.id == event.user.id
     return send_embed(
       event, 
-      title: "#{EMOJIS['confused']} Invalid Trade", 
-      description: "You must select a valid user to trade with (not yourself)!\n" \
-                   "**Prefix Usage:** `#{PREFIX}trade @user <Your Char> for <Their Char>`\n" \
-                   "**Slash Usage:** `/trade user:@user offer:<Your Char> request:<Their Char>`"
+      title: "#{EMOJI_STRINGS['confused']} Invalid Trade",
+      description: "You can't trade with yourself, weirdo. Pick someone else.\n" \
+                   "**Prefix:** `#{PREFIX}trade @user <Your Char> for <Their Char>`\n" \
+                   "**Slash:** `/trade user:@user offer:<Your Char> request:<Their Char>`"
     )
   end
 
@@ -23,8 +23,8 @@ def execute_trade(event, target_user, offer_str, request_str)
   if offer_str.nil? || offer_str.strip.empty? || request_str.nil? || request_str.strip.empty?
     return send_embed(
       event, 
-      title: "#{EMOJIS['error']} Trade Formatting", 
-      description: "Please specify both the character you are offering and the one you are requesting."
+      title: "#{EMOJI_STRINGS['error']} Trade Formatting",
+      description: "You gotta specify what you're offering AND what you want back. I'm not a mind reader, chat."
     )
   end
 
@@ -42,11 +42,11 @@ def execute_trade(event, target_user, offer_str, request_str)
   their_char_real = coll_b.keys.find { |k| k.downcase == their_char_search }
 
   if my_char_real.nil? || coll_a[my_char_real]['count'] < 1
-    return send_embed(event, title: "#{EMOJIS['x_']} Missing Character", description: "You don't own **#{offer_str}** to trade!")
+    return send_embed(event, title: "#{EMOJI_STRINGS['x_']} Nice Try", description: "You can't trade what you don't have, genius. You don't own **#{offer_str}**.")
   end
 
   if their_char_real.nil? || coll_b[their_char_real]['count'] < 1
-    return send_embed(event, title: "#{EMOJIS['x_']} Missing Character", description: "#{target_user.mention} doesn't own **#{request_str}**!")
+    return send_embed(event, title: "#{EMOJI_STRINGS['x_']} They Don't Have It", description: "#{target_user.mention} doesn't even own **#{request_str}**. Awkward.")
   end
 
   # 5. State Persistence: Create a temporary trade record
@@ -64,9 +64,9 @@ def execute_trade(event, target_user, offer_str, request_str)
   # 6. UI: Construct the Trade Proposal Embed
   embed = Discordrb::Webhooks::Embed.new(
     title: '🤝 Trade Offer!',
-    description: "#{target_user.mention}, #{event.user.mention} wants to trade with you!\n\n" \
-                 "They are offering **#{my_char_real}** in exchange for your **#{their_char_real}**.\n\n" \
-                 "Do you accept? (Offer expires <t:#{expire_time.to_i}:R>)",
+    description: "#{target_user.mention}, yo! #{event.user.mention} wants to make a deal.\n\n" \
+                 "They're putting up **#{my_char_real}** and want your **#{their_char_real}**.\n\n" \
+                 "Accept or dodge? Clock's ticking — expires <t:#{expire_time.to_i}:R>.",
     color: NEON_COLORS.sample
   )
 
@@ -74,13 +74,13 @@ def execute_trade(event, target_user, offer_str, request_str)
   view = Discordrb::Components::View.new do |v|
     v.row do |r|
       r.button(custom_id: "#{trade_id}_accept", label: 'Accept', style: :success, emoji: '✅')
-      r.button(custom_id: "#{trade_id}_decline", label: 'Decline', style: :danger, emoji: '❌')
+      r.button(custom_id: "#{trade_id}_decline", label: 'Decline', style: :danger, emoji: EMOJI_OBJECTS['x_'])
     end
   end
 
   # 8. Dispatch: Send the message and handle Slash/Prefix differences
   if event.is_a?(Discordrb::Events::ApplicationCommandEvent)
-    event.respond(content: "Sent trade request!", ephemeral: true)
+    event.respond(content: "Trade request sent! Let's see if they bite.", ephemeral: true)
     msg = event.channel.send_message(nil, false, embed, nil, nil, nil, view)
   else
     msg = event.channel.send_message(nil, false, embed, nil, nil, event.message, view)
@@ -91,7 +91,7 @@ def execute_trade(event, target_user, offer_str, request_str)
     sleep 120
     if ACTIVE_TRADES.key?(trade_id)
       ACTIVE_TRADES.delete(trade_id)
-      failed_embed = Discordrb::Webhooks::Embed.new(title: '⏳ Trade Expired', description: 'The trade offer timed out.', color: 0x808080)
+      failed_embed = Discordrb::Webhooks::Embed.new(title: '⏳ Trade Expired', description: 'Too slow. The deal is off.', color: 0x808080)
       msg.edit(nil, failed_embed, Discordrb::Components::View.new) if msg
     end
   end
@@ -113,8 +113,8 @@ $bot.command(:trade,
   
   if parts.size != 2
     send_embed(event, 
-      title: "#{EMOJIS['error']} Trade Formatting", 
-      description: "Please format it exactly like this:\n`#{PREFIX}trade @user Gawr Gura for Filian`"
+      title: "#{EMOJI_STRINGS['error']} Trade Formatting",
+      description: "Wrong format, chat. Do it like this:\n`#{PREFIX}trade @user Gawr Gura for Filian`"
     )
     next
   end

@@ -10,34 +10,34 @@ def execute_about(event)
       type: 17,
       accent_color: 0xFF69B4,
       components: [
-        { type: 10, content: "## 💖 About Blossom" },
+        { type: 10, content: "## #{EMOJI_STRINGS['hearts']} About Blossom" },
         { type: 14, spacing: 1 },
         {
           type: 10,
-          content: "Hey Chat! I'm **Blossom**, your server's dedicated head mod, hype-woman, and resident gacha addict. " \
-                   "I'm here to turn your Discord server into the ultimate content creator community.\n\n" \
-                   "Drop a `/help` in chat and let's go live! 📡✨"
+          content: "Yo, what's good chat! I'm **Blossom** — streamer, gacha degen, and the one keeping this whole Neon Arcade running. " \
+                   "You're in MY server now, so buckle up.\n\n" \
+                   "Type `/help` and I'll show you around. Try to keep up. 📡#{EMOJI_STRINGS['neonsparkle']}"
         },
         { type: 14, spacing: 1 },
         {
           type: 10,
           content: "💻 **The Content Grind**\n" \
-                   "Earn coins by streaming, posting on socials, or doing collabs with other chatters."
+                   "Stream, post, collab — hustle your way to the top. Coins don't farm themselves, bestie."
         },
         {
           type: 10,
           content: "🎲 **VTuber Gacha**\n" \
-                   "Spend your stream revenue to summon VTubers! Build your collection and flex your pulls."
+                   "Blow your hard-earned coins on gacha pulls. Get a Goddess or get rekt. No refunds~"
         },
         {
           type: 10,
           content: "💣 **A Little Bit of Trolling**\n" \
-                   "Admins can drop bombs in chat — scramble to defuse them for a massive coin payout!"
+                   "Bombs drop in chat randomly. Be fast or be broke. First click eats good tonight."
         },
         { type: 14, spacing: 1 },
         {
           type: 10,
-          content: "🛠️ Blossom is a **Kyvrixon Dev.** product. Developed by **en.vvy** and written in **.rb** (Ruby)."
+          content: "#{EMOJI_STRINGS['developer']} Built by **Kyvrixon Dev.** — coded by **en.vvy** in **.rb** (Ruby). Yeah, I'm handcrafted. You're welcome."
         }
       ]
     }

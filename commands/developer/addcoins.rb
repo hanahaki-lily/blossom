@@ -10,7 +10,7 @@
 def execute_addcoins(event, target_user, amount)
   # 1. Security: Strict Developer-Only Check
   unless event.user.id == DEV_ID
-    return event.respond("#{EMOJIS['x_']} Only the bot developer can use this command!")
+    return event.respond("#{EMOJI_STRINGS['x_']} Only the bot developer can use this command!")
   end
 
   # 2. Validation: Ensure a target user was provided
@@ -24,8 +24,8 @@ def execute_addcoins(event, target_user, amount)
   
   # 4. UI: Confirm success and display the updated balance via Embed
   send_embed(event, 
-    title: "#{EMOJIS['developer']} Developer Override", 
-    description: "Successfully added **#{amount}** #{EMOJIS['s_coin']} to #{target_user.mention}.\nTheir new balance is **#{DB.get_coins(uid)}**."
+    title: "#{EMOJI_STRINGS['developer']} Developer Override", 
+    description: "Successfully added **#{amount}** #{EMOJI_STRINGS['s_coin']} to #{target_user.mention}.\nTheir new balance is **#{DB.get_coins(uid)}**."
   )
 end
 

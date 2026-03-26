@@ -11,7 +11,7 @@ def execute_logtoggle(event, type)
   # 1. Security: Ensure the user has "Manage Server" permissions
   # Toggling logs is a high-level config change that shouldn't be accessible to junior mods.
   unless event.user.permission?(:manage_server) || event.user.id == DEV_ID
-    return mod_reply(event, "❌ *You need the Manage Server permission to do this!*", is_ephemeral: true)
+    return mod_reply(event, "#{EMOJI_STRINGS['x_']} *You need the Manage Server permission to do this!*", is_ephemeral: true)
   end
 
   # 2. Validation: Map user-friendly names to actual database columns

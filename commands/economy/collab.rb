@@ -18,8 +18,8 @@ def execute_collab(event)
   if last_used && (now - last_used) < COLLAB_COOLDOWN
     remaining = COLLAB_COOLDOWN - (now - last_used)
     return send_embed(event, 
-      title: "#{EMOJIS['worktired']} Collab Burnout", 
-      description: "You're collaborating too much! Rest your voice.\nTry again in **#{format_time_delta(remaining)}**."
+      title: "#{EMOJI_STRINGS['worktired']} Collab Burnout", 
+      description: "You're collab-spamming, chill out. Try again in **#{format_time_delta(remaining)}**."
     )
   end
 
@@ -36,9 +36,9 @@ def execute_collab(event)
 
   # 6. UI: Build the invitation Embed
   embed = Discordrb::Webhooks::Embed.new(
-    title: "#{EMOJIS['stream']} Collab Request!",
-    description: "#{event.user.mention} is looking for someone to do a collab stream with!\n\n" \
-                 "Press the button below to join them! Request expires **#{discord_timestamp}**.",
+    title: "#{EMOJI_STRINGS['stream']} Collab Request!",
+    description: "#{event.user.mention} wants a collab partner! Any takers?\n\n" \
+                 "Smash that button before it expires **#{discord_timestamp}**!",
     color: NEON_COLORS.sample
   )
 
@@ -49,7 +49,7 @@ def execute_collab(event)
 
   # 8. Messaging: Handle Slash vs. Prefix response logic
   if event.is_a?(Discordrb::Events::ApplicationCommandEvent)
-    event.respond(content: "Starting collab request...", ephemeral: true)
+    event.respond(content: "Putting out the collab signal...", ephemeral: true)
     msg = event.channel.send_message(nil, false, embed, nil, nil, nil, view)
   else
     msg = event.channel.send_message(nil, false, embed, nil, nil, event.message, view)
@@ -64,8 +64,8 @@ def execute_collab(event)
       ACTIVE_COLLABS.delete(collab_id)
       
       failed_embed = Discordrb::Webhooks::Embed.new(
-        title: "#{EMOJIS['x_']} Collab Cancelled", 
-        description: "Nobody was available to collab with #{event.user.mention} this time #{EMOJIS['confused']}...", 
+        title: "#{EMOJI_STRINGS['x_']} Collab Cancelled", 
+        description: "No one showed up for #{event.user.mention}'s collab #{EMOJI_STRINGS['confused']}... awkward.",
         color: 0x808080 # Neutral Gray
       )
       

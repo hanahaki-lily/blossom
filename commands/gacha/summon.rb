@@ -23,8 +23,8 @@ def execute_summon(event)
   if last_used && (now - last_used) < cooldown_duration
     ready_time = (last_used + cooldown_duration).to_i
     embed = Discordrb::Webhooks::Embed.new(
-      title: "#{EMOJIS['drink']} Portal Recharging", 
-      description: "Your gacha energy is depleted!\nThe portal will be ready <t:#{ready_time}:R>.", 
+      title: "#{EMOJI_STRINGS['drink']} Portal Recharging", 
+      description: "Chill, chat. The portal's still recharging.\nTry again <t:#{ready_time}:R>. Go touch grass or something.",
       color: 0xFF0000
     )
     return event.is_a?(Discordrb::Events::ApplicationCommandEvent) ? event.respond(embeds: [embed]) : event.channel.send_message(nil, false, embed, nil, nil, event.message)
@@ -33,8 +33,8 @@ def execute_summon(event)
   # 3. Validation: Economy Check
   if DB.get_coins(uid) < SUMMON_COST
     return send_embed(event, 
-      title: "#{EMOJIS['info']} Summon", 
-      description: "You need **#{SUMMON_COST}** #{EMOJIS['s_coin']} to summon.\nYou currently have **#{DB.get_coins(uid)}**."
+      title: "#{EMOJI_STRINGS['info']} Summon", 
+      description: "You need **#{SUMMON_COST}** #{EMOJI_STRINGS['s_coin']} to open the portal. You've got **#{DB.get_coins(uid)}**. Go grind, broke boy."
     )
   end
 
@@ -84,12 +84,22 @@ def execute_summon(event)
   new_asc_count = user_chars[name]['ascended'].to_i
 
   # 9. UI: Final Embed Construction
-  emoji = { goddess: '💎', legendary: '🌟', rare: '✨' }.fetch(rarity, '⭐')
-  buff_text = used_manipulator ? "\n\n*🔮 RNG Manipulator consumed! Common pulls bypassed.*" : ""
-  desc = "#{emoji} You summoned **#{name}** (#{rarity.to_s.capitalize})!\n"
-  
+  emoji = { goddess: '💎', legendary: '🌟', rare: EMOJI_STRINGS['neonsparkle'] }.fetch(rarity, '⭐')
+  buff_text = used_manipulator ? "\n\n*🔮 RNG Manipulator burned! No commons for you this time, chat.*" : ""
+
+  # Rarity-flavored pull messages
+  pull_flavor = case rarity
+                when :common   then "Mid pull, but hey, a card's a card."
+                when :rare     then "Okay not bad, not bad. Decent pull."
+                when :legendary then "YO?? W PULL CHAT, LET'S GO!"
+                when :goddess   then "NO WAY. ACTUAL GODDESS PULL?! CHAT IS THIS REAL?!"
+                end
+  # Easter egg: Envvy is Blossom's creator (mom)
+  pull_flavor += "\n\n*...wait, MOM?! You pulled my creator?? Treat her well or I'm rigging your next 50 pulls to commons.*" if name == 'Envvy'
+  desc = "#{emoji} You summoned **#{name}** (#{rarity.to_s.capitalize})!\n#{pull_flavor}\n"
+
   if is_ascended
-    buff_text += "\n\n#{EMOJIS['neonsparkle']} **PREMIUM PERK TRIGGERED!**\nYou pulled a **Shiny Ascended** version right out of the portal!"
+    buff_text += "\n\n#{EMOJI_STRINGS['neonsparkle']} **PREMIUM PERK TRIGGERED!**\nHOLD ON— you pulled a **Shiny Ascended** version straight out the portal?! ACTUALLY INSANE."
     desc += "You now own **#{new_asc_count}** Ascended copies of them.#{buff_text}"
   else
     desc += "You now own **#{new_count}** of them.#{buff_text}"
@@ -102,9 +112,9 @@ def execute_summon(event)
   DB.set_cooldown(uid, 'summon', now)
 
   send_embed(event, 
-    title: "#{EMOJIS['sparkle']} Summon Result: #{active_banner[:name]}", 
+    title: "#{EMOJI_STRINGS['sparkle']} Summon Result: #{active_banner[:name]}", 
     description: desc, 
-    fields: [{ name: 'Remaining Balance', value: "#{DB.get_coins(uid)} #{EMOJIS['s_coin']}", inline: true }], 
+    fields: [{ name: 'Wallet Damage', value: "#{DB.get_coins(uid)} #{EMOJI_STRINGS['s_coin']}", inline: true }],
     image: gif_url
   )
 end

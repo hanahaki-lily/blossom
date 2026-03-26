@@ -73,7 +73,7 @@ $bot.ready do |event|
             end
 
             ended_embed = Discordrb::Webhooks::Embed.new(
-              title: "🎉 **GIVEAWAY ENDED: #{gw['prize']}** 🎉",
+              title: "#{EMOJI_STRINGS['surprise']} **GIVEAWAY ENDED: #{gw['prize']}** #{EMOJI_STRINGS['surprise']}",
               color: 0x808080 # Gray out the embed so people know it's over
             )
 
@@ -91,7 +91,7 @@ $bot.ready do |event|
               
               ended_embed.description = "Hosted by: <@#{gw['host_id']}>\nWinner: #{winner_mention}\nTotal Entrants: **#{entrants.size}**"
               msg.edit(nil, ended_embed, Discordrb::Components::View.new) if msg
-              channel.send_message("Congratulations #{winner_mention}! You won the **#{gw['prize']}**! 🎉")
+              channel.send_message("Congratulations #{winner_mention}! You won the **#{gw['prize']}**! #{EMOJI_STRINGS['surprise']}")
             end
             
             # Wipe it from the active database

@@ -13,7 +13,7 @@ $bot.select_menu(custom_id: /^event_hub_/) do |event|
 
   if selection == "spring_carnival"
     if Time.now.month != SPRING_CARNIVAL[:month]
-      next event.update_message(content: "❌ The **Spring Carnival** is currently closed! It will return in April.", embeds: [], components: [])
+      next event.update_message(content: "#{EMOJI_STRINGS['x_']} The **Spring Carnival** is currently closed! It will return in April.", embeds: [], components: [])
     end
 
     uid = event.user.id
@@ -50,7 +50,7 @@ $bot.button(custom_id: /^carnival_ringtoss_/) do |event|
   cost = 100
 
   if DB.get_coins(uid) < cost
-    next event.update_message(content: "💸 You need **#{cost}** #{EMOJIS['s_coin']} to play Ring Toss!", embeds: [], components: carnival_back_view(owner_id))
+    next event.update_message(content: "💸 You need **#{cost}** #{EMOJI_STRINGS['s_coin']} to play Ring Toss!", embeds: [], components: carnival_back_view(owner_id))
   end
 
   DB.add_coins(uid, -cost)
@@ -64,7 +64,7 @@ $bot.button(custom_id: /^carnival_ringtoss_/) do |event|
     embed.description = "You toss the ring... and it lands perfectly on a bottle!\n\nYou won **#{winnings}** #{SPRING_CARNIVAL[:emoji]}!\n*Balance: #{DB.get_tickets(uid)} #{SPRING_CARNIVAL[:emoji]}*"
   else
     embed.title = "⭕ Ring Toss Miss"
-    embed.description = "You toss the ring... and it bounces right off the bottle.\n\nBetter luck next time! (-#{cost} #{EMOJIS['s_coin']})\n*Balance: #{DB.get_tickets(uid)} #{SPRING_CARNIVAL[:emoji]}*"
+    embed.description = "You toss the ring... and it bounces right off the bottle.\n\nBetter luck next time! (-#{cost} #{EMOJI_STRINGS['s_coin']})\n*Balance: #{DB.get_tickets(uid)} #{SPRING_CARNIVAL[:emoji]}*"
   end
 
   view = Discordrb::Components::View.new do |v|
@@ -86,7 +86,7 @@ $bot.button(custom_id: /^carnival_game2_/) do |event|
   cost = 150
 
   if DB.get_coins(uid) < cost
-    next event.update_message(content: "💸 You need **#{cost}** #{EMOJIS['s_coin']} to play Balloon Pop!", embeds: [], components: carnival_back_view(owner_id))
+    next event.update_message(content: "💸 You need **#{cost}** #{EMOJI_STRINGS['s_coin']} to play Balloon Pop!", embeds: [], components: carnival_back_view(owner_id))
   end
 
   DB.add_coins(uid, -cost)
@@ -103,7 +103,7 @@ $bot.button(custom_id: /^carnival_game2_/) do |event|
     embed.description = "You throw your darts and pop **#{successes}** balloons!\n\nYou won **#{winnings}** #{SPRING_CARNIVAL[:emoji]}!\n*Balance: #{DB.get_tickets(uid)} #{SPRING_CARNIVAL[:emoji]}*"
   else
     embed.title = "🎈 Balloon Pop Miss"
-    embed.description = "You throw your darts... and miss every single balloon. The carnie laughs at you.\n\nBetter luck next time! (-#{cost} #{EMOJIS['s_coin']})\n*Balance: #{DB.get_tickets(uid)} #{SPRING_CARNIVAL[:emoji]}*"
+    embed.description = "You throw your darts... and miss every single balloon. The carnie laughs at you.\n\nBetter luck next time! (-#{cost} #{EMOJI_STRINGS['s_coin']})\n*Balance: #{DB.get_tickets(uid)} #{SPRING_CARNIVAL[:emoji]}*"
   end
 
   view = Discordrb::Components::View.new do |v|

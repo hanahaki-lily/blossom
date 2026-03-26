@@ -21,7 +21,7 @@ def execute_givecoins(event, target, amount_str)
         components: [
           { type: 10, content: "## ⚠️ Invalid Target" },
           { type: 14, spacing: 1 },
-          { type: 10, content: "You need to mention another user to give coins to!" }
+          { type: 10, content: "You gotta actually tag someone, chat. I can't read minds." }
         ]
       }
     ]
@@ -37,7 +37,7 @@ def execute_givecoins(event, target, amount_str)
         components: [
           { type: 10, content: "## ⚠️ Invalid Amount" },
           { type: 14, spacing: 1 },
-          { type: 10, content: "You must give at least 1 🪙." }
+          { type: 10, content: "You can't give zero coins, that's just embarrassing. At least 1 #{EMOJI_STRINGS['s_coin']}." }
         ]
       }
     ]
@@ -53,7 +53,7 @@ def execute_givecoins(event, target, amount_str)
         components: [
           { type: 10, content: "## 😰 Insufficient Funds" },
           { type: 14, spacing: 1 },
-          { type: 10, content: "You don't have **#{amount}** 🪙 to give!" }
+          { type: 10, content: "You're broke, bestie. You don't have **#{amount}** #{EMOJI_STRINGS['s_coin']} to throw around." }
         ]
       }
     ]
@@ -76,7 +76,7 @@ def execute_givecoins(event, target, amount_str)
       components: [
         { type: 10, content: "## 💸 Coins Transferred!" },
         { type: 14, spacing: 1 },
-        { type: 10, content: "#{event.user.mention} gave **#{amount}** 🪙 to #{target.mention}!\n\nYour new balance: **#{DB.get_coins(uid)}** 🪙" }
+        { type: 10, content: "#{event.user.mention} just dropped **#{amount}** #{EMOJI_STRINGS['s_coin']} on #{target.mention}! Big spender energy.\n\nYour balance: **#{DB.get_coins(uid)}** #{EMOJI_STRINGS['s_coin']}" }
       ]
     }
   ]

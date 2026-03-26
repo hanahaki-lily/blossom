@@ -13,7 +13,7 @@ def execute_serverinfo(event)
   unless event.server
     return send_embed(event, 
       title: "⚠️ Error", 
-      description: "This command can only be used inside a server!"
+      description: "You gotta be in a server for this one, chief."
     )
   end
 
@@ -35,15 +35,15 @@ def execute_serverinfo(event)
   fields = [
     { name: '👑 Server Owner', value: owner ? owner.mention : "Unknown", inline: true },
     { name: '👥 Total Members', value: server.member_count.to_s, inline: true },
-    { name: '✨ Community Rank', value: "**Level #{current_level}**\n*(#{current_xp} / #{next_level_xp} XP)*", inline: false },
+    { name: "#{EMOJI_STRINGS['neonsparkle']} Community Rank", value: "**Level #{current_level}**\n*(#{current_xp} / #{next_level_xp} XP)*", inline: false },
     { name: '📅 Created On', value: "<t:#{created_time}:D> (<t:#{created_time}:R>)", inline: false }
   ]
 
   # 6. Messaging: Construct and send the final Server Info Embed
   send_embed(
     event, 
-    title: "📊 #{server.name} - Server Info", 
-    description: "Here are the stats for **#{server.name}**:", 
+    title: "📊 #{server.name} — The Rundown",
+    description: "Alright, here's what we're working with in **#{server.name}**:",
     fields: fields,
     image: server.icon_url # Sets the server icon as the embed's large image
   )

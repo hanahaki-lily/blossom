@@ -94,22 +94,22 @@ $bot.message do |event|
         
         if target_channel
           embed = Discordrb::Webhooks::Embed.new
-          embed.title = "🎉 Level Up!"
-          embed.description = "Congratulations #{event.user.mention}! You just advanced to **Level #{new_level}**!"
+          embed.title = "#{EMOJI_STRINGS['surprise']} LEVEL UP!"
+          embed.description = "LETS GOOO #{event.user.mention}!! You hit **Level #{new_level}**! Absolute grinder."
           embed.color = NEON_COLORS.sample
-          embed.add_field(name: 'XP Remaining', value: "#{new_xp}/#{new_level * 100}", inline: true)
-          embed.add_field(name: 'Coins', value: "#{DB.get_coins(uid)} #{EMOJIS['s_coin']}", inline: true)
+          embed.add_field(name: 'XP to Next', value: "#{new_xp}/#{new_level * 100}", inline: true)
+          embed.add_field(name: 'Bank', value: "#{DB.get_coins(uid)} #{EMOJI_STRINGS['s_coin']}", inline: true)
 
           target_channel.send_message(nil, false, embed)
         else
           # Fallback: Send to the channel they just typed in if the custom channel is broken/deleted
           send_embed(
             event,
-            title: "🎉 Level Up!",
-            description: "Congratulations #{event.user.mention}! You just advanced to **Level #{new_level}**!",
+            title: "#{EMOJI_STRINGS['surprise']} LEVEL UP!",
+            description: "LETS GOOO #{event.user.mention}!! You hit **Level #{new_level}**! Absolute grinder.",
             fields: [
-              { name: 'XP Remaining', value: "#{new_xp}/#{new_level * 100}", inline: true },
-              { name: 'Coins', value: "#{DB.get_coins(uid)} #{EMOJIS['s_coin']}", inline: true }
+              { name: 'XP to Next', value: "#{new_xp}/#{new_level * 100}", inline: true },
+              { name: 'Bank', value: "#{DB.get_coins(uid)} #{EMOJI_STRINGS['s_coin']}", inline: true }
             ]
           )
         end
@@ -117,11 +117,11 @@ $bot.message do |event|
         # Fallback: Send to the channel they just typed in if no custom channel is set
         send_embed(
           event,
-          title: "🎉 Level Up!",
-          description: "Congratulations #{event.user.mention}! You just advanced to **Level #{new_level}**!",
+          title: "#{EMOJI_STRINGS['surprise']} LEVEL UP!",
+          description: "LETS GOOO #{event.user.mention}!! You hit **Level #{new_level}**! Absolute grinder.",
           fields: [
-            { name: 'XP Remaining', value: "#{new_xp}/#{new_level * 100}", inline: true },
-            { name: 'Coins', value: "#{DB.get_coins(uid)} #{EMOJIS['s_coin']}", inline: true }
+            { name: 'XP to Next', value: "#{new_xp}/#{new_level * 100}", inline: true },
+            { name: 'Bank', value: "#{DB.get_coins(uid)} #{EMOJI_STRINGS['s_coin']}", inline: true }
           ]
         )
       end

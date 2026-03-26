@@ -11,7 +11,7 @@ def execute_removepremium(event, target)
   # 1. Security: Strict Developer-Only Check
   unless event.user.id == DEV_ID
     return send_embed(event, 
-      title: "❌ Access Denied", 
+      title: "#{EMOJI_STRINGS['x_']} Access Denied", 
       description: "Only the bot developer can revoke Lifetime Premium."
     )
   end
@@ -19,7 +19,7 @@ def execute_removepremium(event, target)
   # 2. Validation: Ensure a target user was identified
   unless target
     return send_embed(event, 
-      title: "❌ Error", 
+      title: "#{EMOJI_STRINGS['x_']} Error", 
       description: "Please mention a user to remove lifetime premium from!"
     )
   end

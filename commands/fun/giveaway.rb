@@ -11,8 +11,8 @@ def execute_giveaway(event, channel_id, time_str, prize)
   # 1. Security: Ensure the user is an Admin or the Developer
   unless event.user.permission?(:administrator, event.channel) || event.user.id == DEV_ID
     return send_embed(event, 
-      title: "❌ Permission Denied", 
-      description: 'You need Administrator permissions to start a giveaway!'
+      title: "#{EMOJI_STRINGS['x_']} Permission Denied", 
+      description: 'Lol nope. Admins only, bestie.'
     )
   end
 
@@ -21,7 +21,7 @@ def execute_giveaway(event, channel_id, time_str, prize)
   unless target_channel
     return send_embed(event, 
       title: "⚠️ Error", 
-      description: "I couldn't find that channel!"
+      description: "That channel doesn't exist. You good?"
     )
   end
 
@@ -36,7 +36,7 @@ def execute_giveaway(event, channel_id, time_str, prize)
   else
     return send_embed(event, 
       title: "⚠️ Invalid Time Format", 
-      description: "Please use a format like `10m`, `5h`, or `2d`."
+      description: "Skill issue. Use `10m`, `5h`, or `2d`."
     )
   end
 
@@ -47,14 +47,14 @@ def execute_giveaway(event, channel_id, time_str, prize)
 
   # 5. UI: Construct the Giveaway Announcement Embed
   embed = Discordrb::Webhooks::Embed.new(
-    title: "🎉 **GIVEAWAY: #{prize}** 🎉",
-    description: "Hosted by: #{event.user.mention}\nEnds: **#{discord_timestamp}**\n\nClick the button below to enter!",
+    title: "#{EMOJI_STRINGS['surprise']} **GIVEAWAY: #{prize}** #{EMOJI_STRINGS['surprise']}",
+    description: "Hosted by: #{event.user.mention}\nEnds: **#{discord_timestamp}**\n\nSmash that button to enter. Don't be shy~",
     color: 0xFFD700 # Gold
   )
 
   # 6. Components: Attach the 'Enter' Button
   view = Discordrb::Components::View.new do |v|
-    v.row { |r| r.button(custom_id: giveaway_id, label: 'Enter Giveaway', style: :success, emoji: '🎉') }
+    v.row { |r| r.button(custom_id: giveaway_id, label: 'Enter Giveaway', style: :success, emoji: EMOJI_OBJECTS['surprise']) }
   end
 
   # 7. Deployment: Send the message to the target channel
@@ -64,7 +64,7 @@ def execute_giveaway(event, channel_id, time_str, prize)
   DB.create_giveaway(giveaway_id, target_channel.id, msg.id, event.user.id, prize, expire_time.to_i)
   
   # 9. Feedback: Confirm to the host that the giveaway is live
-  response_text = "✅ Giveaway successfully started in #{target_channel.mention}!"
+  response_text = "✅ Giveaway is LIVE in #{target_channel.mention}! Let's goooo~"
   if event.is_a?(Discordrb::Events::ApplicationCommandEvent)
     event.respond(content: response_text, ephemeral: true)
   else

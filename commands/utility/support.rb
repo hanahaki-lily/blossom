@@ -10,12 +10,12 @@ def execute_support(event)
       type: 17,
       accent_color: 0x5865F2,
       components: [
-        { type: 10, content: "## 🛠️ Support Server" },
+        { type: 10, content: "## #{EMOJI_STRINGS['developer']} Support Server" },
         { type: 14, spacing: 1 },
         {
           type: 10,
-          content: "Need assistance, have questions, or want to report a bug?\n" \
-                   "Join the Tsukiyo Server here:\n\n" \
+          content: "Something broke? Skill issue... jk, jk. Maybe.\n" \
+                   "Come yell at us in the Tsukiyo Server:\n\n" \
                    "**https://discord.gg/tsukiyo**"
         }
       ]

@@ -13,7 +13,7 @@ $bot.button(custom_id: /^collab_/) do |event|
 
     # Prevent the user from accepting their own request
     if event.user.id == author_id
-      event.respond(content: "❌ *You can't accept your own collab request!*", ephemeral: true)
+      event.respond(content: "#{EMOJI_STRINGS['x_']} *Collabing with yourself? That's just... sad.*", ephemeral: true)
       next
     end
 
@@ -32,14 +32,14 @@ $bot.button(custom_id: /^collab_/) do |event|
     author_mention = author_user ? author_user.mention : "<@#{author_id}>"
 
     success_embed = Discordrb::Webhooks::Embed.new(
-      title: "#{EMOJIS['neonsparkle']} Collab Stream Started!",
-      description: "#{event.user.mention} accepted the collab with #{author_mention}!\n\nBoth streamers got a baseline of **#{COLLAB_REWARD}** #{EMOJIS['s_coin']} for an awesome stream! *(Subscribers received a 10% bonus!)*",
+      title: "#{EMOJI_STRINGS['neonsparkle']} Collab Stream Started!",
+      description: "#{event.user.mention} linked up with #{author_mention}! ACTUALLY POG.\n\nBoth of you earned **#{COLLAB_REWARD}** #{EMOJI_STRINGS['s_coin']} for the collab! *(Premium users got a sneaky 10% bonus~)*",
       color: 0x00FF00
     )
 
     # Replace the original request message with the success embed
     event.update_message(content: nil, embeds: [success_embed], components: [])
   else
-    event.respond(content: '⚠️ *This collab request has already expired or been accepted!*', ephemeral: true)
+    event.respond(content: '⚠️ *That collab is old news. Too late!*', ephemeral: true)
   end
 end

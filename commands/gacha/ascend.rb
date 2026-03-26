@@ -18,9 +18,9 @@ def execute_ascend(event, search_name)
 
   unless owned_name
     return send_cv2(event, [{ type: 17, accent_color: NEON_COLORS.sample, components: [
-      { type: 10, content: "## ❌ Ascension Failed" },
+      { type: 10, content: "## #{EMOJI_STRINGS['x_']} Ascension Failed" },
       { type: 14, spacing: 1 },
-      { type: 10, content: "You don't own any copies of **#{search_name}**!" }
+      { type: 10, content: "You don't even HAVE **#{search_name}**. Can't ascend thin air, chat." }
     ]}])
   end
 
@@ -29,7 +29,7 @@ def execute_ascend(event, search_name)
     return send_cv2(event, [{ type: 17, accent_color: NEON_COLORS.sample, components: [
       { type: 10, content: "## 😰 Not Enough Copies" },
       { type: 14, spacing: 1 },
-      { type: 10, content: "You need **5 copies** of #{owned_name} to ascend them. You only have **#{user_chars[owned_name]['count']}**." }
+      { type: 10, content: "You need **5 copies** of #{owned_name} to ascend. You've got **#{user_chars[owned_name]['count']}**. Keep pulling, copium andy." }
     ]}])
   end
 
@@ -37,9 +37,9 @@ def execute_ascend(event, search_name)
   ascension_cost = 5000
   if DB.get_coins(uid) < ascension_cost
     return send_cv2(event, [{ type: 17, accent_color: NEON_COLORS.sample, components: [
-      { type: 10, content: "## 😰 Insufficient Funds" },
+      { type: 10, content: "## 😰 Broke Alert" },
       { type: 14, spacing: 1 },
-      { type: 10, content: "The ritual costs **#{ascension_cost}** coins. You currently have **#{DB.get_coins(uid)}** coins." }
+      { type: 10, content: "The ascension ritual costs **#{ascension_cost}** coins. You've got **#{DB.get_coins(uid)}**. Go farm, broke boy." }
     ]}])
   end
 
@@ -53,9 +53,9 @@ def execute_ascend(event, search_name)
 
   # 7. UI: Send the success CV2 message with the "Shiny" announcement
   send_cv2(event, [{ type: 17, accent_color: 0xFFD700, components: [
-    { type: 10, content: "## ✨ Ascension Complete! ✨" },
+    { type: 10, content: "## #{EMOJI_STRINGS['neonsparkle']} ASCENSION COMPLETE #{EMOJI_STRINGS['neonsparkle']}" },
     { type: 14, spacing: 1 },
-    { type: 10, content: "You paid **#{ascension_cost}** coins and fused 5 copies of **#{owned_name}** together!\n\nThey have been reborn as a **Shiny Ascended** character. View them in your `/collection`!" }
+    { type: 10, content: "You dropped **#{ascension_cost}** coins and sacrificed 5 copies of **#{owned_name}** to the Neon Arcade gods.\n\nThey've been reborn as a **Shiny Ascended** character. POG. Check your `/collection`!" }
   ]}])
 end
 

@@ -11,7 +11,7 @@ def execute_bomb(event)
   # 1. Security: Strict Developer-Only Check
   unless event.user.id == DEV_ID
     return send_embed(event, 
-      title: "#{EMOJIS['x_']} Permission Denied", 
+      title: "#{EMOJI_STRINGS['x_']} Permission Denied", 
       description: 'You need developer permissions to plant a bomb!'
     )
   end
@@ -26,7 +26,7 @@ def execute_bomb(event)
 
   # 4. UI: Create the "Planted" Embed with a random neon color
   embed = Discordrb::Webhooks::Embed.new(
-    title: "#{EMOJIS['bomb']} Bomb Planted!",
+    title: "#{EMOJI_STRINGS['bomb']} Bomb Planted!",
     description: "A bomb has been planted! It will explode **#{discord_timestamp}**!\nQuick, press the button to defuse it and earn a reward!",
     color: NEON_COLORS.sample
   )
@@ -54,7 +54,7 @@ def execute_bomb(event)
       ACTIVE_BOMBS.delete(bomb_id)
       
       exploded_embed = Discordrb::Webhooks::Embed.new(
-        title: "#{EMOJIS['bomb']} BOOM!", 
+        title: "#{EMOJI_STRINGS['bomb']} BOOM!", 
         description: 'Nobody defused it in time... The bomb exploded!', 
         color: 0x000000 # Black for the charred remains
       )

@@ -14,17 +14,17 @@ def execute_premium(event)
         { type: 14, spacing: 1 },
         {
           type: 10,
-          content: "Support Blossom's development and unlock amazing global perks!\n\n" \
-                   "**💎 Premium Bonuses:**\n" \
-                   "⏱️ **50% Faster Cooldowns** on `!work`, `!stream`, and `!post`\n" \
-                   "💰 **+10% Coin Boost** from all sources\n" \
-                   "🍀 **Boosted Gacha Odds** (higher chance for Rares, Legendaries, and Goddesses)\n" \
-                   "✨ **1% Secret Chance** to instantly pull a Shiny Ascended character!"
+          content: "Wanna go full whale mode? I respect the hustle.\n\n" \
+                   "**💎 Premium Perks:**\n" \
+                   "⏱️ **50% Faster Cooldowns** — grind harder, rest less\n" \
+                   "💰 **+10% Coin Boost** — cha-ching on everything\n" \
+                   "🍀 **Boosted Gacha Odds** — Rares, Legendaries, Goddesses hit different\n" \
+                   "#{EMOJI_STRINGS['neonsparkle']} **1% Secret Chance** to insta-pull a Shiny Ascended. ACTUALLY POG."
         },
         { type: 14, spacing: 1 },
         {
           type: 10,
-          content: "To unlock these perks, join the Tsukiyo Server and boost it!\n" \
+          content: "Boost the Tsukiyo Server to unlock all this. Do it. You won't.\n" \
                    "**https://discord.gg/tsukiyo**"
         }
       ]

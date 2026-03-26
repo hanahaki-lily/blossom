@@ -41,13 +41,13 @@ $bot.button(custom_id: /^verify_pass_/) do |event|
       event.user.add_role(role)
       event.update_message(content: "✅ **Verification successful!** Welcome to the server! 🌸", components: [])
     rescue => e
-      event.update_message(content: "❌ I don't have permission to give you the role! Please tell an Admin to move my bot role higher up in the settings.", components: [])
+      event.update_message(content: "#{EMOJI_STRINGS['x_']} I don't have permission to give you the role! Please tell an Admin to move my bot role higher up in the settings.", components: [])
     end
   else
-    event.update_message(content: "❌ The verification role no longer exists! An Admin needs to run `#{PREFIX}verifysetup` again.", components: [])
+    event.update_message(content: "#{EMOJI_STRINGS['x_']} The verification role no longer exists! An Admin needs to run `#{PREFIX}verifysetup` again.", components: [])
   end
 end
 
 $bot.button(custom_id: /^verify_fail_/) do |event|
-  event.update_message(content: "❌ **Incorrect!** That was the wrong emoji. Please dismiss this message and click the 'Start Verification' button to try again.", components: [])
+  event.update_message(content: "#{EMOJI_STRINGS['x_']} **Incorrect!** That was the wrong emoji. Please dismiss this message and click the 'Start Verification' button to try again.", components: [])
 end

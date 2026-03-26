@@ -14,7 +14,7 @@ def check_achievement(channel_or_event, uid, ach_id, silent: false)
     unless silent || channel_or_event.nil?
       embed = Discordrb::Webhooks::Embed.new(
         title: "🏆 Achievement Unlocked!",
-        description: "**#{data[:emoji]} #{data[:name]}**\n> #{data[:desc]}\n\n*Reward: **#{data[:reward]}** #{EMOJIS['s_coin'] || '🪙'}*",
+        description: "Oh? **#{data[:emoji]} #{data[:name]}**\n> #{data[:desc]}\n\n*Not bad. Here's **#{data[:reward]}** #{EMOJI_STRINGS['s_coin'] || '🪙'} for your trouble.*",
         color: 0xFFD700
       )
       
@@ -36,14 +36,14 @@ def generate_achievements_page(username, uid, page)
   per_page = 5 
   
   embed = Discordrb::Webhooks::Embed.new(
-    title: "🏆 Achievement Showcase",
+    title: "🏆 Trophy Case",
     color: 0xFFD700
   )
   
-  desc = "**#{username}'s Unlocked Trophies**\n*Unlocked: #{unlocked_ids.size} / #{ACHIEVEMENTS.size}*\n\n"
+  desc = "**#{username}'s Trophies**\n*Flexing: #{unlocked_ids.size} / #{ACHIEVEMENTS.size}*\n\n"
   
   if unlocked_ids.empty?
-    desc += "*You haven't unlocked any achievements yet! Keep playing!*"
+    desc += "*No trophies yet?? Go grind, come back when you've done something.*"
     embed.description = desc
     return [embed, 1]
   end

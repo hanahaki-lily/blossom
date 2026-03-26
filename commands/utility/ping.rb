@@ -13,9 +13,9 @@ def execute_ping(event, timestamp)
       type: 17,
       accent_color: NEON_COLORS.sample,
       components: [
-        { type: 10, content: "## #{EMOJIS['play']} Pong!" },
+        { type: 10, content: "## #{EMOJI_STRINGS['play']} Pong!" },
         { type: 14, spacing: 1 },
-        { type: 10, content: "My connection to Discord is **#{latency_ms}ms**.\nChat is moving fast!" }
+        { type: 10, content: "**#{latency_ms}ms** — not bad for a girl running the whole Neon Arcade.\nY'all are lucky I'm this fast." }
       ]
     }
   ]

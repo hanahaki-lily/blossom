@@ -11,7 +11,7 @@ def execute_card(event, action, target_user, name_query)
   # 1. Security: Strict Developer-Only Check
   unless event.user.id == DEV_ID
     return send_embed(event, 
-      title: "❌ Access Denied", 
+      title: "#{EMOJI_STRINGS['x_']} Access Denied", 
       description: "This command is restricted to the Bot Developer."
     )
   end
@@ -59,7 +59,7 @@ def execute_card(event, action, target_user, name_query)
     )
 
   # --- GRANT ASCENDED VERSION ---
-  when 'giveascended', 'give✨', 'addascended'
+  when 'giveascended', 'addascended'
     # Direct DB execution to handle the specific 'ascended' column logic
     DB.instance_variable_get(:@db).execute(
       "INSERT INTO collections (user_id, character_name, rarity, count, ascended) 
@@ -69,12 +69,12 @@ def execute_card(event, action, target_user, name_query)
       [uid, real_name, rarity]
     )
     send_embed(event, 
-      title: "✨ Ascended Card Granted", 
+      title: "#{EMOJI_STRINGS['neonsparkle']} Ascended Card Granted", 
       description: "Successfully granted an **Ascended #{real_name}** to #{target_user.mention}!"
     )
 
   # --- REMOVE ASCENDED VERSION ---
-  when 'takeascended', 'take✨', 'removeascended'
+  when 'takeascended', 'removeascended'
     # Logic to decrement the ascended star count without dropping below zero
     DB.instance_variable_get(:@db).execute(
       "UPDATE collections SET ascended = MAX(0, ascended - 1) 
@@ -83,7 +83,7 @@ def execute_card(event, action, target_user, name_query)
     )
     send_embed(event, 
       title: "♻️ Ascended Card Removed", 
-      description: "Removed one ✨ star from #{target_user.mention}'s **#{real_name}**."
+      description: "Removed one #{EMOJI_STRINGS['neonsparkle']} star from #{target_user.mention}'s **#{real_name}**."
     )
 
   # --- FALLBACK ---

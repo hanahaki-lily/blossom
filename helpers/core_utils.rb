@@ -94,7 +94,7 @@ end
 
 def interaction_embed(event, action_name, gifs, target)
   unless target
-    return send_embed(event, title: "#{EMOJIS['error']} Interaction Error", description: "Mention someone to #{action_name}!")
+    return send_embed(event, title: "#{EMOJI_STRINGS['error']} Interaction Error", description: "Mention someone to #{action_name}!")
   end
 
   actor_id  = event.user.id
@@ -108,7 +108,7 @@ def interaction_embed(event, action_name, gifs, target)
 
   send_embed(
     event,
-    title: "#{EMOJIS['heart']} #{action_name.capitalize}",
+    title: "#{EMOJI_STRINGS['heart']} #{action_name.capitalize}",
     description: "#{event.user.mention} #{action_name}s #{target.mention}!",
     fields: [
       { name: "#{event.user.name}'s #{action_name}s", value: "Sent: **#{actor_stats['sent']}**\nReceived: **#{actor_stats['received']}**", inline: true },

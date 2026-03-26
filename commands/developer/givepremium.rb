@@ -11,7 +11,7 @@ def execute_givepremium(event, target)
   # 1. Security: Strict Developer-Only Check
   unless event.user.id == DEV_ID 
     return send_embed(event, 
-      title: "❌ Access Denied", 
+      title: "#{EMOJI_STRINGS['x_']} Access Denied", 
       description: "Only the bot developer can grant Lifetime Premium."
     )
   end
@@ -19,7 +19,7 @@ def execute_givepremium(event, target)
   # 2. Validation: Ensure a target user was identified
   unless target
     return send_embed(event, 
-      title: "❌ Error", 
+      title: "#{EMOJI_STRINGS['x_']} Error", 
       description: "Please mention a user to give lifetime premium to!"
     )
   end
@@ -29,7 +29,7 @@ def execute_givepremium(event, target)
   
   # 4. UI: Confirm the upgrade and list the permanent perks via Embed
   send_embed(event, 
-    title: "✨ Lifetime Premium Granted!", 
+    title: "#{EMOJI_STRINGS['neonsparkle']} Lifetime Premium Granted!", 
     description: "**#{target.display_name}** has been permanently upgraded!\nThey will now receive the 10% coin boost, half cooldowns, and boosted gacha luck globally."
   )
 end

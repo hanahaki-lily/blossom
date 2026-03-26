@@ -10,7 +10,7 @@
 def execute_kick(event, member, reason)
   # 1. Security: Verify the moderator has the 'kick_members' permission
   unless event.user.permission?(:kick_members)
-    return mod_reply(event, "❌ *You don't have permission to do that!*", is_ephemeral: true)
+    return mod_reply(event, "#{EMOJI_STRINGS['x_']} *You don't have permission to do that!*", is_ephemeral: true)
   end
 
   # 2. Validation: Ensure the target user is actually in the server
@@ -46,7 +46,7 @@ def execute_kick(event, member, reason)
 
   rescue => e
     # 8. Error Handling: Specifically catches role hierarchy or bot permission issues
-    mod_reply(event, "❌ *Action Failed! Error:* `#{e.message}`\n*(Make sure my Bot Role is placed higher than theirs!)*", is_ephemeral: true)
+    mod_reply(event, "#{EMOJI_STRINGS['x_']} *Action Failed! Error:* `#{e.message}`\n*(Make sure my Bot Role is placed higher than theirs!)*", is_ephemeral: true)
   end
 end
 

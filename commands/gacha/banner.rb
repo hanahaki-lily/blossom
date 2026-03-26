@@ -23,7 +23,7 @@ def execute_banner(event)
   next_rotation_time = (week_number + 1) * 604_800
 
   # 3. UI: Build the description with live Discord timestamps
-  desc = "Here are the VTubers you can pull this week!\n\n" \
+  desc = "Here's who's in the Neon Arcade portal this week, chat.\n\n" \
          "**Next Rotation:** <t:#{next_rotation_time}:R>\n" \
          "**Up Next:** #{next_banner[:name]}"
 
@@ -33,17 +33,17 @@ def execute_banner(event)
       type: 17,
       accent_color: NEON_COLORS.sample,
       components: [
-        { type: 10, content: "## ✨ Current Gacha: #{active_banner[:name]}" },
+        { type: 10, content: "## #{EMOJI_STRINGS['neonsparkle']} Current Gacha: #{active_banner[:name]}" },
         { type: 14, spacing: 1 },
         { type: 10, content: desc },
         { type: 14, spacing: 1 },
-        { type: 10, content: "**👑 Goddesses (1%)**\n#{chars[:goddess].map { |c| c[:name] }.join(', ')}" },
+        { type: 10, content: "**👑 Goddesses (1%)** — actual lottery winners only\n#{chars[:goddess].map { |c| c[:name] }.join(', ')}" },
         { type: 14, spacing: 1 },
-        { type: 10, content: "**🌟 Legendaries (5%)**\n#{chars[:legendary].map { |c| c[:name] }.join(', ')}" },
+        { type: 10, content: "**🌟 Legendaries (5%)** — W pull territory\n#{chars[:legendary].map { |c| c[:name] }.join(', ')}" },
         { type: 14, spacing: 1 },
-        { type: 10, content: "**✨ Rares (25%)**\n#{chars[:rare].map { |c| c[:name] }.join(', ')}" },
+        { type: 10, content: "**#{EMOJI_STRINGS['neonsparkle']} Rares (25%)** — solid, no copium needed\n#{chars[:rare].map { |c| c[:name] }.join(', ')}" },
         { type: 14, spacing: 1 },
-        { type: 10, content: "**⭐ Commons (69%)**\n#{chars[:common].map { |c| c[:name] }.join(', ')}" }
+        { type: 10, content: "**⭐ Commons (69%)** — you'll see these a lot, chat\n#{chars[:common].map { |c| c[:name] }.join(', ')}" }
       ]
     }
   ]

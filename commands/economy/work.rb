@@ -27,7 +27,7 @@ def execute_work(event)
         components: [
           { type: 10, content: "## 💼 Work" },
           { type: 14, spacing: 1 },
-          { type: 10, content: "You are tired 😩\nTry working again in **#{format_time_delta(remaining)}**." }
+          { type: 10, content: "You're tired already?? Go take a nap or something.\nCome back in **#{format_time_delta(remaining)}**." }
         ]
       }
     ]
@@ -64,7 +64,7 @@ def execute_work(event)
         components: [
           { type: 10, content: "## 💼 Work" },
           { type: 14, spacing: 1 },
-          { type: 10, content: "You worked hard and earned **#{final_amount}** 🪙!#{bonus_text}\nNew balance: **#{DB.get_coins(uid)}** 🪙." }
+          { type: 10, content: "Not bad, chat. You ground out **#{final_amount}** #{EMOJI_STRINGS['s_coin']}. The hustle is real.#{bonus_text}\nBalance: **#{DB.get_coins(uid)}** #{EMOJI_STRINGS['s_coin']}." }
         ]
       }
     ]

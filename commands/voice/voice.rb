@@ -61,7 +61,7 @@ $bot.command(:play,
   unless File.exist?(filepath)
     send_embed(
       event, 
-      title: "❌ Track Not Found", 
+      title: "#{EMOJI_STRINGS['x_']} Track Not Found", 
       description: "I couldn't find an MP3 named **#{filename}** in my music folder. Check your spelling!"
     )
     next

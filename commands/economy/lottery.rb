@@ -23,9 +23,9 @@ def execute_lottery(event, amount)
         type: 17,
         accent_color: 0xFF0000,
         components: [
-          { type: 10, content: "## ❌ Not Enough Coins" },
+          { type: 10, content: "## #{EMOJI_STRINGS['x_']} Not Enough Coins" },
           { type: 14, spacing: 1 },
-          { type: 10, content: "You need **#{cost}** 🪙 for #{amount} tickets!\nYour Balance: **#{balance}**" }
+          { type: 10, content: "You need **#{cost}** #{EMOJI_STRINGS['s_coin']} for #{amount} tickets and you only have **#{balance}**. Tragic." }
         ]
       }
     ]
@@ -54,11 +54,11 @@ def execute_lottery(event, amount)
       components: [
         { type: 10, content: "## 🎟️ Lottery Entered!" },
         { type: 14, spacing: 1 },
-        { type: 10, content: "You bought **#{amount}** tickets! 🌸\n\n" \
-                             "💰 **Current Prize Pool:** #{pool} 🪙\n" \
-                             "🎫 **Total Tickets Sold:** #{stats[:total_tickets]}\n" \
+        { type: 10, content: "Locked in with **#{amount}** tickets! Feeling lucky, chat?\n\n" \
+                             "💰 **Prize Pool:** #{pool} #{EMOJI_STRINGS['s_coin']}\n" \
+                             "🎫 **Total Tickets:** #{stats[:total_tickets]}\n" \
                              "👤 **Your Tickets:** #{stats[:user_tickets]}\n\n" \
-                             "*Blossom will DM the winner at the top of the hour!*" }
+                             "*I'll DM the winner at the top of the hour. Don't mute me.*" }
       ]
     }
   ]

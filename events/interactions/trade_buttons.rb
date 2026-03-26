@@ -13,7 +13,7 @@ $bot.button(custom_id: /^trade_\d+_\d+_(accept|decline)$/) do |event|
 
   # Validation 1: Check if the trade is still actively pending in Blossom's memory
   unless ACTIVE_TRADES.key?(trade_id)
-    event.respond(content: '⚠️ *This trade has expired or already been processed!*', ephemeral: true)
+    event.respond(content: '⚠️ *That trade is dead. Gone. Expired. Move on.*', ephemeral: true)
     next
   end
 
@@ -21,7 +21,7 @@ $bot.button(custom_id: /^trade_\d+_\d+_(accept|decline)$/) do |event|
 
   # Validation 2: Ensure ONLY the person receiving the offer can click the buttons!
   if event.user.id != trade_data[:user_b]
-    event.respond(content: "❌ *Only the person receiving the trade offer can click this!*", ephemeral: true)
+    event.respond(content: "#{EMOJI_STRINGS['x_']} *Hands off! This trade isn't for you.*", ephemeral: true)
     next
   end
 
@@ -31,8 +31,8 @@ $bot.button(custom_id: /^trade_\d+_\d+_(accept|decline)$/) do |event|
   # Handle the Decline action instantly
   if action == 'decline'
     declined_embed = Discordrb::Webhooks::Embed.new(
-      title: '🚫 Trade Declined', 
-      description: "#{event.user.mention} rejected the trade offer.", 
+      title: '🚫 Trade Declined',
+      description: "#{event.user.mention} said nah. Tough break.",
       color: 0xFF0000
     )
     event.update_message(content: nil, embeds: [declined_embed], components: [])
@@ -52,8 +52,8 @@ $bot.button(custom_id: /^trade_\d+_\d+_(accept|decline)$/) do |event|
   # (e.g., they sold it or traded it to someone else while this offer was pending)
   if coll_a[char_a].nil? || coll_a[char_a]['count'] < 1 || coll_b[char_b].nil? || coll_b[char_b]['count'] < 1
     error_embed = Discordrb::Webhooks::Embed.new(
-      title: '❌ Trade Failed', 
-      description: "Someone no longer has the character they offered! The trade has been automatically cancelled to prevent errors.", 
+      title: "#{EMOJI_STRINGS['x_']} Trade Failed",
+      description: "Someone already got rid of their character. Caught in 4K. Trade cancelled.",
       color: 0xFF0000
     )
     event.update_message(content: nil, embeds: [error_embed], components: [])
@@ -76,9 +76,13 @@ $bot.button(custom_id: /^trade_\d+_\d+_(accept|decline)$/) do |event|
   check_achievement(event.channel, uid_a, 'first_trade')
   check_achievement(event.channel, uid_b, 'first_trade')
 
+  # Easter egg: Envvy is Blossom's creator (mom)
+  envvy_comment = ""
+  envvy_comment = "\n\n*...you're trading away my MOM?? I'm watching you. She better be going to a good home.*" if char_a == 'Envvy' || char_b == 'Envvy'
+
   success_embed = Discordrb::Webhooks::Embed.new(
-    title: '🎉 Trade Successful!',
-    description: "The trade was a success!\n\n<@#{uid_a}> received **#{char_b}**.\n<@#{uid_b}> received **#{char_a}**.",
+    title: "#{EMOJI_STRINGS['surprise']} Trade Complete!",
+    description: "Not bad, chat. Not bad at all.\n\n<@#{uid_a}> snagged **#{char_b}**.\n<@#{uid_b}> snagged **#{char_a}**.#{envvy_comment}",
     color: 0x00FF00
   )
   

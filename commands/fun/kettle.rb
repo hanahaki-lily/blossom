@@ -10,7 +10,7 @@
 def execute_kettle(event)
   # 1. Initialization: Define the hardcoded target and the sparkle wrapper
   # User ID: 266358927401287680
-  shoutout_msg = "#{EMOJIS['sparkle']} <@266358927401287680> #{EMOJIS['sparkle']}"
+  shoutout_msg = "#{EMOJI_STRINGS['sparkle']} <@266358927401287680> #{EMOJI_STRINGS['sparkle']}"
 
   # 2. Messaging: Respond based on the event trigger type
   if event.is_a?(Discordrb::Events::ApplicationCommandEvent)

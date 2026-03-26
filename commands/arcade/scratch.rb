@@ -19,7 +19,7 @@ def execute_scratch(event)
       components: [
         { type: 10, content: "## 😰 Insufficient Funds" },
         { type: 14, spacing: 1 },
-        { type: 10, content: "You need **#{ticket_price}** 🪙 to buy a scratch-off ticket." }
+        { type: 10, content: "A ticket costs **#{ticket_price}** #{EMOJI_STRINGS['s_coin']} and you don't even have that. Down bad." }
       ]
     }])
   end
@@ -56,7 +56,7 @@ def execute_scratch(event)
       components: [
         { type: 10, content: "## 🎫 Scratch-Off Ticket" },
         { type: 14, spacing: 1 },
-        { type: 10, content: "**[ #{result.join(' | ')} ]**\n\n**WINNER!** You matched three **#{result[0]}** and won **#{payout}** 🪙!\nNew Balance: **#{DB.get_coins(uid)}** 🪙" }
+        { type: 10, content: "**[ #{result.join(' | ')} ]**\n\nACTUALLY POG?! Triple **#{result[0]}**!! You just snagged **#{payout}** #{EMOJI_STRINGS['s_coin']}!\nNew Balance: **#{DB.get_coins(uid)}** #{EMOJI_STRINGS['s_coin']}" }
       ]
     }])
   else
@@ -66,7 +66,7 @@ def execute_scratch(event)
       components: [
         { type: 10, content: "## 🎫 Scratch-Off Ticket" },
         { type: 14, spacing: 1 },
-        { type: 10, content: "**[ #{result.join(' | ')} ]**\n\nNo match... Better luck next ticket. 😩\nNew Balance: **#{DB.get_coins(uid)}** 🪙" }
+        { type: 10, content: "**[ #{result.join(' | ')} ]**\n\nNothing. Not even close. Thanks for the donation tho~ 😩\nNew Balance: **#{DB.get_coins(uid)}** #{EMOJI_STRINGS['s_coin']}" }
       ]
     }])
   end

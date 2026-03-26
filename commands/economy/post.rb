@@ -25,9 +25,9 @@ def execute_post(event)
         type: 17,
         accent_color: 0xFF0000,
         components: [
-          { type: 10, content: "## ❌ Social Media Break" },
+          { type: 10, content: "## #{EMOJI_STRINGS['x_']} Social Media Break" },
           { type: 14, spacing: 1 },
-          { type: 10, content: "You're posting too fast! Don't get shadowbanned 😰\nTry posting again in **#{format_time_delta(remaining)}**." }
+          { type: 10, content: "Slow down, you're gonna get shadowbanned lol.\nPost again in **#{format_time_delta(remaining)}**." }
         ]
       }
     ]
@@ -65,7 +65,7 @@ def execute_post(event)
         components: [
           { type: 10, content: "## 👍 New Post Uploaded!" },
           { type: 14, spacing: 1 },
-          { type: 10, content: "Your latest post on **#{platform}** got a lot of engagement! You earned **#{final_reward}** 🪙.#{bonus_text}\nNew balance: **#{DB.get_coins(uid)}** 🪙." }
+          { type: 10, content: "Your **#{platform}** post went kinda viral, nice flex. You earned **#{final_reward}** #{EMOJI_STRINGS['s_coin']}!#{bonus_text}\nBalance: **#{DB.get_coins(uid)}** #{EMOJI_STRINGS['s_coin']}." }
         ]
       }
     ]

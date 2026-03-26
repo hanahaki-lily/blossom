@@ -10,7 +10,7 @@
 def execute_blacklist(event, target_user)
   # 1. Security: Strict Developer-Only Check
   unless event.user.id == DEV_ID
-    return event.respond("#{EMOJIS['x_']} Only the bot developer can use this command!")
+    return event.respond("#{EMOJI_STRINGS['x_']} Only the bot developer can use this command!")
   end
 
   # 2. Validation: Ensure a target user was provided
@@ -21,7 +21,7 @@ def execute_blacklist(event, target_user)
   # 3. Safety Check: Prevent the developer from locking themselves out
   uid = target_user.id
   if uid == DEV_ID
-    return event.respond("#{EMOJIS['x_']} You cannot blacklist yourself!")
+    return event.respond("#{EMOJI_STRINGS['x_']} You cannot blacklist yourself!")
   end
 
   # 4. Database: Toggle the blacklist status in the PostgreSQL 'blacklist' table

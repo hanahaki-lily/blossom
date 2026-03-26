@@ -22,7 +22,7 @@ def execute_sell(event, filter, rarity_opt = nil)
         components: [
           { type: 10, content: "## ⚠️ Invalid Filter" },
           { type: 14, spacing: 1 },
-          { type: 10, content: "Please use a valid filter: `all`, `over5`, or `rarity <type>`.\nExample: `#{PREFIX}sell over5`" }
+          { type: 10, content: "That's not a filter, chat. Use `all`, `over5`, or `rarity <type>`.\nExample: `#{PREFIX}sell over5`" }
         ]
       }
     ]
@@ -40,7 +40,7 @@ def execute_sell(event, filter, rarity_opt = nil)
           components: [
             { type: 10, content: "## ⚠️ Missing Rarity" },
             { type: 14, spacing: 1 },
-            { type: 10, content: "Please specify a rarity: `common`, `rare`, `legendary`, or `goddess`.\nExample: `#{PREFIX}sell rarity common`" }
+            { type: 10, content: "Pick a rarity, bestie: `common`, `rare`, `legendary`, or `goddess`.\nExample: `#{PREFIX}sell rarity common`" }
           ]
         }
       ]
@@ -90,7 +90,7 @@ def execute_sell(event, filter, rarity_opt = nil)
         components: [
           { type: 10, content: "## ♻️ Nothing to Sell" },
           { type: 14, spacing: 1 },
-          { type: 10, content: "You don't have any cards that match that filter!" }
+          { type: 10, content: "Nothing to sell here. Your collection is already clean, nerd." }
         ]
       }
     ]
@@ -111,9 +111,9 @@ def execute_sell(event, filter, rarity_opt = nil)
       components: [
         { type: 10, content: "## ♻️ Duplicates Sold!" },
         { type: 14, spacing: 1 },
-        { type: 10, content: "You successfully cleared out **#{sold_count}** duplicate cards! 🌸\n\n" \
-                             "💰 **Earned:** #{coins_earned} 🪙\n" \
-                             "💳 **New Balance:** #{DB.get_coins(uid)} 🪙" }
+        { type: 10, content: "Dumped **#{sold_count}** dupes. Declutter arc activated.\n\n" \
+                             "💰 **Earned:** #{coins_earned} #{EMOJI_STRINGS['s_coin']}\n" \
+                             "💳 **Balance:** #{DB.get_coins(uid)} #{EMOJI_STRINGS['s_coin']}" }
       ]
     }
   ]

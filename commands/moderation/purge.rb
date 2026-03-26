@@ -10,7 +10,7 @@
 def execute_purge(event, amount)
   # 1. Security: Verify 'Manage Messages' permission in the specific channel
   unless event.user.permission?(:manage_messages, event.channel)
-    return mod_reply(event, "❌ *You don't have permission to do that!*", is_ephemeral: true)
+    return mod_reply(event, "#{EMOJI_STRINGS['x_']} *You don't have permission to do that!*", is_ephemeral: true)
   end
   
   # 2. Validation: Ensure the amount is within Discord's API limits (1-100)
@@ -44,7 +44,7 @@ def execute_purge(event, amount)
 
   rescue => e
     # 6. Error Handling: Catch 2-week-old message limits or permission errors
-    error_msg = "❌ *I couldn't delete messages! Error:* `#{e.message}`"
+    error_msg = "#{EMOJI_STRINGS['x_']} *I couldn't delete messages! Error:* `#{e.message}`"
     if is_slash
       event.edit_response(content: error_msg)
     else

@@ -27,11 +27,11 @@ def execute_lotteryinfo(event)
       components: [
         { type: 10, content: "## 🎟️ Global Lottery Status" },
         { type: 14, spacing: 1 },
-        { type: 10, content: "The winning ticket will be drawn **<t:#{next_hour.to_i}:R>**!\n\n" \
-                             "💰 **Current Prize Pool:** #{pool} 🪙\n" \
-                             "🎫 **Total Tickets Sold:** #{stats[:total_tickets]}\n" \
+        { type: 10, content: "Drawing goes live **<t:#{next_hour.to_i}:R>**! You ready or what?\n\n" \
+                             "💰 **Prize Pool:** #{pool} #{EMOJI_STRINGS['s_coin']}\n" \
+                             "🎫 **Total Tickets:** #{stats[:total_tickets]}\n" \
                              "🌸 **Your Tickets:** #{stats[:user_tickets]}\n\n" \
-                             "*Want to increase your odds? Use `#{PREFIX}lottery <amount>`!*" }
+                             "*Want better odds? Use `#{PREFIX}lottery <amount>` and stop being a coward.*" }
       ]
     }
   ]

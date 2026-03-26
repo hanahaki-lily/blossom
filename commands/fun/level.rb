@@ -6,7 +6,7 @@
 
 def execute_level(event, target_user)
   unless event.server
-    error_msg = "❌ This command can only be used in a server!"
+    error_msg = "#{EMOJI_STRINGS['x_']} Nice try, but this only works in a server!"
     if event.is_a?(Discordrb::Events::ApplicationCommandEvent)
       return event.respond(content: error_msg, ephemeral: true)
     else
@@ -33,7 +33,7 @@ def execute_level(event, target_user)
 
   # Badges
   badges = []
-  badges << "#{EMOJIS['developer']} **Bot Developer**" if uid == DEV_ID
+  badges << "#{EMOJI_STRINGS['developer']} **Bot Developer**" if uid == DEV_ID
   badges << "💎 **Blossom Premium**" if is_sub
   badge_line = badges.empty? ? "" : badges.join("  ") + "\n"
 
@@ -42,12 +42,12 @@ def execute_level(event, target_user)
       type: 17,
       accent_color: NEON_COLORS.sample,
       components: [
-        { type: 10, content: "## #{target_user.display_name}'s Profile" },
+        { type: 10, content: "## #{target_user.display_name}'s Stats" },
         { type: 14, spacing: 1 },
         {
           type: 10,
           content: badge_line +
-            "**Level** #{level}  ·  **XP** #{xp}/#{needed}  ·  🪙 #{coins}\n" \
+            "**Level** #{level}  ·  **XP** #{xp}/#{needed}  ·  #{EMOJI_STRINGS['s_coin']} #{coins}\n" \
             "`#{bar}` #{((xp.to_f / [needed, 1].max) * 100).round}%\n" \
             "🔥 **#{streak}** day streak"
         }

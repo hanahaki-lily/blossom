@@ -11,7 +11,7 @@ def execute_leaderboard(event)
   # 1. Validation: Ensure the command isn't being run in DMs
   # Leaderboards require a server context to calculate "Local" rankings.
   unless event.server
-    error_msg = "❌ This command can only be used in a server!"
+    error_msg = "#{EMOJI_STRINGS['x_']} This only works in a server, duh!"
     if event.is_a?(Discordrb::Events::ApplicationCommandEvent)
       return event.respond(content: error_msg, ephemeral: true)
     else

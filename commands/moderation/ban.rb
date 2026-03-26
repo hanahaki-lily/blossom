@@ -10,7 +10,7 @@
 def execute_ban(event, user_input, reason)
   # 1. Security: Verify the moderator has the 'ban_members' permission
   unless event.user.permission?(:ban_members)
-    return mod_reply(event, "❌ *You don't have permission to do that!*", is_ephemeral: true)
+    return mod_reply(event, "#{EMOJI_STRINGS['x_']} *You don't have permission to do that!*", is_ephemeral: true)
   end
   
   # 2. Input Parsing: Resolve the user ID (handles mentions or raw numbers)
@@ -52,7 +52,7 @@ def execute_ban(event, user_input, reason)
 
   rescue => e
     # 9. Error Handling: Specifically catches Permission Hierarchy issues
-    mod_reply(event, "❌ *Action Failed! Error:* `#{e.message}`\n*(Make sure my Bot Role is placed higher than theirs!)*", is_ephemeral: true)
+    mod_reply(event, "#{EMOJI_STRINGS['x_']} *Action Failed! Error:* `#{e.message}`\n*(Make sure my Bot Role is placed higher than theirs!)*", is_ephemeral: true)
   end
 end
 

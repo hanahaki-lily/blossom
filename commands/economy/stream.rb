@@ -27,7 +27,7 @@ def execute_stream(event)
         components: [
           { type: 10, content: "## 📡 Stream Offline" },
           { type: 14, spacing: 1 },
-          { type: 10, content: "You just finished streaming! Your voice needs a break 🥤\nTry going live again in **#{format_time_delta(remaining)}**." }
+          { type: 10, content: "You JUST went offline, bestie. Touch grass for a sec.\nGo live again in **#{format_time_delta(remaining)}**." }
         ]
       }
     ]
@@ -63,7 +63,7 @@ def execute_stream(event)
         components: [
           { type: 10, content: "## 📡 Stream Ended" },
           { type: 14, spacing: 1 },
-          { type: 10, content: "You had a great stream playing **#{game}** and earned **#{final_reward}** 🪙!#{bonus_text}\nNew balance: **#{DB.get_coins(uid)}** 🪙." }
+          { type: 10, content: "Chat went crazy watching you play **#{game}**! You banked **#{final_reward}** #{EMOJI_STRINGS['s_coin']}!#{bonus_text}\nBalance: **#{DB.get_coins(uid)}** #{EMOJI_STRINGS['s_coin']}." }
         ]
       }
     ]

@@ -16,9 +16,9 @@ def execute_cups(event, amount, guess)
     return send_cv2(event, [{
       type: 17, accent_color: 0xFF0000,
       components: [
-        { type: 10, content: "## ❌ Invalid Bet" },
+        { type: 10, content: "## #{EMOJI_STRINGS['x_']} Invalid Bet" },
         { type: 14, spacing: 1 },
-        { type: 10, content: "You don't have enough coins or entered an invalid amount!" }
+        { type: 10, content: "You're either broke or can't type a number. Either way, skill issue." }
       ]
     }])
   end
@@ -28,9 +28,9 @@ def execute_cups(event, amount, guess)
     return send_cv2(event, [{
       type: 17, accent_color: 0xFF0000,
       components: [
-        { type: 10, content: "## ❌ Invalid Cup" },
+        { type: 10, content: "## #{EMOJI_STRINGS['x_']} Invalid Cup" },
         { type: 14, spacing: 1 },
-        { type: 10, content: "You must pick cup `1`, `2`, or `3`." }
+        { type: 10, content: "There are THREE cups. Pick `1`, `2`, or `3`. That's not hard, chat." }
       ]
     }])
   end
@@ -40,7 +40,7 @@ def execute_cups(event, amount, guess)
   winning_cup = [1, 2, 3].sample
   
   # 5. UI Logic: Create the visual "lifted cups" display string
-  cups_display = [1, 2, 3].map { |c| c == winning_cup ? '🪙' : '🥤' }.join('   ')
+  cups_display = [1, 2, 3].map { |c| c == winning_cup ? EMOJI_STRINGS['s_coin'] : '🥤' }.join('   ')
 
   # 6. Achievements
   check_achievement(event.channel, uid, 'cups_play')
@@ -57,7 +57,7 @@ def execute_cups(event, amount, guess)
       components: [
         { type: 10, content: "## 🥤 The Shell Game" },
         { type: 14, spacing: 1 },
-        { type: 10, content: "Blossom lifts cup ##{winning_cup}...\n\n**#{cups_display}**\n\nYou found it! You won **#{payout}** 🪙!\nNew Balance: **#{DB.get_coins(uid)}** 🪙" }
+        { type: 10, content: "I lift cup ##{winning_cup}...\n\n**#{cups_display}**\n\nNO WAY you actually found it?! GG, take your **#{payout}** #{EMOJI_STRINGS['s_coin']}.\nNew Balance: **#{DB.get_coins(uid)}** #{EMOJI_STRINGS['s_coin']}" }
       ]
     }])
   else
@@ -67,7 +67,7 @@ def execute_cups(event, amount, guess)
       components: [
         { type: 10, content: "## 🥤 The Shell Game" },
         { type: 14, spacing: 1 },
-        { type: 10, content: "Blossom lifts cup ##{guess}...\nEmpty! The coin was under cup ##{winning_cup}.\n\n**#{cups_display}**\n\nYou lost **#{amount}** 🪙.\nNew Balance: **#{DB.get_coins(uid)}** 🪙" }
+        { type: 10, content: "I lift cup ##{guess} and... NOTHING. LOL it was under cup ##{winning_cup} the whole time.\n\n**#{cups_display}**\n\nSkill issue. **#{amount}** #{EMOJI_STRINGS['s_coin']} mine now.\nNew Balance: **#{DB.get_coins(uid)}** #{EMOJI_STRINGS['s_coin']}" }
       ]
     }])
   end
@@ -87,7 +87,7 @@ $bot.command(:cups,
       components: [
         { type: 10, content: "## 😕 Missing Arguments" },
         { type: 14, spacing: 1 },
-        { type: 10, content: "Keep your eye on the cup!\n\n**Usage:** `#{PREFIX}cups <amount> <1/2/3>`" }
+        { type: 10, content: "Uh, hello?? I need a bet amount AND a cup number, chat.\n\n**Usage:** `#{PREFIX}cups <amount> <1/2/3>`" }
       ]
     }])
     next

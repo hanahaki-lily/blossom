@@ -11,7 +11,7 @@ def execute_hug(event, target)
   # 1. Validation: Ensure a target was actually mentioned
   if target.nil?
     return send_embed(event, 
-      title: "#{EMOJIS['error']} Interaction Error", 
+      title: "#{EMOJI_STRINGS['error']} Interaction Error", 
       description: "Mention someone to hug!"
     )
   end

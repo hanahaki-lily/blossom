@@ -16,9 +16,9 @@ def execute_slots(event, amount)
     return send_cv2(event, [{
       type: 17, accent_color: 0xFF0000,
       components: [
-        { type: 10, content: "## ❌ Invalid Bet" },
+        { type: 10, content: "## #{EMOJI_STRINGS['x_']} Invalid Bet" },
         { type: 14, spacing: 1 },
-        { type: 10, content: "You don't have enough coins or entered an invalid amount!\nYou currently have **#{DB.get_coins(uid)}** 🪙." }
+        { type: 10, content: "You're broke or you can't type. Either way, no spin for you.\nYou've got **#{DB.get_coins(uid)}** #{EMOJI_STRINGS['s_coin']}." }
       ]
     }])
   end
@@ -44,7 +44,7 @@ def execute_slots(event, amount)
       components: [
         { type: 10, content: "## 🎰 Neon Slots" },
         { type: 14, spacing: 1 },
-        { type: 10, content: "[ #{spin.join(' | ')} ]\n\n**JACKPOT!** ✨\nYou won **#{winnings}** 🪙!\nNew Balance: **#{DB.get_coins(uid)}** 🪙" }
+        { type: 10, content: "[ #{spin.join(' | ')} ]\n\nNO WAY. **JACKPOT!!** #{EMOJI_STRINGS['neonsparkle']}\nYou just pulled **#{winnings}** #{EMOJI_STRINGS['s_coin']}!! ACTUALLY POG!!\nNew Balance: **#{DB.get_coins(uid)}** #{EMOJI_STRINGS['s_coin']}" }
       ]
     }])
 
@@ -58,7 +58,7 @@ def execute_slots(event, amount)
       components: [
         { type: 10, content: "## 🎰 Neon Slots" },
         { type: 14, spacing: 1 },
-        { type: 10, content: "[ #{spin.join(' | ')} ]\n\nNice! You matched two and won **#{winnings}** 🪙!\nNew Balance: **#{DB.get_coins(uid)}** 🪙" }
+        { type: 10, content: "[ #{spin.join(' | ')} ]\n\nTwo outta three, not bad chat~ You grabbed **#{winnings}** #{EMOJI_STRINGS['s_coin']}.\nNew Balance: **#{DB.get_coins(uid)}** #{EMOJI_STRINGS['s_coin']}" }
       ]
     }])
 
@@ -69,7 +69,7 @@ def execute_slots(event, amount)
       components: [
         { type: 10, content: "## 🎰 Neon Slots" },
         { type: 14, spacing: 1 },
-        { type: 10, content: "[ #{spin.join(' | ')} ]\n\nYou lost your bet... Better luck next spin. 😩\nNew Balance: **#{DB.get_coins(uid)}** 🪙" }
+        { type: 10, content: "[ #{spin.join(' | ')} ]\n\nLOL nothing. Skill issue, better luck next spin I guess~ 😩\nNew Balance: **#{DB.get_coins(uid)}** #{EMOJI_STRINGS['s_coin']}" }
       ]
     }])
   end
@@ -89,7 +89,7 @@ $bot.command(:slots,
       components: [
         { type: 10, content: "## 😕 Missing Arguments" },
         { type: 14, spacing: 1 },
-        { type: 10, content: "You need to drop some coins into the machine first!\n\n**Usage:** `#{PREFIX}slots <amount>`" }
+        { type: 10, content: "The machine doesn't spin itself, chat. Tell me how much to bet.\n\n**Usage:** `#{PREFIX}slots <amount>`" }
       ]
     }])
     next

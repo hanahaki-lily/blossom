@@ -10,7 +10,7 @@
 def execute_setcoins(event, target_user, amount)
   # 1. Security: Strict Developer-Only Check
   unless event.user.id == DEV_ID
-    return event.respond("#{EMOJIS['x_']} Only the bot developer can use this command!")
+    return event.respond("#{EMOJI_STRINGS['x_']} Only the bot developer can use this command!")
   end
 
   # 2. Validation: Ensure a target user was identified and the amount is non-negative
@@ -24,8 +24,8 @@ def execute_setcoins(event, target_user, amount)
   
   # 4. UI: Confirm success and display the finalized balance via Embed
   send_embed(event, 
-    title: "#{EMOJIS['developer']} Developer Override", 
-    description: "#{target_user.mention}'s balance has been forcefully set to **#{DB.get_coins(uid)}** #{EMOJIS['s_coin']}."
+    title: "#{EMOJI_STRINGS['developer']} Developer Override", 
+    description: "#{target_user.mention}'s balance has been forcefully set to **#{DB.get_coins(uid)}** #{EMOJI_STRINGS['s_coin']}."
   )
 end
 

@@ -47,7 +47,7 @@ def build_collection_page(event, target_user, col, current_rarity, page, is_edit
     desc += "**#{name}** - x#{count}#{asc_text}\n"
   end
 
-  embed.description = desc.empty? ? "*No VTubers found.*" : desc
+  embed.description = desc.empty? ? "*Nothing here yet. Go pull some cards, chat.*" : desc
   embed.footer = Discordrb::Webhooks::EmbedFooter.new(
     text: "Page #{page}/#{total_pages} • Total #{current_rarity.capitalize}: #{items_in_rarity.size}"
   )
@@ -91,7 +91,7 @@ def execute_collection(event, target_user)
 
   # A. Safety: Handle users with empty collections
   if col.empty?
-    error_msg = "🌸 *#{target_user.display_name} hasn't pulled any VTubers yet!*"
+    error_msg = "🌸 *#{target_user.display_name} has zero VTubers. Literally empty. Go summon something!*"
     return event.is_a?(Discordrb::Events::ApplicationCommandEvent) ? event.respond(content: error_msg) : event.respond(error_msg)
   end
 

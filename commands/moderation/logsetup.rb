@@ -11,7 +11,7 @@ def execute_logsetup(event, channel)
   # 1. Security: Verify 'Manage Server' permission or Developer status
   # This prevents regular moderators from moving or disabling the log feed.
   unless event.user.permission?(:manage_server) || event.user.id == DEV_ID
-    return mod_reply(event, "❌ *You need the Manage Server permission to set up logging!*", is_ephemeral: true)
+    return mod_reply(event, "#{EMOJI_STRINGS['x_']} *You need the Manage Server permission to set up logging!*", is_ephemeral: true)
   end
 
   # 2. Validation: Ensure a valid channel object was passed through

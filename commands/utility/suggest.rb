@@ -23,7 +23,7 @@ def execute_suggest(event, suggestion_text)
   unless dev_user
     return send_embed(
       event, 
-      title: "❌ Error", 
+      title: "#{EMOJI_STRINGS['x_']} Error", 
       description: "I couldn't find my developer in my cache! Try again later."
     )
   end
@@ -58,7 +58,7 @@ def execute_suggest(event, suggestion_text)
     puts "[SUGGEST ERROR] #{e.message}"
     send_embed(
       event, 
-      title: "❌ Delivery Failed", 
+      title: "#{EMOJI_STRINGS['x_']} Delivery Failed", 
       description: "I couldn't send the suggestion. My developer might have their DMs closed right now!"
     )
   end

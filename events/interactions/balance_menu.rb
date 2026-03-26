@@ -27,13 +27,13 @@ $bot.select_menu(custom_id: /^bal_menu_/) do |event|
     daily_info = DB.get_daily_info(uid)
 
     badges = []
-    badges << "#{EMOJIS['developer']} **Bot Developer**" if uid == DEV_ID
-    badges << "#{EMOJIS['prisma']} **Premium**" if is_sub 
+    badges << "#{EMOJI_STRINGS['developer']} **Bot Developer**" if uid == DEV_ID
+    badges << "#{EMOJI_STRINGS['prisma']} **Premium**" if is_sub 
     
     header = badges.empty? ? "" : badges.join(" | ") + "\n\n"
 
     new_embed.title = "🌸 #{username}'s Balance"
-    new_embed.description = "#{header}**Coins:** #{coins} #{EMOJIS['s_coin']}\n**Prisma:** #{prisma} #{EMOJIS['prisma']}\n🔥 **Daily Streak:** #{daily_info['streak']} Days\n\n*Use the dropdown below to view your items and VTubers!*"
+    new_embed.description = "#{header}**Coins:** #{coins} #{EMOJI_STRINGS['s_coin']}\n**Prisma:** #{prisma} #{EMOJI_STRINGS['prisma']}\n🔥 **Daily Streak:** #{daily_info['streak']} Days\n\n*Use the dropdown below to view your items and VTubers!*"
 
   when 'inv'
     inv = DB.get_inventory(uid)
@@ -91,7 +91,7 @@ $bot.select_menu(custom_id: /^bal_menu_/) do |event|
       sorted_rarity = rarity_counts.sort_by { |r, _| rarity_order.index(r.downcase) || 99 }
       sorted_ascended = ascended_rarity_counts.sort_by { |r, _| rarity_order.index(r.downcase) || 99 }
 
-      desc = "✨ **Unique VTubers:** #{unique_vtubers}\n🌟 **Unique Ascended:** #{unique_ascended}\n\n📊 **Total by Rarity:**\n"
+      desc = "#{EMOJI_STRINGS['neonsparkle']} **Unique VTubers:** #{unique_vtubers}\n🌟 **Unique Ascended:** #{unique_ascended}\n\n📊 **Total by Rarity:**\n"
       sorted_rarity.each { |r, c| desc += "• #{r.capitalize}: **#{c}**\n" }
 
       if sorted_ascended.any?

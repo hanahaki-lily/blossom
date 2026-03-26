@@ -30,8 +30,8 @@ $bot.message do |event|
       
       if target_channel
         embed = Discordrb::Webhooks::Embed.new(
-          title: "#{EMOJIS['bomb']} INCOMING BOMB!",
-          description: "A rogue bomb just dropped into the chat!\nQuick, click the button below to defuse it and steal the coins inside!",
+          title: "#{EMOJI_STRINGS['bomb']} BOMB DROP!!",
+          description: "EVERYONE SHUT UP — A BOMB JUST LANDED IN CHAT.\nFirst one to cut the wire gets the bag. GO GO GO!",
           color: 0xFF0000
         )
         

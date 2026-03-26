@@ -10,14 +10,14 @@
 def execute_enablebombs(event, channel_id)
   # 1. Security: Permission Check (Admins or Developer Only)
   unless event.user.permission?(:administrator, event.channel) || event.user.id == DEV_ID
-    return event.respond("#{EMOJIS['x_']} You need Administrator permissions to set this up!")
+    return event.respond("#{EMOJI_STRINGS['x_']} You need Administrator permissions to set this up!")
   end
 
   # 2. Validation: Verify the existence of the target channel
   target_channel = event.bot.channel(channel_id, event.server)
 
   if target_channel.nil?
-    return event.respond("#{EMOJIS['x_']} Please mention a valid channel! Usage: `#{PREFIX}enablebombs #channel-name`")
+    return event.respond("#{EMOJI_STRINGS['x_']} Please mention a valid channel! Usage: `#{PREFIX}enablebombs #channel-name`")
   end
 
   # 3. Initialization: Capture Server ID and generate a random drop threshold
@@ -38,7 +38,7 @@ def execute_enablebombs(event, channel_id)
 
   # 6. UI: Success confirmation via Embed
   send_embed(event, 
-    title: "#{EMOJIS['bomb']} Bomb Drops Enabled!", 
+    title: "#{EMOJI_STRINGS['bomb']} Bomb Drops Enabled!", 
     description: "I will now randomly drop bombs in <##{channel_id}> as people chat!"
   )
 end

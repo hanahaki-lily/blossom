@@ -56,9 +56,9 @@ def execute_cooldowns(event)
       type: 17,
       accent_color: NEON_COLORS.sample,
       components: [
-        { type: 10, content: "## ℹ️ #{event.user.display_name}'s Cooldowns" },
+        { type: 10, content: "## #{EMOJI_STRINGS['info']} #{event.user.display_name}'s Cooldowns" },
         { type: 14, spacing: 1 },
-        { type: 10, content: "Here are your current economy timers:#{streak_text}#{reminder_text}" },
+        { type: 10, content: "Ugh, fine. Here are your timers, impatient much?#{streak_text}#{reminder_text}" },
         { type: 14, spacing: 1 },
         { type: 10, content: cd_lines }
       ]

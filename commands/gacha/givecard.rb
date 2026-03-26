@@ -16,7 +16,7 @@ def execute_givecard(event, target, char_name)
     return send_cv2(event, [{ type: 17, accent_color: NEON_COLORS.sample, components: [
       { type: 10, content: "## ⚠️ Invalid Target" },
       { type: 14, spacing: 1 },
-      { type: 10, content: "You need to mention another user to give a card to!" }
+      { type: 10, content: "You gotta @ someone else, bestie. Can't gift cards to yourself, that's just sad." }
     ]}])
   end
 
@@ -25,7 +25,7 @@ def execute_givecard(event, target, char_name)
     return send_cv2(event, [{ type: 17, accent_color: NEON_COLORS.sample, components: [
       { type: 10, content: "## ⚠️ Missing Character" },
       { type: 14, spacing: 1 },
-      { type: 10, content: "Please specify the character you want to give." }
+      { type: 10, content: "Give WHAT? You forgot to say which character, chat." }
     ]}])
   end
 
@@ -36,7 +36,7 @@ def execute_givecard(event, target, char_name)
     return send_cv2(event, [{ type: 17, accent_color: NEON_COLORS.sample, components: [
       { type: 10, content: "## ⚠️ Unknown Character" },
       { type: 14, spacing: 1 },
-      { type: 10, content: "I couldn't find a character named **#{char_name}** in the pools." }
+      { type: 10, content: "Who?? I don't know a VTuber called **#{char_name}**. Check your spelling, chat." }
     ]}])
   end
 
@@ -48,9 +48,9 @@ def execute_givecard(event, target, char_name)
   giver_collection = DB.get_collection(uid)
   if giver_collection[proper_name].nil? || giver_collection[proper_name]['count'] <= 0
     return send_cv2(event, [{ type: 17, accent_color: NEON_COLORS.sample, components: [
-      { type: 10, content: "## ❌ Missing Card" },
+      { type: 10, content: "## #{EMOJI_STRINGS['x_']} Missing Card" },
       { type: 14, spacing: 1 },
-      { type: 10, content: "You don't own any unascended copies of **#{proper_name}** to give away!" }
+      { type: 10, content: "You don't have any base copies of **#{proper_name}** to give away. Can't be generous when you're broke, bestie." }
     ]}])
   end
 
@@ -64,15 +64,18 @@ def execute_givecard(event, target, char_name)
   emoji = case rarity
           when 'goddess'   then '💎'
           when 'legendary' then '🌟'
-          when 'rare'      then '✨'
+          when 'rare'      then EMOJI_STRINGS['neonsparkle']
           else '⭐'
           end
 
+  # Easter egg: Envvy is Blossom's creator (mom)
+  envvy_comment = proper_name == 'Envvy' ? "\n\n*Excuse me?? You're just GIVING my mom away?! #{target.mention}, you better take good care of her or we're gonna have problems.*" : ""
+
   # 7. Messaging: Send the success announcement CV2 message
   send_cv2(event, [{ type: 17, accent_color: NEON_COLORS.sample, components: [
-    { type: 10, content: "## 🎁 Card Transferred!" },
+    { type: 10, content: "## 🎁 Card Gifted!" },
     { type: 14, spacing: 1 },
-    { type: 10, content: "#{event.user.mention} generously gave **#{proper_name}** to #{target.mention}! 🌸\n\n*(Rarity: #{rarity.capitalize} #{emoji})*" }
+    { type: 10, content: "#{event.user.mention} just handed over **#{proper_name}** to #{target.mention}! W friend tbh.\n\n*(Rarity: #{rarity.capitalize} #{emoji})*#{envvy_comment}" }
   ]}])
 end
 

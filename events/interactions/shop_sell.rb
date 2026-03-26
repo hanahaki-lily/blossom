@@ -8,7 +8,7 @@ $bot.button(custom_id: /^shop_sell_(\d+)$/) do |event|
   uid = event.custom_id.match(/^shop_sell_(\d+)$/)[1].to_i
   
   if event.user.id != uid
-    event.respond(content: "❌ *You cannot sell someone else's characters!*", ephemeral: true)
+    event.respond(content: "#{EMOJI_STRINGS['x_']} *Selling someone else's stuff? Bold. But no.*", ephemeral: true)
     next
   end
 
@@ -44,12 +44,12 @@ $bot.button(custom_id: /^shop_sell_(\d+)$/) do |event|
   if dupes_sold > 0
     # Add the lump sum to their wallet
     DB.add_coins(uid, total_earned)
-    embed.title = "#{EMOJIS['rich']} Duplicates Sold!"
-    embed.description = "You converted **#{dupes_sold}** duplicate characters into **#{total_earned}** #{EMOJIS['s_coin']}!\n\nNew Balance: **#{DB.get_coins(uid)}** #{EMOJIS['s_coin']}."
+    embed.title = "#{EMOJI_STRINGS['rich']} Dupes Liquidated!"
+    embed.description = "Flipped **#{dupes_sold}** dupes for **#{total_earned}** #{EMOJI_STRINGS['s_coin']}. Easy money.\n\nNew Balance: **#{DB.get_coins(uid)}** #{EMOJI_STRINGS['s_coin']}."
     embed.color = 0x00FF00
   else
-    embed.title = "#{EMOJIS['confused']} No Duplicates"
-    embed.description = "You don't have any duplicate characters to sell right now! You currently have 1 or 0 copies of everyone."
+    embed.title = "#{EMOJI_STRINGS['confused']} No Dupes Found"
+    embed.description = "You've got nothing to sell. Zero extras. Go pull more gacha first."
     embed.color = 0xFF0000 
   end
 

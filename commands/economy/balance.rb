@@ -21,8 +21,8 @@ def execute_balance(event, target_user)
 
   # 4. Badge Logic: Build a list of visual achievements/roles
   badges = []
-  badges << "#{EMOJIS['developer']} **Bot Developer**" if uid == DEV_ID
-  badges << "<:prisma:1486142162805723196> **Premium**" if is_sub
+  badges << "#{EMOJI_STRINGS['developer']} **Bot Developer**" if uid == DEV_ID
+  badges << "#{EMOJI_STRINGS['prisma']} **Premium**" if is_sub
   
   # 5. Header Formatting: Create the top-row badge line if badges exist
   header = badges.empty? ? "" : badges.join(" | ") + "\n\n"
@@ -30,8 +30,8 @@ def execute_balance(event, target_user)
   # 6. UI: Construct the primary Balance Embed
   embed = Discordrb::Webhooks::Embed.new(
     title: "🌸 #{target_user.display_name}'s Balance",
-    description: "#{header}**Coins:** #{coins} #{EMOJIS['s_coin']}\n" \
-                 "**Prisma:** #{prisma} <:prisma:1486142162805723196>\n" \
+    description: "#{header}**Coins:** #{coins} #{EMOJI_STRINGS['s_coin']}\n" \
+                 "**Prisma:** #{prisma} #{EMOJI_STRINGS['prisma']}\n" \
                  "🔥 **Daily Streak:** #{daily_info['streak']} Days\n\n" \
                  "*Use the dropdown below to view your items, VTubers, and Achievements!*",
     color: 0xFFB6C1 # Light Pink (Princess Vibe)

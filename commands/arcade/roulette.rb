@@ -17,9 +17,9 @@ def execute_roulette(event, amount, bet)
     return send_cv2(event, [{
       type: 17, accent_color: 0xFF0000,
       components: [
-        { type: 10, content: "## ❌ Invalid Bet" },
+        { type: 10, content: "## #{EMOJI_STRINGS['x_']} Invalid Bet" },
         { type: 14, spacing: 1 },
-        { type: 10, content: "You don't have enough coins or entered an invalid amount!" }
+        { type: 10, content: "You can't afford to sit at this table, bestie. Check your balance." }
       ]
     }])
   end
@@ -34,9 +34,9 @@ def execute_roulette(event, amount, bet)
     return send_cv2(event, [{
       type: 17, accent_color: 0xFF0000,
       components: [
-        { type: 10, content: "## ❌ Invalid Bet Type" },
+        { type: 10, content: "## #{EMOJI_STRINGS['x_']} Invalid Bet Type" },
         { type: 14, spacing: 1 },
-        { type: 10, content: "You can only bet on `red`, `black`, `even`, `odd`, or a number from `0` to `36`." }
+        { type: 10, content: "That's not a real bet?? Try `red`, `black`, `even`, `odd`, or a number `0`-`36`. Come on, chat." }
       ]
     }])
   end
@@ -89,7 +89,7 @@ def execute_roulette(event, amount, bet)
       components: [
         { type: 10, content: "## 🎰 Roulette Spin" },
         { type: 14, spacing: 1 },
-        { type: 10, content: "The dealer spins the wheel... It lands on **#{color_emoji} #{spin}**!\n\nYou bet on **#{bet}** and won **#{payout}** 🪙!\nNew Balance: **#{DB.get_coins(uid)}** 🪙" }
+        { type: 10, content: "I spin the wheel... it lands on **#{color_emoji} #{spin}**!\n\nYou called **#{bet}** and it ACTUALLY hit. Pog. **#{payout}** #{EMOJI_STRINGS['s_coin']} yours.\nNew Balance: **#{DB.get_coins(uid)}** #{EMOJI_STRINGS['s_coin']}" }
       ]
     }])
   else
@@ -99,7 +99,7 @@ def execute_roulette(event, amount, bet)
       components: [
         { type: 10, content: "## 🎰 Roulette Spin" },
         { type: 14, spacing: 1 },
-        { type: 10, content: "The dealer spins the wheel... It lands on **#{color_emoji} #{spin}**.\n\nYou bet on **#{bet}** and lost **#{amount}** 🪙.\nNew Balance: **#{DB.get_coins(uid)}** 🪙" }
+        { type: 10, content: "I spin the wheel... it lands on **#{color_emoji} #{spin}**.\n\nYou bet **#{bet}**. Not even close. **#{amount}** #{EMOJI_STRINGS['s_coin']} evaporated.\nNew Balance: **#{DB.get_coins(uid)}** #{EMOJI_STRINGS['s_coin']}" }
       ]
     }])
   end
@@ -119,7 +119,7 @@ $bot.command(:roulette,
       components: [
         { type: 10, content: "## 😕 Missing Arguments" },
         { type: 14, spacing: 1 },
-        { type: 10, content: "Place your bets!\n\n**Usage:** `#{PREFIX}roulette <amount> <bet>`\n**Valid Bets:** `red`, `black`, `even`, `odd`, or a number `0-36`." }
+        { type: 10, content: "You literally gave me nothing to work with. Amount AND bet, chat.\n\n**Usage:** `#{PREFIX}roulette <amount> <bet>`\n**Valid Bets:** `red`, `black`, `even`, `odd`, or a number `0-36`." }
       ]
     }])
     next

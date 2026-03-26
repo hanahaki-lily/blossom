@@ -10,7 +10,7 @@
 def execute_verifysetup(event, channel_input, role_input)
   # 1. Security: Ensure only High-Level Admins or Developers can set this up
   unless event.user.permission?(:manage_server) || event.user.id == DEV_ID
-    return mod_reply(event, "❌ *You need the Manage Server permission to do this!*", is_ephemeral: true)
+    return mod_reply(event, "#{EMOJI_STRINGS['x_']} *You need the Manage Server permission to do this!*", is_ephemeral: true)
   end
 
   # 2. Parsing: Resolve the Channel object
@@ -53,7 +53,7 @@ def execute_verifysetup(event, channel_input, role_input)
     mod_reply(event, "✅ **Verification Set Up!**\nThe verification panel has been sent to #{channel.mention} and will grant the **#{role.name}** role.")
   rescue => e
     # 8. Error Handling: Catch permission issues (e.g., bot can't see the #welcome channel)
-    mod_reply(event, "❌ *I couldn't send the message! Error:* `#{e.message}`\n*(Do I have permission to type in that channel?)*", is_ephemeral: true)
+    mod_reply(event, "#{EMOJI_STRINGS['x_']} *I couldn't send the message! Error:* `#{e.message}`\n*(Do I have permission to type in that channel?)*", is_ephemeral: true)
   end
 end
 

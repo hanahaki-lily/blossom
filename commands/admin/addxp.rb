@@ -10,12 +10,12 @@
 def execute_addxp(event, target_user, amount)
   # 1. Validation: Ensure command is used in a Guild
   unless event.server
-    return event.respond("#{EMOJIS['x_']} This command can only be used inside a server!")
+    return event.respond("#{EMOJI_STRINGS['x_']} This command can only be used inside a server!")
   end
 
   # 2. Security: Permission Check (Admins or Developer Only)
   unless event.user.permission?(:administrator, event.channel) || event.user.id == DEV_ID
-    return event.respond("#{EMOJIS['x_']} You need Administrator permissions to use this command!")
+    return event.respond("#{EMOJI_STRINGS['x_']} You need Administrator permissions to use this command!")
   end
 
   # 3. Validation: Ensure a target user exists
@@ -46,7 +46,7 @@ def execute_addxp(event, target_user, amount)
   
   # 8. UI: Confirm success via Embed
   send_embed(event, 
-    title: "#{EMOJIS['developer']} Admin Override", 
+    title: "#{EMOJI_STRINGS['developer']} Admin Override", 
     description: "Successfully added **#{amount}** XP to #{target_user.mention}.\nThey are now **Level #{new_level}** with **#{new_xp}** XP."
   )
 end

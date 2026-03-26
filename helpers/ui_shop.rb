@@ -6,11 +6,11 @@
 
 def build_shop_home(user_id)
   embed = Discordrb::Webhooks::Embed.new
-  embed.title = "#{EMOJIS['rich']} The VTuber Black Market"
+  embed.title = "#{EMOJI_STRINGS['rich']} The VTuber Black Market"
   embed.description = "Tired of bad gacha luck? Save up your stream revenue and buy exactly who you want!\n\n" \
-                      "⭐ **Common:** #{SHOP_PRICES['common']} #{EMOJIS['s_coin']} *(Sells for #{SELL_PRICES['common']})*\n" \
-                      "✨ **Rare:** #{SHOP_PRICES['rare']} #{EMOJIS['s_coin']} *(Sells for #{SELL_PRICES['rare']})*\n" \
-                      "🌟 **Legendary:** #{SHOP_PRICES['legendary']} #{EMOJIS['s_coin']} *(Sells for #{SELL_PRICES['legendary']})*\n\n" \
+                      "⭐ **Common:** #{SHOP_PRICES['common']} #{EMOJI_STRINGS['s_coin']} *(Sells for #{SELL_PRICES['common']})*\n" \
+                      "#{EMOJI_STRINGS['neonsparkle']} **Rare:** #{SHOP_PRICES['rare']} #{EMOJI_STRINGS['s_coin']} *(Sells for #{SELL_PRICES['rare']})*\n" \
+                      "🌟 **Legendary:** #{SHOP_PRICES['legendary']} #{EMOJI_STRINGS['s_coin']} *(Sells for #{SELL_PRICES['legendary']})*\n\n" \
                       "Use `#{PREFIX}buy <Name>` to purchase characters or tech upgrades!"
   embed.color = NEON_COLORS.sample
   embed.image = Discordrb::Webhooks::EmbedImage.new(url: 'https://media.discordapp.net/attachments/1475890017443516476/1476244926638592050/d60459-53-0076f9af74811878db01-0.jpg')
@@ -35,13 +35,13 @@ def build_shop_catalog(user_id, page)
 
   emoji = case target_rarity
           when 'legendary' then '🌟'
-          when 'rare'      then '✨'
+          when 'rare'      then EMOJI_STRINGS['neonsparkle']
           else '⭐'
           end
 
   embed = Discordrb::Webhooks::Embed.new
   embed.title = "📖 Shop Catalog - #{target_rarity.capitalize}s #{emoji}"
-  embed.description = "Price: **#{SHOP_PRICES[target_rarity]}** #{EMOJIS['s_coin']} each.\n\n`" + chars.join("`, `") + "`"
+  embed.description = "Price: **#{SHOP_PRICES[target_rarity]}** #{EMOJI_STRINGS['s_coin']} each.\n\n`" + chars.join("`, `") + "`"
   embed.color = NEON_COLORS.sample
   embed.footer = Discordrb::Webhooks::EmbedFooter.new(text: "Catalog Page #{page} of 3")
 
@@ -61,14 +61,14 @@ def build_blackmarket_page(user_id)
   desc += "**🖥️ Stream Upgrades (Permanent)**\n"
   BLACK_MARKET_ITEMS.each do |key, data|
     if data[:type] == 'upgrade'
-      desc += "`#{key}` — **#{data[:name]}** (#{data[:price]} #{EMOJIS['s_coin']})\n> *#{data[:desc]}*\n"
+      desc += "`#{key}` — **#{data[:name]}** (#{data[:price]} #{EMOJI_STRINGS['s_coin']})\n> *#{data[:desc]}*\n"
     end
   end
 
   desc += "\n**🎒 Consumables (One-Time Use)**\n"
   BLACK_MARKET_ITEMS.each do |key, data|
     if data[:type] == 'consumable'
-      desc += "`#{key}` — **#{data[:name]}** (#{data[:price]} #{EMOJIS['s_coin']})\n> *#{data[:desc]}*\n"
+      desc += "`#{key}` — **#{data[:name]}** (#{data[:price]} #{EMOJI_STRINGS['s_coin']})\n> *#{data[:desc]}*\n"
     end
   end
 
@@ -97,9 +97,9 @@ def build_prisma_shop(user_id)
   prisma_bal = DB.get_prisma(user_id)
 
   desc = "Spend your hard-earned Prisma on the rarest characters in existence.\n\n"
-  desc += "💎 **Goddess Characters** — **#{GODDESS_PRISMA_PRICE}** #{EMOJIS['prisma']} each\n\n"
+  desc += "💎 **Goddess Characters** — **#{GODDESS_PRISMA_PRICE}** #{EMOJI_STRINGS['prisma']} each\n\n"
   desc += goddess_chars.map { |name| "`#{name}`" }.join(', ')
-  desc += "\n\nYour Prisma: **#{prisma_bal}** #{EMOJIS['prisma']}"
+  desc += "\n\nYour Prisma: **#{prisma_bal}** #{EMOJI_STRINGS['prisma']}"
   desc += "\n\nUse `#{PREFIX}buy <Name>` to purchase!"
 
   embed = Discordrb::Webhooks::Embed.new
@@ -127,7 +127,7 @@ def generate_collection_page(user_obj, rarity_page)
   emoji = case rarity_page
           when 'goddess'   then '💎'
           when 'legendary' then '🌟'
-          when 'rare'      then '✨'
+          when 'rare'      then EMOJI_STRINGS['neonsparkle']
           else '⭐'
           end
           
@@ -138,7 +138,7 @@ def generate_collection_page(user_obj, rarity_page)
   else
     list = page_chars.map do |name, data|
       str = "`#{name}` (x#{data['count']})"
-      str += " ✨*(Ascended x#{data['ascended']})*" if data['ascended'].to_i > 0
+      str += " #{EMOJI_STRINGS['neonsparkle']}*(Ascended x#{data['ascended']})*" if data['ascended'].to_i > 0
       str
     end
     desc += list.join(', ')
@@ -158,7 +158,7 @@ def collection_view(target_uid, current_page)
   Discordrb::Components::View.new do |v|
     v.row do |r|
       r.button(custom_id: "coll_common_#{target_uid}", label: 'Common', style: current_page == 'common' ? :success : :secondary, emoji: '⭐', disabled: current_page == 'common')
-      r.button(custom_id: "coll_rare_#{target_uid}", label: 'Rare', style: current_page == 'rare' ? :success : :secondary, emoji: '✨', disabled: current_page == 'rare')
+      r.button(custom_id: "coll_rare_#{target_uid}", label: 'Rare', style: current_page == 'rare' ? :success : :secondary, emoji: EMOJI_OBJECTS['neonsparkle'], disabled: current_page == 'rare')
       r.button(custom_id: "coll_legendary_#{target_uid}", label: 'Legendary', style: current_page == 'legendary' ? :success : :secondary, emoji: '🌟', disabled: current_page == 'legendary')
       if owns_goddess
         r.button(custom_id: "coll_goddess_#{target_uid}", label: 'Goddess', style: current_page == 'goddess' ? :success : :secondary, emoji: '💎', disabled: current_page == 'goddess')
