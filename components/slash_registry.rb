@@ -209,7 +209,7 @@ bot.register_application_command(:backup, 'Manually trigger a database backup (D
 bot.register_application_command(:syncachievements, 'Retroactively grant achievements to everyone! (Dev Only)')
 
 
-
+=end
 
 # --- Register new/updated slash commands ---
 $bot.register_application_command(:bomb, 'Enable or disable bomb drops (Admin Only)') do |cmd|
@@ -223,6 +223,6 @@ $bot.register_application_command(:setxp, 'Manage user XP/Level — add, remove,
   cmd.integer('amount', 'Amount of XP or target level', required: true)
 end
 
-=end
+
 
 puts "✅ All slash commands registered!"
