@@ -139,16 +139,26 @@ def sync_user_achievements(uid, channel = nil)
   unlocked_count += 1 if hug_sent >= 1 && check_achievement(channel, uid, 'first_hug', silent: true)
   unlocked_count += 1 if hug_sent >= 10 && check_achievement(channel, uid, 'hug_sent_10', silent: true)
   unlocked_count += 1 if hug_sent >= 50 && check_achievement(channel, uid, 'hug_sent_50', silent: true)
+  unlocked_count += 1 if hug_sent >= 100 && check_achievement(channel, uid, 'hug_sent_100', silent: true)
   unlocked_count += 1 if hug_rec >= 10 && check_achievement(channel, uid, 'hug_rec_10', silent: true)
   unlocked_count += 1 if hug_rec >= 50 && check_achievement(channel, uid, 'hug_rec_50', silent: true)
+  unlocked_count += 1 if hug_rec >= 100 && check_achievement(channel, uid, 'hug_rec_100', silent: true)
 
   slap_sent = stats.dig('slap', 'sent').to_i
   slap_rec = stats.dig('slap', 'received').to_i
   unlocked_count += 1 if slap_sent >= 1 && check_achievement(channel, uid, 'first_slap', silent: true)
   unlocked_count += 1 if slap_sent >= 10 && check_achievement(channel, uid, 'slap_sent_10', silent: true)
   unlocked_count += 1 if slap_sent >= 50 && check_achievement(channel, uid, 'slap_sent_50', silent: true)
+  unlocked_count += 1 if slap_sent >= 100 && check_achievement(channel, uid, 'slap_sent_100', silent: true)
   unlocked_count += 1 if slap_rec >= 10 && check_achievement(channel, uid, 'slap_rec_10', silent: true)
   unlocked_count += 1 if slap_rec >= 50 && check_achievement(channel, uid, 'slap_rec_50', silent: true)
+  unlocked_count += 1 if slap_rec >= 100 && check_achievement(channel, uid, 'slap_rec_100', silent: true)
+
+  # 6. Meta: Achievement count milestones
+  total_unlocked = DB.get_achievements(uid).size + unlocked_count
+  unlocked_count += 1 if total_unlocked >= 10 && check_achievement(channel, uid, 'ach_10', silent: true)
+  unlocked_count += 1 if total_unlocked >= 25 && check_achievement(channel, uid, 'ach_25', silent: true)
+  unlocked_count += 1 if total_unlocked >= 50 && check_achievement(channel, uid, 'ach_50', silent: true)
 
   unlocked_count
 end

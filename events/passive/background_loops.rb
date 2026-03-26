@@ -24,7 +24,8 @@ $bot.ready do |event|
         jackpot = 100 + (entries.size * 100) # Base 100 + 100 per entry
         
         DB.add_coins(winner_id, jackpot)
-        
+        check_achievement(nil, winner_id, 'lottery_win', silent: true)
+
         winner_user = event.bot.user(winner_id)
         if winner_user
           begin

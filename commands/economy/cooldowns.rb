@@ -49,13 +49,22 @@ def execute_cooldowns(event)
   streak_text = daily_info['streak'] > 0 ? "\n🔥 **Daily Streak:** #{daily_info['streak']} Days" : ""
   reminder_text = daily_info['channel'] ? "\n🔔 **Auto-Reminder:** ON" : ""
 
-  # 7. Messaging: Send the finalized summary Embed
-  send_embed(
-    event, 
-    title: "#{EMOJIS['info']} #{event.user.display_name}'s Cooldowns", 
-    description: "Here are your current economy timers:#{streak_text}#{reminder_text}", 
-    fields: cd_fields
-  )
+  # 7. Messaging: Send the finalized summary via CV2
+  cd_lines = cd_fields.map { |f| "**#{f[:name]}:** #{f[:value]}" }.join("\n")
+  components = [
+    {
+      type: 17,
+      accent_color: NEON_COLORS.sample,
+      components: [
+        { type: 10, content: "## ℹ️ #{event.user.display_name}'s Cooldowns" },
+        { type: 14, spacing: 1 },
+        { type: 10, content: "Here are your current economy timers:#{streak_text}#{reminder_text}" },
+        { type: 14, spacing: 1 },
+        { type: 10, content: cd_lines }
+      ]
+    }
+  ]
+  send_cv2(event, components)
 end
 
 # ------------------------------------------

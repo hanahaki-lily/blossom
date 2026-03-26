@@ -3,6 +3,8 @@
 # DESCRIPTION: Listens for category selections on the /help dropdown.
 # ==========================================
 
+CV2_FLAG = 1 << 15 unless defined?(CV2_FLAG)
+
 $bot.select_menu(custom_id: /^help_menu_/) do |event|
   owner_id = event.custom_id.split('_').last
 
@@ -12,8 +14,7 @@ $bot.select_menu(custom_id: /^help_menu_/) do |event|
   end
 
   selected_category = event.values.first
-  new_embed = generate_category_embed(event.bot, event.user, selected_category)
-  view = help_select_menu(owner_id) 
+  components = help_cv2_components(event.bot, owner_id, selected_category)
 
-  event.update_message(embeds: [new_embed], components: view)
+  event.update_message(content: '', flags: CV2_FLAG, components: components)
 end

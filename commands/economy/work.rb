@@ -20,10 +20,18 @@ def execute_work(event)
   # 3. Validation: Check if the user is still on their rest period
   if last_used && (now - last_used) < active_cd
     remaining = active_cd - (now - last_used)
-    send_embed(event, 
-      title: "#{EMOJIS['work']} Work", 
-      description: "You are tired #{EMOJIS['worktired']}\nTry working again in **#{format_time_delta(remaining)}**."
-    )
+    components = [
+      {
+        type: 17,
+        accent_color: 0xFF0000,
+        components: [
+          { type: 10, content: "## 💼 Work" },
+          { type: 14, spacing: 1 },
+          { type: 10, content: "You are tired 😩\nTry working again in **#{format_time_delta(remaining)}**." }
+        ]
+      }
+    ]
+    send_cv2(event, components)
   else
     # 4. Calculation: Roll for the base reward range
     amount = rand(WORK_REWARD_RANGE)
@@ -45,12 +53,22 @@ def execute_work(event)
     final_amount = award_coins(event.bot, uid, amount)
     DB.set_cooldown(uid, 'work', now)
 
-    # 8. UI: Send the success Embed with the updated balance
-    send_embed(event, 
-      title: "#{EMOJIS['work']} Work", 
-      description: "You worked hard and earned **#{final_amount}** #{EMOJIS['s_coin']}!#{bonus_text}\n" \
-                   "New balance: **#{DB.get_coins(uid)}** #{EMOJIS['s_coin']}."
-    )
+    # 8. Achievements
+    check_achievement(event.channel, uid, 'first_work')
+
+    # 9. UI: Send the success CV2 with the updated balance
+    components = [
+      {
+        type: 17,
+        accent_color: 0x00FF00,
+        components: [
+          { type: 10, content: "## 💼 Work" },
+          { type: 14, spacing: 1 },
+          { type: 10, content: "You worked hard and earned **#{final_amount}** 🪙!#{bonus_text}\nNew balance: **#{DB.get_coins(uid)}** 🪙." }
+        ]
+      }
+    ]
+    send_cv2(event, components)
   end
 end
 

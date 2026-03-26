@@ -33,6 +33,13 @@ $bot.message do |event|
     new_xp -= needed
     new_level += 1
 
+    # --- LEVEL ACHIEVEMENTS ---
+    check_achievement(event.channel, uid, 'level_5') if new_level == 5
+    check_achievement(event.channel, uid, 'level_10') if new_level == 10
+    check_achievement(event.channel, uid, 'level_25') if new_level == 25
+    check_achievement(event.channel, uid, 'level_50') if new_level == 50
+    check_achievement(event.channel, uid, 'level_100') if new_level == 100
+
     # --- CUSTOM SERVER ROLE REWARDS ---
     # This block only executes if the message was sent in your specific main server
     if sid == 1472509438010065070

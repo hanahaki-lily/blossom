@@ -22,43 +22,34 @@ def execute_banner(event)
   next_banner = CHARACTER_POOLS[next_key]
   next_rotation_time = (week_number + 1) * 604_800
 
-  # 3. UI: Construct the Rarity Fields
-  # We've added the "Goddess" tier at 1% and kept the rest of your rates balanced.
-  fields = [
-    { 
-      name: '👑 Goddesses (1%)', 
-      value: chars[:goddess].map { |c| c[:name] }.join(', '), 
-      inline: false 
-    },
-    { 
-      name: '🌟 Legendaries (5%)', 
-      value: chars[:legendary].map { |c| c[:name] }.join(', '), 
-      inline: false 
-    },
-    { 
-      name: '✨ Rares (25%)', 
-      value: chars[:rare].map { |c| c[:name] }.join(', '), 
-      inline: false 
-    },
-    { 
-      name: '⭐ Commons (69%)', 
-      value: chars[:common].map { |c| c[:name] }.join(', '), 
-      inline: false 
-    }
-  ]
-
-  # 4. UI: Build the description with live Discord timestamps
+  # 3. UI: Build the description with live Discord timestamps
   desc = "Here are the VTubers you can pull this week!\n\n" \
          "**Next Rotation:** <t:#{next_rotation_time}:R>\n" \
          "**Up Next:** #{next_banner[:name]}"
 
-  # 5. Messaging: Send the finalized Embed
-  send_embed(
-    event, 
-    title: "#{EMOJIS['neonsparkle']} Current Gacha: #{active_banner[:name]}", 
-    description: desc, 
-    fields: fields
-  )
+  # 4. UI: Construct the CV2 Container with rarity sections
+  components = [
+    {
+      type: 17,
+      accent_color: NEON_COLORS.sample,
+      components: [
+        { type: 10, content: "## ✨ Current Gacha: #{active_banner[:name]}" },
+        { type: 14, spacing: 1 },
+        { type: 10, content: desc },
+        { type: 14, spacing: 1 },
+        { type: 10, content: "**👑 Goddesses (1%)**\n#{chars[:goddess].map { |c| c[:name] }.join(', ')}" },
+        { type: 14, spacing: 1 },
+        { type: 10, content: "**🌟 Legendaries (5%)**\n#{chars[:legendary].map { |c| c[:name] }.join(', ')}" },
+        { type: 14, spacing: 1 },
+        { type: 10, content: "**✨ Rares (25%)**\n#{chars[:rare].map { |c| c[:name] }.join(', ')}" },
+        { type: 14, spacing: 1 },
+        { type: 10, content: "**⭐ Commons (69%)**\n#{chars[:common].map { |c| c[:name] }.join(', ')}" }
+      ]
+    }
+  ]
+
+  # 5. Messaging: Send the finalized CV2 message
+  send_cv2(event, components)
 end
 
 # ------------------------------------------

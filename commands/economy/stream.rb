@@ -20,10 +20,18 @@ def execute_stream(event)
   # 3. Validation: Check if the user is still in "Post-Stream Recovery"
   if last_used && (now - last_used) < active_cd
     remaining = active_cd - (now - last_used)
-    send_embed(event, 
-      title: "#{EMOJIS['stream']} Stream Offline", 
-      description: "You just finished streaming! Your voice needs a break #{EMOJIS['drink']}\nTry going live again in **#{format_time_delta(remaining)}**."
-    )
+    components = [
+      {
+        type: 17,
+        accent_color: 0xFF0000,
+        components: [
+          { type: 10, content: "## 📡 Stream Offline" },
+          { type: 14, spacing: 1 },
+          { type: 10, content: "You just finished streaming! Your voice needs a break 🥤\nTry going live again in **#{format_time_delta(remaining)}**." }
+        ]
+      }
+    ]
+    send_cv2(event, components)
   else
     # 4. Calculation: Roll for a random game and base reward
     reward = rand(STREAM_REWARD_RANGE)
@@ -47,12 +55,19 @@ def execute_stream(event)
     DB.set_cooldown(uid, 'stream', now)
     check_achievement(event.channel, event.user.id, 'first_stream')
 
-    # 8. UI: Send the success Embed with the final tally
-    send_embed(event, 
-      title: "#{EMOJIS['stream']} Stream Ended", 
-      description: "You had a great stream playing **#{game}** and earned **#{final_reward}** #{EMOJIS['s_coin']}!#{bonus_text}\n" \
-                   "New balance: **#{DB.get_coins(uid)}** #{EMOJIS['s_coin']}."
-    )
+    # 8. UI: Send the success CV2 with the final tally
+    components = [
+      {
+        type: 17,
+        accent_color: 0x00FF00,
+        components: [
+          { type: 10, content: "## 📡 Stream Ended" },
+          { type: 14, spacing: 1 },
+          { type: 10, content: "You had a great stream playing **#{game}** and earned **#{final_reward}** 🪙!#{bonus_text}\nNew balance: **#{DB.get_coins(uid)}** 🪙." }
+        ]
+      }
+    ]
+    send_cv2(event, components)
   end
 end
 

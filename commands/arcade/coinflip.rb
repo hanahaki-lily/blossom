@@ -14,49 +14,67 @@ def execute_coinflip(event, amount, choice)
 
   # 2. Validation: Ensure the bet is a positive number
   if amount <= 0
-    return send_embed(event, 
-      title: "#{EMOJIS['error']} Invalid Bet", 
-      description: "You must bet at least 1 #{EMOJIS['s_coin']}."
-    )
+    return send_cv2(event, [{
+      type: 17, accent_color: 0xFF0000,
+      components: [
+        { type: 10, content: "## ❌ Invalid Bet" },
+        { type: 14, spacing: 1 },
+        { type: 10, content: "You must bet at least 1 🪙." }
+      ]
+    }])
   end
 
   # 3. Validation: Check the user's balance in the Database
   if DB.get_coins(uid) < amount
-    return send_embed(event, 
-      title: "#{EMOJIS['nervous']} Insufficient Funds", 
-      description: "You don't have enough coins to cover that bet!\nYou currently have **#{DB.get_coins(uid)}** #{EMOJIS['s_coin']}."
-    )
+    return send_cv2(event, [{
+      type: 17, accent_color: 0xFF0000,
+      components: [
+        { type: 10, content: "## 😰 Insufficient Funds" },
+        { type: 14, spacing: 1 },
+        { type: 10, content: "You don't have enough coins to cover that bet!\nYou currently have **#{DB.get_coins(uid)}** 🪙." }
+      ]
+    }])
   end
 
   # 4. Validation: Ensure the choice is valid (Heads or Tails)
   unless ['heads', 'tails'].include?(choice)
-    return send_embed(event, 
-      title: "#{EMOJIS['error']} Invalid Choice", 
-      description: "Please pick either `heads` or `tails`."
-    )
+    return send_cv2(event, [{
+      type: 17, accent_color: 0xFF0000,
+      components: [
+        { type: 10, content: "## ❌ Invalid Choice" },
+        { type: 14, spacing: 1 },
+        { type: 10, content: "Please pick either `heads` or `tails`." }
+      ]
+    }])
   end
 
   # 5. Calculation: Determine the result and deduct the initial bet
   result = ['heads', 'tails'].sample
   DB.add_coins(uid, -amount)
-  
+  check_achievement(event.channel, uid, 'gamble_10k') if amount >= 10000
+
   # 6. Result: Handle the Win/Loss scenarios
   if choice == result
-    # Win: Add double the bet (return the original + the prize)
     DB.add_coins(uid, amount * 2)
-    send_embed(event, 
-      title: "🪙 Coinflip: #{result.capitalize}!", 
-      description: "You won! You doubled your bet and earned **#{amount}** #{EMOJIS['s_coin']}.\nNew Balance: **#{DB.get_coins(uid)}** #{EMOJIS['s_coin']}"
-    )
-    
-    # 7. Achievement Check: See if they unlocked 'gamble_win'
-    check_achievement(event.channel, event.user.id, 'gamble_win')
+    send_cv2(event, [{
+      type: 17, accent_color: 0x00FF00,
+      components: [
+        { type: 10, content: "## 🪙 Coinflip: #{result.capitalize}!" },
+        { type: 14, spacing: 1 },
+        { type: 10, content: "You won! You doubled your bet and earned **#{amount}** 🪙.\nNew Balance: **#{DB.get_coins(uid)}** 🪙" }
+      ]
+    }])
+    check_achievement(event.channel, uid, 'gamble_win')
   else
-    # Loss: Bet was already deducted; just provide feedback
-    send_embed(event, 
-      title: "🪙 Coinflip: #{result.capitalize}!", 
-      description: "You lost... **#{amount}** #{EMOJIS['s_coin']} down the drain.\nNew Balance: **#{DB.get_coins(uid)}** #{EMOJIS['s_coin']}"
-    )
+    check_achievement(event.channel, uid, 'gamble_broke') if amount >= 5000
+    send_cv2(event, [{
+      type: 17, accent_color: 0xFF0000,
+      components: [
+        { type: 10, content: "## 🪙 Coinflip: #{result.capitalize}!" },
+        { type: 14, spacing: 1 },
+        { type: 10, content: "You lost... **#{amount}** 🪙 down the drain.\nNew Balance: **#{DB.get_coins(uid)}** 🪙" }
+      ]
+    }])
   end
 end
 
@@ -69,10 +87,14 @@ $bot.command(:coinflip,
 ) do |event, amount_str, choice|
   # Argument Check: Ensure both amount and choice are present
   if amount_str.nil? || choice.nil?
-    send_embed(event, 
-      title: "#{EMOJIS['confused']} Missing Arguments", 
-      description: "You need to tell me how much to bet and what side you want!\n\n**Usage:** `#{PREFIX}coinflip <amount> <heads/tails>`"
-    )
+    send_cv2(event, [{
+      type: 17, accent_color: 0xFF0000,
+      components: [
+        { type: 10, content: "## 😕 Missing Arguments" },
+        { type: 14, spacing: 1 },
+        { type: 10, content: "You need to tell me how much to bet and what side you want!\n\n**Usage:** `#{PREFIX}coinflip <amount> <heads/tails>`" }
+      ]
+    }])
     next
   end
 

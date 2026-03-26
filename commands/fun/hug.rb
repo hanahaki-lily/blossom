@@ -34,11 +34,12 @@ def execute_hug(event, target)
     stats = DB.get_interactions(uid)['hug']
     check_achievement(event.channel, uid, 'hug_sent_10') if stats['sent'].to_i >= 10
     check_achievement(event.channel, uid, 'hug_sent_50') if stats['sent'].to_i >= 50
+    check_achievement(event.channel, uid, 'hug_sent_100') if stats['sent'].to_i >= 100
 
-    # Check milestones for the bot (Blossom) receiving the hug
     target_stats = DB.get_interactions(target_id)['hug']
     check_achievement(event.channel, target_id, 'hug_rec_10') if target_stats['received'].to_i >= 10
     check_achievement(event.channel, target_id, 'hug_rec_50') if target_stats['received'].to_i >= 50
+    check_achievement(event.channel, target_id, 'hug_rec_100') if target_stats['received'].to_i >= 100
 
     # --- STEP C: Fetch Final Stats for UI ---
     actor_stats = DB.get_interactions(event.user.id)['hug']

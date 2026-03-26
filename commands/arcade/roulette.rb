@@ -14,10 +14,14 @@ def execute_roulette(event, amount, bet)
 
   # 2. Validation: Check for valid amount and sufficient funds
   if amount <= 0 || DB.get_coins(uid) < amount
-    return send_embed(event, 
-      title: "#{EMOJIS['error']} Invalid Bet", 
-      description: "You don't have enough coins or entered an invalid amount!"
-    )
+    return send_cv2(event, [{
+      type: 17, accent_color: 0xFF0000,
+      components: [
+        { type: 10, content: "## ❌ Invalid Bet" },
+        { type: 14, spacing: 1 },
+        { type: 10, content: "You don't have enough coins or entered an invalid amount!" }
+      ]
+    }])
   end
 
   # 3. Data Map: Define the standard European Roulette red numbers
@@ -27,10 +31,14 @@ def execute_roulette(event, amount, bet)
   valid_bets = ['red', 'black', 'even', 'odd'] + (0..36).map(&:to_s)
 
   unless valid_bets.include?(bet)
-    return send_embed(event, 
-      title: "#{EMOJIS['error']} Invalid Bet Type", 
-      description: "You can only bet on `red`, `black`, `even`, `odd`, or a number from `0` to `36`."
-    )
+    return send_cv2(event, [{
+      type: 17, accent_color: 0xFF0000,
+      components: [
+        { type: 10, content: "## ❌ Invalid Bet Type" },
+        { type: 14, spacing: 1 },
+        { type: 10, content: "You can only bet on `red`, `black`, `even`, `odd`, or a number from `0` to `36`." }
+      ]
+    }])
   end
 
   # 5. Database: Deduct the initial bet amount
@@ -68,18 +76,32 @@ def execute_roulette(event, amount, bet)
   # 10. UI Logic: Select the appropriate emoji for the result color
   color_emoji = spin_color == 'red' ? '🔴' : (spin_color == 'black' ? '⚫' : '🟢')
 
-  # 11. Result: Handle the win/loss feedback
+  # 11. Achievements
+  check_achievement(event.channel, uid, 'roulette_play')
+  check_achievement(event.channel, uid, 'gamble_10k') if amount >= 10000
+
+  # 12. Result: Handle the win/loss feedback
   if win
     DB.add_coins(uid, payout)
-    send_embed(event, 
-      title: "🎰 Roulette Spin", 
-      description: "The dealer spins the wheel... It lands on **#{color_emoji} #{spin}**!\n\nYou bet on **#{bet}** and won **#{payout}** #{EMOJIS['s_coin']}!\nNew Balance: **#{DB.get_coins(uid)}** #{EMOJIS['s_coin']}"
-    )
+    check_achievement(event.channel, uid, 'roulette_number') if bet == spin.to_s
+    send_cv2(event, [{
+      type: 17, accent_color: 0x00FF00,
+      components: [
+        { type: 10, content: "## 🎰 Roulette Spin" },
+        { type: 14, spacing: 1 },
+        { type: 10, content: "The dealer spins the wheel... It lands on **#{color_emoji} #{spin}**!\n\nYou bet on **#{bet}** and won **#{payout}** 🪙!\nNew Balance: **#{DB.get_coins(uid)}** 🪙" }
+      ]
+    }])
   else
-    send_embed(event, 
-      title: "🎰 Roulette Spin", 
-      description: "The dealer spins the wheel... It lands on **#{color_emoji} #{spin}**.\n\nYou bet on **#{bet}** and lost **#{amount}** #{EMOJIS['s_coin']}.\nNew Balance: **#{DB.get_coins(uid)}** #{EMOJIS['s_coin']}"
-    )
+    check_achievement(event.channel, uid, 'gamble_broke') if amount >= 5000
+    send_cv2(event, [{
+      type: 17, accent_color: 0xFF0000,
+      components: [
+        { type: 10, content: "## 🎰 Roulette Spin" },
+        { type: 14, spacing: 1 },
+        { type: 10, content: "The dealer spins the wheel... It lands on **#{color_emoji} #{spin}**.\n\nYou bet on **#{bet}** and lost **#{amount}** 🪙.\nNew Balance: **#{DB.get_coins(uid)}** 🪙" }
+      ]
+    }])
   end
 end
 
@@ -92,10 +114,14 @@ $bot.command(:roulette,
 ) do |event, amount_str, bet_str|
   # Argument Check: Ensure both inputs are present
   if amount_str.nil? || bet_str.nil?
-    send_embed(event, 
-      title: "#{EMOJIS['confused']} Missing Arguments", 
-      description: "Place your bets!\n\n**Usage:** `#{PREFIX}roulette <amount> <bet>`\n**Valid Bets:** `red`, `black`, `even`, `odd`, or a number `0-36`."
-    )
+    send_cv2(event, [{
+      type: 17, accent_color: 0xFF0000,
+      components: [
+        { type: 10, content: "## 😕 Missing Arguments" },
+        { type: 14, spacing: 1 },
+        { type: 10, content: "Place your bets!\n\n**Usage:** `#{PREFIX}roulette <amount> <bet>`\n**Valid Bets:** `red`, `black`, `even`, `odd`, or a number `0-36`." }
+      ]
+    }])
     next
   end
 

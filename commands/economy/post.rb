@@ -20,10 +20,18 @@ def execute_post(event)
   # 3. Validation: Check if the user is currently on a social media break
   if last_used && (now - last_used) < active_cd
     remaining = active_cd - (now - last_used)
-    send_embed(event, 
-      title: "#{EMOJIS['error']} Social Media Break", 
-      description: "You're posting too fast! Don't get shadowbanned #{EMOJIS['nervous']}\nTry posting again in **#{format_time_delta(remaining)}**."
-    )
+    components = [
+      {
+        type: 17,
+        accent_color: 0xFF0000,
+        components: [
+          { type: 10, content: "## ❌ Social Media Break" },
+          { type: 14, spacing: 1 },
+          { type: 10, content: "You're posting too fast! Don't get shadowbanned 😰\nTry posting again in **#{format_time_delta(remaining)}**." }
+        ]
+      }
+    ]
+    send_cv2(event, components)
   else
     # 4. Calculation: Roll for base reward and select a random platform
     reward = rand(POST_REWARD_RANGE)
@@ -46,12 +54,22 @@ def execute_post(event)
     final_reward = award_coins(event.bot, uid, reward)
     DB.set_cooldown(uid, 'post', now)
 
-    # 8. UI: Construct the success Embed with the new balance
-    send_embed(event, 
-      title: "#{EMOJIS['like']} New Post Uploaded!", 
-      description: "Your latest post on **#{platform}** got a lot of engagement! You earned **#{final_reward}** #{EMOJIS['s_coin']}.#{bonus_text}\n" \
-                   "New balance: **#{DB.get_coins(uid)}** #{EMOJIS['s_coin']}."
-    )
+    # 8. Achievements
+    check_achievement(event.channel, uid, 'first_post')
+
+    # 9. UI: Construct the success CV2 with the new balance
+    components = [
+      {
+        type: 17,
+        accent_color: 0x00FF00,
+        components: [
+          { type: 10, content: "## 👍 New Post Uploaded!" },
+          { type: 14, spacing: 1 },
+          { type: 10, content: "Your latest post on **#{platform}** got a lot of engagement! You earned **#{final_reward}** 🪙.#{bonus_text}\nNew balance: **#{DB.get_coins(uid)}** 🪙." }
+        ]
+      }
+    ]
+    send_cv2(event, components)
   end
 end
 

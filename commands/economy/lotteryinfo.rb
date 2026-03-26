@@ -19,16 +19,23 @@ def execute_lotteryinfo(event)
   now = Time.now
   next_hour = Time.new(now.year, now.month, now.day, now.hour) + 3600
   
-  # 4. UI: Send the status summary via Embed
-  send_embed(
-    event,
-    title: "🎟️ Global Lottery Status",
-    description: "The winning ticket will be drawn **<t:#{next_hour.to_i}:R>**!\n\n" \
-                 "💰 **Current Prize Pool:** #{pool} #{EMOJIS['s_coin']}\n" \
-                 "🎫 **Total Tickets Sold:** #{stats[:total_tickets]}\n" \
-                 "🌸 **Your Tickets:** #{stats[:user_tickets]}\n\n" \
-                 "*Want to increase your odds? Use `#{PREFIX}lottery <amount>`!*"
-  )
+  # 4. UI: Send the status summary via CV2
+  components = [
+    {
+      type: 17,
+      accent_color: NEON_COLORS.sample,
+      components: [
+        { type: 10, content: "## 🎟️ Global Lottery Status" },
+        { type: 14, spacing: 1 },
+        { type: 10, content: "The winning ticket will be drawn **<t:#{next_hour.to_i}:R>**!\n\n" \
+                             "💰 **Current Prize Pool:** #{pool} 🪙\n" \
+                             "🎫 **Total Tickets Sold:** #{stats[:total_tickets]}\n" \
+                             "🌸 **Your Tickets:** #{stats[:user_tickets]}\n\n" \
+                             "*Want to increase your odds? Use `#{PREFIX}lottery <amount>`!*" }
+      ]
+    }
+  ]
+  send_cv2(event, components)
 end
 
 # ------------------------------------------

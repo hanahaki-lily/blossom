@@ -34,11 +34,12 @@ def execute_slap(event, target)
     stats = DB.get_interactions(uid)['slap']
     check_achievement(event.channel, uid, 'slap_sent_10') if stats['sent'].to_i >= 10
     check_achievement(event.channel, uid, 'slap_sent_50') if stats['sent'].to_i >= 50
+    check_achievement(event.channel, uid, 'slap_sent_100') if stats['sent'].to_i >= 100
 
-    # Check milestones for the bot (Blossom) receiving the slap
     target_stats = DB.get_interactions(target_id)['slap']
     check_achievement(event.channel, target_id, 'slap_rec_10') if target_stats['received'].to_i >= 10
     check_achievement(event.channel, target_id, 'slap_rec_50') if target_stats['received'].to_i >= 50
+    check_achievement(event.channel, target_id, 'slap_rec_100') if target_stats['received'].to_i >= 100
 
     # --- STEP C: Fetch Final Stats for UI ---
     actor_stats = DB.get_interactions(event.user.id)['slap']

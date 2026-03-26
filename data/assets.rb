@@ -12,18 +12,16 @@ EMOJIS = {
   'coins'        => '<a:coins:1476300477217112127>',
   's_coin'       => '<:s_coin:1476318407044628664>',
   'prisma'       => '<:prisma:1486142162805723196>',
-  'LevelUp'      => '<:LevelUp:1476317904705421332>',
   'bomb'         => '<a:bomb:1476321595877232802>',
   'work'         => '<a:work:1476300654120276148>',
   'stream'       => '<:stream:1476318017217368084>',
-  # Fallback emojis for keys used across the bot (replace with custom Discord emoji IDs when available)
+  # Fallback emojis for keys without custom Discord assets yet
   'heart'        => '💖',
   'x_'           => '❌',
   'developer'    => '🛠️',
   'confused'     => '❓',
   'neonsparkle'  => '✨',
   'surprise'     => '🎉',
-  'play'         => '▶️',
   'sparkle'      => '✨',
   'info'         => 'ℹ️',
 }.freeze

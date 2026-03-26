@@ -17,27 +17,30 @@ def execute_ascend(event, search_name)
   owned_name = user_chars.keys.find { |k| k.downcase == search_name }
 
   unless owned_name
-    return send_embed(event, 
-      title: "#{EMOJIS['error']} Ascension Failed", 
-      description: "You don't own any copies of **#{search_name}**!"
-    )
+    return send_cv2(event, [{ type: 17, accent_color: NEON_COLORS.sample, components: [
+      { type: 10, content: "## ❌ Ascension Failed" },
+      { type: 14, spacing: 1 },
+      { type: 10, content: "You don't own any copies of **#{search_name}**!" }
+    ]}])
   end
 
   # 3. Validation: Quantity Check (Requirement: 5 Copies)
   if user_chars[owned_name]['count'] < 5
-    return send_embed(event, 
-      title: "#{EMOJIS['nervous']} Not Enough Copies", 
-      description: "You need **5 copies** of #{owned_name} to ascend them. You only have **#{user_chars[owned_name]['count']}**."
-    )
+    return send_cv2(event, [{ type: 17, accent_color: NEON_COLORS.sample, components: [
+      { type: 10, content: "## 😰 Not Enough Copies" },
+      { type: 14, spacing: 1 },
+      { type: 10, content: "You need **5 copies** of #{owned_name} to ascend them. You only have **#{user_chars[owned_name]['count']}**." }
+    ]}])
   end
 
   # 4. Validation: Economy Check (Requirement: 5,000 Coins)
   ascension_cost = 5000
   if DB.get_coins(uid) < ascension_cost
-    return send_embed(event, 
-      title: "#{EMOJIS['nervous']} Insufficient Funds", 
-      description: "The ritual costs **#{ascension_cost}** #{EMOJIS['s_coin']}. You currently have **#{DB.get_coins(uid)}** #{EMOJIS['s_coin']}."
-    )
+    return send_cv2(event, [{ type: 17, accent_color: NEON_COLORS.sample, components: [
+      { type: 10, content: "## 😰 Insufficient Funds" },
+      { type: 14, spacing: 1 },
+      { type: 10, content: "The ritual costs **#{ascension_cost}** coins. You currently have **#{DB.get_coins(uid)}** coins." }
+    ]}])
   end
 
   # 5. Database: Deduct the ritual cost and perform the character transformation
@@ -48,13 +51,12 @@ def execute_ascend(event, search_name)
   # 6. Progression: Check if this triggers the 'ascension' achievement milestone
   check_achievement(event.channel, event.user.id, 'ascension')
 
-  # 7. UI: Send the success Embed with the "Shiny" announcement
-  send_embed(event, 
-    title: "#{EMOJIS['neonsparkle']} Ascension Complete! #{EMOJIS['neonsparkle']}", 
-    description: "You paid **#{ascension_cost}** #{EMOJIS['s_coin']} and fused 5 copies of **#{owned_name}** together!\n\n" \
-                 "They have been reborn as a **Shiny Ascended** character. View them in your `/collection`!",
-    color: 0xFFD700 # Gold/Ascension theme
-  )
+  # 7. UI: Send the success CV2 message with the "Shiny" announcement
+  send_cv2(event, [{ type: 17, accent_color: 0xFFD700, components: [
+    { type: 10, content: "## ✨ Ascension Complete! ✨" },
+    { type: 14, spacing: 1 },
+    { type: 10, content: "You paid **#{ascension_cost}** coins and fused 5 copies of **#{owned_name}** together!\n\nThey have been reborn as a **Shiny Ascended** character. View them in your `/collection`!" }
+  ]}])
 end
 
 # ------------------------------------------

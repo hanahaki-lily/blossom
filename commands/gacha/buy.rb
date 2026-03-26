@@ -10,7 +10,11 @@
 def execute_buy(event, search_name)
   # 1. Validation: Ensure an item name was provided
   if search_name.nil? || search_name.strip.empty?
-    return send_embed(event, title: "⚠️ Missing Name", description: "Who or what do you want to buy?")
+    return send_cv2(event, [{ type: 17, accent_color: NEON_COLORS.sample, components: [
+      { type: 10, content: "## ⚠️ Missing Name" },
+      { type: 14, spacing: 1 },
+      { type: 10, content: "Who or what do you want to buy?" }
+    ]}])
   end
 
   # 2. Initialization: Normalize search strings
@@ -21,11 +25,11 @@ def execute_buy(event, search_name)
   # Prevents users from bypassing the Event Hub during seasonal events.
   if is_event_character?(search_name)
     display_name = search_name.split.map(&:capitalize).join(' ') 
-    return send_embed(
-      event, 
-      title: "🎪 Event Exclusive!", 
-      description: "**#{display_name}** is a limited-time event character!\n\nYou can only purchase them from the Event Hub using #{SPRING_CARNIVAL[:emoji]}."
-    )
+    return send_cv2(event, [{ type: 17, accent_color: NEON_COLORS.sample, components: [
+      { type: 10, content: "## 🎪 Event Exclusive!" },
+      { type: 14, spacing: 1 },
+      { type: 10, content: "**#{display_name}** is a limited-time event character!\n\nYou can only purchase them from the Event Hub using #{SPRING_CARNIVAL[:emoji]}." }
+    ]}])
   end
 
   # 4. Branch: Black Market Items (Upgrades & Consumables)
@@ -35,14 +39,22 @@ def execute_buy(event, search_name)
 
     # A. Funds Check
     if DB.get_coins(uid) < price
-      return send_embed(event, title: "#{EMOJIS['nervous']} Insufficient Funds", description: "You need **#{price}** #{EMOJIS['s_coin']} to buy the #{item_data[:name]}.\nYou currently have **#{DB.get_coins(uid)}** #{EMOJIS['s_coin']}.")
+      return send_cv2(event, [{ type: 17, accent_color: NEON_COLORS.sample, components: [
+        { type: 10, content: "## 😰 Insufficient Funds" },
+        { type: 14, spacing: 1 },
+        { type: 10, content: "You need **#{price}** coins to buy the #{item_data[:name]}.\nYou currently have **#{DB.get_coins(uid)}** coins." }
+      ]}])
     end
 
     # B. Ownership Check: Prevent duplicate upgrades (Mic, Keyboard, etc.)
     inv_array = DB.get_inventory(uid)
     inv = inv_array.each_with_object({}) { |item, h| h[item['item_id']] = item['quantity'] }
     if item_data[:type] == 'upgrade' && inv[search_name] && inv[search_name] >= 1
-      return send_embed(event, title: "#{EMOJIS['confused']} Already Owned", description: "You already have the **#{item_data[:name]}** equipped in your setup!")
+      return send_cv2(event, [{ type: 17, accent_color: NEON_COLORS.sample, components: [
+        { type: 10, content: "## 😕 Already Owned" },
+        { type: 14, spacing: 1 },
+        { type: 10, content: "You already have the **#{item_data[:name]}** equipped in your setup!" }
+      ]}])
     end
 
     # C. Transaction: Deduct coins and add to inventory
@@ -60,38 +72,95 @@ def execute_buy(event, search_name)
     if search_name == 'gamer fuel'
       DB.remove_inventory(uid, search_name, 1)
       ['stream', 'post', 'collab'].each { |cd| DB.set_cooldown(uid, cd, nil) }
-      return send_embed(event, title: "🥫 Gamer Fuel Consumed!", description: "You cracked open a cold one and chugged it.\n**ALL your content creation cooldowns have been reset!** Get back to the grind.")
-    
+      check_achievement(event.channel, uid, 'use_fuel')
+      return send_cv2(event, [{ type: 17, accent_color: NEON_COLORS.sample, components: [
+        { type: 10, content: "## 🥫 Gamer Fuel Consumed!" },
+        { type: 14, spacing: 1 },
+        { type: 10, content: "You cracked open a cold one and chugged it.\n**ALL your content creation cooldowns have been reset!** Get back to the grind." }
+      ]}])
+
     elsif search_name == 'stamina pill'
       DB.remove_inventory(uid, search_name, 1)
       DB.set_cooldown(uid, 'summon', nil)
-      return send_embed(event, title: "💊 Stamina Pill Swallowed!", description: "You took a highly questionable Stamina Pill...\n**Your !summon cooldown has been instantly reset!** Get back to gambling.")
+      check_achievement(event.channel, uid, 'use_pill')
+      return send_cv2(event, [{ type: 17, accent_color: NEON_COLORS.sample, components: [
+        { type: 10, content: "## 💊 Stamina Pill Swallowed!" },
+        { type: 14, spacing: 1 },
+        { type: 10, content: "You took a highly questionable Stamina Pill...\n**Your !summon cooldown has been instantly reset!** Get back to gambling." }
+      ]}])
+
+    elsif search_name == 'rng manipulator'
+      check_achievement(event.channel, uid, 'use_rng')
     end
 
-    return send_embed(event, title: "🛒 Item Purchased!", description: "You successfully bought the **#{item_data[:name]}** for **#{price}** #{EMOJIS['s_coin']}!\nIt has been added to your inventory/setup.")
+    return send_cv2(event, [{ type: 17, accent_color: NEON_COLORS.sample, components: [
+      { type: 10, content: "## 🛒 Item Purchased!" },
+      { type: 14, spacing: 1 },
+      { type: 10, content: "You successfully bought the **#{item_data[:name]}** for **#{price}** coins!\nIt has been added to your inventory/setup." }
+    ]}])
   end
 
   # 5. Branch: Direct Character Purchase (Pity System)
   result = find_character_in_pools(search_name)
   unless result
-    return send_embed(event, title: "#{EMOJIS['error']} Shop Error", description: "I couldn't find a character or item named **#{search_name}**. Check your spelling!")
+    return send_cv2(event, [{ type: 17, accent_color: NEON_COLORS.sample, components: [
+      { type: 10, content: "## ❌ Shop Error" },
+      { type: 14, spacing: 1 },
+      { type: 10, content: "I couldn't find a character or item named **#{search_name}**. Check your spelling!" }
+    ]}])
   end
 
   char_data = result[:char]
   rarity    = result[:rarity]
   price     = SHOP_PRICES[rarity]
 
-  # A. Pricing Check: Some rarities may not be directly purchasable
+  # A. Goddess characters cost Prisma, not coins
+  if rarity == 'goddess'
+    prisma_price = GODDESS_PRISMA_PRICE
+    prisma_bal = DB.get_prisma(uid)
+
+    if prisma_bal < prisma_price
+      return send_cv2(event, [{ type: 17, accent_color: NEON_COLORS.sample, components: [
+        { type: 10, content: "## 💎 Not Enough Prisma" },
+        { type: 14, spacing: 1 },
+        { type: 10, content: "**#{char_data[:name]}** is a Goddess-tier character and costs **#{prisma_price}** Prisma.\nYou currently have **#{prisma_bal}** Prisma.\n\n*Earn Prisma through premium rewards and special events!*" }
+      ]}])
+    end
+
+    DB.add_prisma(uid, -prisma_price)
+    name = char_data[:name]
+    DB.add_character(uid, name, rarity.to_s, 1)
+    new_count = DB.get_collection(uid)[name]['count']
+    check_achievement(event.channel, uid, 'first_goddess_buy')
+
+    return send_cv2(event, [{ type: 17, accent_color: NEON_COLORS.sample, components: [
+      { type: 10, content: "## 💎 Goddess Acquired!" },
+      { type: 14, spacing: 1 },
+      { type: 10, content: "💎 You purchased **#{name}** for **#{prisma_price}** Prisma!\nYou now own **#{new_count}** of them." },
+      { type: 14, spacing: 1 },
+      { type: 10, content: "**Remaining Prisma:** #{DB.get_prisma(uid)} Prisma" }
+    ]}])
+  end
+
+  # B. Pricing Check: Some rarities may not be directly purchasable
   if price.nil?
-    return send_embed(event, title: "#{EMOJIS['x_']} Black Market Locked", description: "You cannot directly purchase **#{char_data[:name]}**. She can only be obtained through the gacha portal.")
+    return send_cv2(event, [{ type: 17, accent_color: NEON_COLORS.sample, components: [
+      { type: 10, content: "## ❌ Black Market Locked" },
+      { type: 14, spacing: 1 },
+      { type: 10, content: "You cannot directly purchase **#{char_data[:name]}**. She can only be obtained through the gacha portal." }
+    ]}])
   end
 
-  # B. Funds Check
+  # C. Funds Check
   if DB.get_coins(uid) < price
-    return send_embed(event, title: "#{EMOJIS['nervous']} Insufficient Funds", description: "You need **#{price}** #{EMOJIS['s_coin']} to buy a #{rarity.capitalize} character.\nYou currently have **#{DB.get_coins(uid)}** #{EMOJIS['s_coin']}.")
+    return send_cv2(event, [{ type: 17, accent_color: NEON_COLORS.sample, components: [
+      { type: 10, content: "## 😰 Insufficient Funds" },
+      { type: 14, spacing: 1 },
+      { type: 10, content: "You need **#{price}** coins to buy a #{rarity.capitalize} character.\nYou currently have **#{DB.get_coins(uid)}** coins." }
+    ]}])
   end
 
-  # C. Transaction & UI Response
+  # D. Transaction & UI Response
   DB.add_coins(uid, -price)
   name = char_data[:name]
   DB.add_character(uid, name, rarity.to_s, 1)
@@ -99,12 +168,13 @@ def execute_buy(event, search_name)
 
   emoji = { 'goddess' => '💎', 'legendary' => '🌟', 'rare' => '✨' }.fetch(rarity, '⭐')
 
-  send_embed(event, 
-    title: "#{EMOJIS['coins']} Purchase Successful!", 
-    description: "#{emoji} You directly purchased **#{name}** for **#{price}** #{EMOJIS['s_coin']}!\nYou now own **#{new_count}** of them.", 
-    fields: [{ name: 'Remaining Balance', value: "#{DB.get_coins(uid)} #{EMOJIS['s_coin']}", inline: true }], 
-    image: char_data[:gif]
-  )
+  send_cv2(event, [{ type: 17, accent_color: NEON_COLORS.sample, components: [
+    { type: 10, content: "## 🪙 Purchase Successful!" },
+    { type: 14, spacing: 1 },
+    { type: 10, content: "#{emoji} You directly purchased **#{name}** for **#{price}** coins!\nYou now own **#{new_count}** of them." },
+    { type: 14, spacing: 1 },
+    { type: 10, content: "**Remaining Balance:** #{DB.get_coins(uid)} coins" }
+  ]}])
 end
 
 # ------------------------------------------

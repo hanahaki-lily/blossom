@@ -15,20 +15,36 @@ def execute_sell(event, filter, rarity_opt = nil)
   # 2. Validation: Ensure the filter type is recognized
   valid_filters = ['all', 'over5', 'rarity']
   unless valid_filters.include?(filter)
-    return send_embed(event, 
-      title: "⚠️ Invalid Filter", 
-      description: "Please use a valid filter: `all`, `over5`, or `rarity <type>`.\nExample: `#{PREFIX}sell over5`"
-    )
+    components = [
+      {
+        type: 17,
+        accent_color: 0xFF0000,
+        components: [
+          { type: 10, content: "## ⚠️ Invalid Filter" },
+          { type: 14, spacing: 1 },
+          { type: 10, content: "Please use a valid filter: `all`, `over5`, or `rarity <type>`.\nExample: `#{PREFIX}sell over5`" }
+        ]
+      }
+    ]
+    return send_cv2(event, components)
   end
 
   # 3. Validation: If using the 'rarity' filter, ensure a valid rarity was provided
   if filter == 'rarity'
     valid_rarities = ['common', 'rare', 'legendary', 'goddess']
     unless valid_rarities.include?(rarity_opt&.downcase)
-      return send_embed(event, 
-        title: "⚠️ Missing Rarity", 
-        description: "Please specify a rarity: `common`, `rare`, `legendary`, or `goddess`.\nExample: `#{PREFIX}sell rarity common`"
-      )
+      components = [
+        {
+          type: 17,
+          accent_color: 0xFF0000,
+          components: [
+            { type: 10, content: "## ⚠️ Missing Rarity" },
+            { type: 14, spacing: 1 },
+            { type: 10, content: "Please specify a rarity: `common`, `rare`, `legendary`, or `goddess`.\nExample: `#{PREFIX}sell rarity common`" }
+          ]
+        }
+      ]
+      return send_cv2(event, components)
     end
     target_rarity = rarity_opt.downcase
   else
@@ -67,23 +83,41 @@ def execute_sell(event, filter, rarity_opt = nil)
 
   # 8. Result Check: Exit if no duplicates were found to be sold
   if sold_count == 0
-    return send_embed(event, 
-      title: "♻️ Nothing to Sell", 
-      description: "You don't have any cards that match that filter!"
-    )
+    components = [
+      {
+        type: 17,
+        accent_color: 0xFF0000,
+        components: [
+          { type: 10, content: "## ♻️ Nothing to Sell" },
+          { type: 14, spacing: 1 },
+          { type: 10, content: "You don't have any cards that match that filter!" }
+        ]
+      }
+    ]
+    return send_cv2(event, components)
   end
 
   # 9. Database: Grant the total profit to the user's balance
   DB.add_coins(uid, coins_earned)
 
-  # 10. UI: Send final success report via Embed
-  send_embed(
-    event,
-    title: "♻️ Duplicates Sold!",
-    description: "You successfully cleared out **#{sold_count}** duplicate cards! 🌸\n\n" \
-                 "💰 **Earned:** #{coins_earned} #{EMOJIS['s_coin']}\n" \
-                 "💳 **New Balance:** #{DB.get_coins(uid)} #{EMOJIS['s_coin']}"
-  )
+  # 10. Achievements
+  check_achievement(event.channel, uid, 'first_sell')
+
+  # 11. UI: Send final success report via CV2
+  components = [
+    {
+      type: 17,
+      accent_color: 0x00FF00,
+      components: [
+        { type: 10, content: "## ♻️ Duplicates Sold!" },
+        { type: 14, spacing: 1 },
+        { type: 10, content: "You successfully cleared out **#{sold_count}** duplicate cards! 🌸\n\n" \
+                             "💰 **Earned:** #{coins_earned} 🪙\n" \
+                             "💳 **New Balance:** #{DB.get_coins(uid)} 🪙" }
+      ]
+    }
+  ]
+  send_cv2(event, components)
 end
 
 # ------------------------------------------

@@ -19,7 +19,7 @@ def build_shop_home(user_id)
     v.row do |r|
       r.button(custom_id: "shop_catalog_#{user_id}_1", label: 'View Catalog', style: :primary, emoji: '📖')
       r.button(custom_id: "shop_blackmarket_#{user_id}", label: 'Tech Upgrades', style: :success, emoji: '🛒')
-      r.button(custom_id: "shop_sell_#{user_id}", label: 'Sell Duplicates', style: :danger, emoji: '♻️')
+      r.button(custom_id: "shop_prisma_#{user_id}", label: 'Prisma Shop', style: :danger, emoji: '💎')
     end
   end
   [embed, view]
@@ -76,6 +76,36 @@ def build_blackmarket_page(user_id)
   embed.title = "🛒 The Black Market"
   embed.description = desc
   embed.color = NEON_COLORS.sample
+
+  view = Discordrb::Components::View.new do |v|
+    v.row do |r|
+      r.button(custom_id: "shop_home_#{user_id}", label: 'Back to Shop', style: :secondary, emoji: '🔙')
+    end
+  end
+  [embed, view]
+end
+
+def build_prisma_shop(user_id)
+  # Gather all unique goddess characters from the pools
+  goddess_chars = []
+  CHARACTER_POOLS.values.each do |pool|
+    next unless pool[:characters][:goddess]
+    pool[:characters][:goddess].each { |c| goddess_chars << c[:name] }
+  end
+  goddess_chars = goddess_chars.uniq.sort
+
+  prisma_bal = DB.get_prisma(user_id)
+
+  desc = "Spend your hard-earned Prisma on the rarest characters in existence.\n\n"
+  desc += "💎 **Goddess Characters** — **#{GODDESS_PRISMA_PRICE}** #{EMOJIS['prisma']} each\n\n"
+  desc += goddess_chars.map { |name| "`#{name}`" }.join(', ')
+  desc += "\n\nYour Prisma: **#{prisma_bal}** #{EMOJIS['prisma']}"
+  desc += "\n\nUse `#{PREFIX}buy <Name>` to purchase!"
+
+  embed = Discordrb::Webhooks::Embed.new
+  embed.title = "💎 Prisma Shop"
+  embed.description = desc
+  embed.color = 0x9370DB
 
   view = Discordrb::Components::View.new do |v|
     v.row do |r|

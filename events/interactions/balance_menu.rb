@@ -28,12 +28,12 @@ $bot.select_menu(custom_id: /^bal_menu_/) do |event|
 
     badges = []
     badges << "#{EMOJIS['developer']} **Bot Developer**" if uid == DEV_ID
-    badges << "<:prisma:1486142162805723196> **Premium**" if is_sub 
+    badges << "#{EMOJIS['prisma']} **Premium**" if is_sub 
     
     header = badges.empty? ? "" : badges.join(" | ") + "\n\n"
 
     new_embed.title = "🌸 #{username}'s Balance"
-    new_embed.description = "#{header}**Coins:** #{coins} #{EMOJIS['s_coin']}\n**Prisma:** #{prisma} <:prisma:1486142162805723196>\n🔥 **Daily Streak:** #{daily_info['streak']} Days\n\n*Use the dropdown below to view your items and VTubers!*"
+    new_embed.description = "#{header}**Coins:** #{coins} #{EMOJIS['s_coin']}\n**Prisma:** #{prisma} #{EMOJIS['prisma']}\n🔥 **Daily Streak:** #{daily_info['streak']} Days\n\n*Use the dropdown below to view your items and VTubers!*"
 
   when 'inv'
     inv = DB.get_inventory(uid)

@@ -14,26 +14,50 @@ def execute_givecoins(event, target, amount_str)
 
   # 2. Validation: Prevent self-gifting or gifting to nobody
   if target.nil? || target.id == uid
-    return send_embed(event, 
-      title: "⚠️ Invalid Target", 
-      description: "You need to mention another user to give coins to!"
-    )
+    components = [
+      {
+        type: 17,
+        accent_color: 0xFF0000,
+        components: [
+          { type: 10, content: "## ⚠️ Invalid Target" },
+          { type: 14, spacing: 1 },
+          { type: 10, content: "You need to mention another user to give coins to!" }
+        ]
+      }
+    ]
+    return send_cv2(event, components)
   end
 
   # 3. Validation: Ensure the amount is a positive number
   if amount <= 0
-    return send_embed(event, 
-      title: "⚠️ Invalid Amount", 
-      description: "You must give at least 1 #{EMOJIS['s_coin']}."
-    )
+    components = [
+      {
+        type: 17,
+        accent_color: 0xFF0000,
+        components: [
+          { type: 10, content: "## ⚠️ Invalid Amount" },
+          { type: 14, spacing: 1 },
+          { type: 10, content: "You must give at least 1 🪙." }
+        ]
+      }
+    ]
+    return send_cv2(event, components)
   end
 
   # 4. Validation: Check if the sender has enough funds in the Database
   if DB.get_coins(uid) < amount
-    return send_embed(event, 
-      title: "#{EMOJIS['nervous']} Insufficient Funds", 
-      description: "You don't have **#{amount}** #{EMOJIS['s_coin']} to give!"
-    )
+    components = [
+      {
+        type: 17,
+        accent_color: 0xFF0000,
+        components: [
+          { type: 10, content: "## 😰 Insufficient Funds" },
+          { type: 14, spacing: 1 },
+          { type: 10, content: "You don't have **#{amount}** 🪙 to give!" }
+        ]
+      }
+    ]
+    return send_cv2(event, components)
   end
 
   # 5. Transaction: Deduct from sender and add to recipient
@@ -41,13 +65,22 @@ def execute_givecoins(event, target, amount_str)
   DB.add_coins(uid, -amount)
   DB.add_coins(target.id, amount)
 
-  # 6. UI: Confirm the successful transfer via Embed
-  send_embed(
-    event, 
-    title: "💸 Coins Transferred!", 
-    description: "#{event.user.mention} gave **#{amount}** #{EMOJIS['s_coin']} to #{target.mention}!\n\n" \
-                 "Your new balance: **#{DB.get_coins(uid)}** #{EMOJIS['s_coin']}"
-  )
+  # 6. Achievements
+  check_achievement(event.channel, uid, 'first_givecoins')
+
+  # 7. UI: Confirm the successful transfer via CV2
+  components = [
+    {
+      type: 17,
+      accent_color: 0x00FF00,
+      components: [
+        { type: 10, content: "## 💸 Coins Transferred!" },
+        { type: 14, spacing: 1 },
+        { type: 10, content: "#{event.user.mention} gave **#{amount}** 🪙 to #{target.mention}!\n\nYour new balance: **#{DB.get_coins(uid)}** 🪙" }
+      ]
+    }
+  ]
+  send_cv2(event, components)
 end
 
 # ------------------------------------------

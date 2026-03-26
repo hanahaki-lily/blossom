@@ -13,18 +13,26 @@ def execute_cups(event, amount, guess)
 
   # 2. Validation: Check for a positive bet and sufficient funds
   if amount <= 0 || DB.get_coins(uid) < amount
-    return send_embed(event, 
-      title: "#{EMOJIS['error']} Invalid Bet", 
-      description: "You don't have enough coins or entered an invalid amount!"
-    )
+    return send_cv2(event, [{
+      type: 17, accent_color: 0xFF0000,
+      components: [
+        { type: 10, content: "## ❌ Invalid Bet" },
+        { type: 14, spacing: 1 },
+        { type: 10, content: "You don't have enough coins or entered an invalid amount!" }
+      ]
+    }])
   end
 
   # 3. Validation: Ensure the user picked a valid cup (1, 2, or 3)
   unless [1, 2, 3].include?(guess)
-    return send_embed(event, 
-      title: "#{EMOJIS['error']} Invalid Cup", 
-      description: "You must pick cup `1`, `2`, or `3`."
-    )
+    return send_cv2(event, [{
+      type: 17, accent_color: 0xFF0000,
+      components: [
+        { type: 10, content: "## ❌ Invalid Cup" },
+        { type: 14, spacing: 1 },
+        { type: 10, content: "You must pick cup `1`, `2`, or `3`." }
+      ]
+    }])
   end
 
   # 4. Calculation: Deduct the bet and determine the winning cup
@@ -34,22 +42,34 @@ def execute_cups(event, amount, guess)
   # 5. UI Logic: Create the visual "lifted cups" display string
   cups_display = [1, 2, 3].map { |c| c == winning_cup ? '🪙' : '🥤' }.join('   ')
 
-  # 6. Result: Handle the win or loss scenarios
+  # 6. Achievements
+  check_achievement(event.channel, uid, 'cups_play')
+  check_achievement(event.channel, uid, 'gamble_10k') if amount >= 10000
+
+  # 7. Result: Handle the win or loss scenarios
   if guess == winning_cup
     # Win: Triple the original bet!
     payout = amount * 3
     DB.add_coins(uid, payout)
-    
-    send_embed(event, 
-      title: "🥤 The Shell Game", 
-      description: "Blossom lifts cup ##{winning_cup}...\n\n**#{cups_display}**\n\nYou found it! You won **#{payout}** #{EMOJIS['s_coin']}!\nNew Balance: **#{DB.get_coins(uid)}** #{EMOJIS['s_coin']}"
-    )
+
+    send_cv2(event, [{
+      type: 17, accent_color: 0x00FF00,
+      components: [
+        { type: 10, content: "## 🥤 The Shell Game" },
+        { type: 14, spacing: 1 },
+        { type: 10, content: "Blossom lifts cup ##{winning_cup}...\n\n**#{cups_display}**\n\nYou found it! You won **#{payout}** 🪙!\nNew Balance: **#{DB.get_coins(uid)}** 🪙" }
+      ]
+    }])
   else
     # Loss: The user picked wrong; reveal where it was
-    send_embed(event, 
-      title: "🥤 The Shell Game", 
-      description: "Blossom lifts cup ##{guess}...\nEmpty! The coin was under cup ##{winning_cup}.\n\n**#{cups_display}**\n\nYou lost **#{amount}** #{EMOJIS['s_coin']}.\nNew Balance: **#{DB.get_coins(uid)}** #{EMOJIS['s_coin']}"
-    )
+    send_cv2(event, [{
+      type: 17, accent_color: 0xFF0000,
+      components: [
+        { type: 10, content: "## 🥤 The Shell Game" },
+        { type: 14, spacing: 1 },
+        { type: 10, content: "Blossom lifts cup ##{guess}...\nEmpty! The coin was under cup ##{winning_cup}.\n\n**#{cups_display}**\n\nYou lost **#{amount}** 🪙.\nNew Balance: **#{DB.get_coins(uid)}** 🪙" }
+      ]
+    }])
   end
 end
 
@@ -62,10 +82,14 @@ $bot.command(:cups,
 ) do |event, amount_str, guess_str|
   # Argument Check: Ensure amount and guess are provided
   if amount_str.nil? || guess_str.nil?
-    send_embed(event, 
-      title: "#{EMOJIS['confused']} Missing Arguments", 
-      description: "Keep your eye on the cup!\n\n**Usage:** `#{PREFIX}cups <amount> <1/2/3>`"
-    )
+    send_cv2(event, [{
+      type: 17, accent_color: 0xFF0000,
+      components: [
+        { type: 10, content: "## 😕 Missing Arguments" },
+        { type: 14, spacing: 1 },
+        { type: 10, content: "Keep your eye on the cup!\n\n**Usage:** `#{PREFIX}cups <amount> <1/2/3>`" }
+      ]
+    }])
     next
   end
 

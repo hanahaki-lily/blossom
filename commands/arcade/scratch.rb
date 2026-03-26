@@ -14,10 +14,14 @@ def execute_scratch(event)
 
   # 2. Validation: Check if the user can afford the ticket
   if DB.get_coins(uid) < ticket_price
-    return send_embed(event, 
-      title: "#{EMOJIS['nervous']} Insufficient Funds", 
-      description: "You need **#{ticket_price}** #{EMOJIS['s_coin']} to buy a scratch-off ticket."
-    )
+    return send_cv2(event, [{
+      type: 17, accent_color: 0xFF0000,
+      components: [
+        { type: 10, content: "## 😰 Insufficient Funds" },
+        { type: 14, spacing: 1 },
+        { type: 10, content: "You need **#{ticket_price}** 🪙 to buy a scratch-off ticket." }
+      ]
+    }])
   end
 
   # 3. Database: Deduct the price immediately (No refunds on scratchers!)
@@ -27,7 +31,10 @@ def execute_scratch(event)
   pool = ['💀', '💀', '💀', '🍒', '🍒', '🍋', '🍋', '💎', '🌟']
   result = [pool.sample, pool.sample, pool.sample]
 
-  # 5. Logic: Check for a match (using .uniq.size == 1 confirms all items are identical)
+  # 5. Achievements
+  check_achievement(event.channel, uid, 'scratch_play')
+
+  # 6. Logic: Check for a match (using .uniq.size == 1 confirms all items are identical)
   if result.uniq.size == 1
     # 6. Payout Mapping: Determine the prize based on the winning symbol
     payout = case result[0]
@@ -41,18 +48,27 @@ def execute_scratch(event)
 
     # 7. Database: Grant the payout to the user
     DB.add_coins(uid, payout)
+    check_achievement(event.channel, uid, 'scratch_jackpot') if result[0] == '🌟'
     
     # 8. UI: Send the "Winner" response
-    send_embed(event, 
-      title: "🎫 Scratch-Off Ticket", 
-      description: "**[ #{result.join(' | ')} ]**\n\n**WINNER!** You matched three **#{result[0]}** and won **#{payout}** #{EMOJIS['s_coin']}!\nNew Balance: **#{DB.get_coins(uid)}** #{EMOJIS['s_coin']}"
-    )
+    send_cv2(event, [{
+      type: 17, accent_color: 0x00FF00,
+      components: [
+        { type: 10, content: "## 🎫 Scratch-Off Ticket" },
+        { type: 14, spacing: 1 },
+        { type: 10, content: "**[ #{result.join(' | ')} ]**\n\n**WINNER!** You matched three **#{result[0]}** and won **#{payout}** 🪙!\nNew Balance: **#{DB.get_coins(uid)}** 🪙" }
+      ]
+    }])
   else
     # 9. UI: Send the "Loss" response
-    send_embed(event, 
-      title: "🎫 Scratch-Off Ticket", 
-      description: "**[ #{result.join(' | ')} ]**\n\nNo match... Better luck next ticket. #{EMOJIS['worktired']}\nNew Balance: **#{DB.get_coins(uid)}** #{EMOJIS['s_coin']}"
-    )
+    send_cv2(event, [{
+      type: 17, accent_color: 0xFF0000,
+      components: [
+        { type: 10, content: "## 🎫 Scratch-Off Ticket" },
+        { type: 14, spacing: 1 },
+        { type: 10, content: "**[ #{result.join(' | ')} ]**\n\nNo match... Better luck next ticket. 😩\nNew Balance: **#{DB.get_coins(uid)}** 🪙" }
+      ]
+    }])
   end
 end
 

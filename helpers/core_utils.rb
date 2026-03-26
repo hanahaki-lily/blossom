@@ -49,6 +49,29 @@ def send_embed(event, title:, description:, fields: nil, image: nil, color: nil)
   end
 end
 
+# Sends a Components V2 message for both slash and prefix commands.
+# For slash commands, uses the interaction response with the CV2 flag.
+# For prefix commands, calls the Discord API directly since discordrb
+# doesn't support the `flags` field on regular messages.
+CV2_FLAG = 1 << 15 unless defined?(CV2_FLAG)
+
+def send_cv2(event, components)
+  if event.is_a?(Discordrb::Events::ApplicationCommandEvent)
+    event.respond(content: '', flags: CV2_FLAG, components: components)
+  else
+    body = { content: '', flags: CV2_FLAG, components: components }.to_json
+    Discordrb::API.request(
+      :channels_cid_messages_mid,
+      event.channel.id,
+      :post,
+      "#{Discordrb::API.api_base}/channels/#{event.channel.id}/messages",
+      body,
+      Authorization: $bot.token,
+      content_type: :json
+    )
+  end
+end
+
 def log_mod_action(bot, server_id, title, description, color = 0x800080)
   config = DB.get_log_config(server_id)
   return unless config && config['log_mod'] && config['log_channel']

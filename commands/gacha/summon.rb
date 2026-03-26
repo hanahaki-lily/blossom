@@ -97,6 +97,7 @@ def execute_summon(event)
 
   # 10. Progression: Trigger achievements and set new cooldown
   check_achievement(event.channel, uid, 'first_pull')
+  check_achievement(event.channel, uid, 'leg_pull') if rarity == :legendary
   check_achievement(event.channel, uid, 'goddess_luck') if rarity == :goddess
   DB.set_cooldown(uid, 'summon', now)
 

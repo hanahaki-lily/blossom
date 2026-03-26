@@ -34,6 +34,19 @@ $bot.button(custom_id: /^shop_home_(\d+)$/) do |event|
   event.update_message(content: nil, embeds: [new_embed], components: new_view)
 end
 
+# Handler for opening the Prisma Shop page
+$bot.button(custom_id: /^shop_prisma_(\d+)$/) do |event|
+  uid = event.custom_id.match(/^shop_prisma_(\d+)$/)[1].to_i
+
+  if event.user.id != uid
+    event.respond(content: "🌸 *You cannot use someone else's shop menu!*", ephemeral: true)
+    next
+  end
+
+  new_embed, new_view = build_prisma_shop(uid)
+  event.update_message(content: nil, embeds: [new_embed], components: new_view)
+end
+
 # Handler for opening the secretive Black Market page
 $bot.button(custom_id: /^shop_blackmarket_(\d+)$/) do |event|
   begin

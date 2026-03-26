@@ -4,6 +4,65 @@
 # for Blossom's general navigation tools.
 # ==========================================
 
+# Builds the raw CV2 select menu action row for the help menu dropdown.
+def help_select_menu_raw(user_id)
+  emoji_map = { 'Economy' => '💰', 'Gacha' => '🌟', 'Arcade' => '🕹️', 'Fun' => '🎉', 'Utility' => '🔧', 'Admin' => '🛡️' }
+  visible_categories = COMMAND_CATEGORIES.keys - ['Developer']
+
+  options = [{ label: 'Home', value: 'Home', emoji: { name: '🏠' }, description: 'Return to the main menu' }]
+  visible_categories.each do |cat|
+    options << { label: cat, value: cat, emoji: { name: emoji_map[cat] || '🌸' } }
+  end
+
+  {
+    type: 1, # Action Row
+    components: [{
+      type: 3, # String Select Menu
+      custom_id: "help_menu_#{user_id}",
+      placeholder: 'Select a category to explore...',
+      max_values: 1,
+      options: options
+    }]
+  }
+end
+
+# Generates the full CV2 component array for a help page (container + select menu).
+def help_cv2_components(bot, user_id, category)
+  if category == 'Home'
+    text_content = "Welcome to Blossom's help menu! 🌸\n\n" \
+                   "**Prefix:** `#{PREFIX}`\n" \
+                   "*All commands listed can be used as both Slash Commands (`/`) and Prefix Commands!*\n\n" \
+                   "Use the dropdown menu below to explore the different categories."
+    inner = [
+      { type: 10, content: "## #{EMOJIS['info']} Blossom Help Menu" },
+      { type: 14, spacing: 1 },
+      { type: 10, content: text_content }
+    ]
+  else
+    if COMMAND_CATEGORIES[category]
+      cmd_list = COMMAND_CATEGORIES[category].map do |cmd_sym|
+        cmd = bot.commands[cmd_sym]
+        desc = cmd ? (cmd.attributes[:description] || 'No description provided.') : 'No description provided.'
+        "`#{cmd_sym}` — #{desc}"
+      end
+      text_content = "**Prefix:** `#{PREFIX}` | **Slash:** `/`\n\n" + cmd_list.join("\n")
+    else
+      text_content = "*No commands found in this category.*"
+    end
+
+    inner = [
+      { type: 10, content: "## 🌸 Help: #{category}" },
+      { type: 14, spacing: 1 },
+      { type: 10, content: text_content }
+    ]
+  end
+
+  [
+    { type: 17, accent_color: NEON_COLORS.sample, components: inner },
+    help_select_menu_raw(user_id)
+  ]
+end
+
 def generate_category_embed(bot, user_obj, category)
   embed = Discordrb::Webhooks::Embed.new
   embed.color = NEON_COLORS.sample

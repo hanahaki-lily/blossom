@@ -13,28 +13,31 @@ def execute_givecard(event, target, char_name)
   # 1. Validation: Target check
   # Prevents giving cards to yourself or trying to gift "nobody."
   if target.nil? || target.id == uid
-    return send_embed(event, 
-      title: "⚠️ Invalid Target", 
-      description: "You need to mention another user to give a card to!"
-    )
+    return send_cv2(event, [{ type: 17, accent_color: NEON_COLORS.sample, components: [
+      { type: 10, content: "## ⚠️ Invalid Target" },
+      { type: 14, spacing: 1 },
+      { type: 10, content: "You need to mention another user to give a card to!" }
+    ]}])
   end
 
   # 2. Validation: Input check
   if char_name.nil? || char_name.strip.empty?
-    return send_embed(event, 
-      title: "⚠️ Missing Character", 
-      description: "Please specify the character you want to give."
-    )
+    return send_cv2(event, [{ type: 17, accent_color: NEON_COLORS.sample, components: [
+      { type: 10, content: "## ⚠️ Missing Character" },
+      { type: 14, spacing: 1 },
+      { type: 10, content: "Please specify the character you want to give." }
+    ]}])
   end
 
   # 3. Data Search: Find the character in the global pools
   # This ensures we get the proper case-sensitive name and rarity.
   pool_data = find_character_in_pools(char_name)
   unless pool_data
-    return send_embed(event, 
-      title: "⚠️ Unknown Character", 
-      description: "I couldn't find a character named **#{char_name}** in the pools."
-    )
+    return send_cv2(event, [{ type: 17, accent_color: NEON_COLORS.sample, components: [
+      { type: 10, content: "## ⚠️ Unknown Character" },
+      { type: 14, spacing: 1 },
+      { type: 10, content: "I couldn't find a character named **#{char_name}** in the pools." }
+    ]}])
   end
 
   proper_name = pool_data[:char][:name]
@@ -44,15 +47,18 @@ def execute_givecard(event, target, char_name)
   # Note: This logic only checks for unascended (base) copies.
   giver_collection = DB.get_collection(uid)
   if giver_collection[proper_name].nil? || giver_collection[proper_name]['count'] <= 0
-    return send_embed(event, 
-      title: "❌ Missing Card", 
-      description: "You don't own any unascended copies of **#{proper_name}** to give away!"
-    )
+    return send_cv2(event, [{ type: 17, accent_color: NEON_COLORS.sample, components: [
+      { type: 10, content: "## ❌ Missing Card" },
+      { type: 14, spacing: 1 },
+      { type: 10, content: "You don't own any unascended copies of **#{proper_name}** to give away!" }
+    ]}])
   end
 
   # 5. Database Transaction: Transfer the card
-  # This should decrement the giver's count and increment the receiver's.
   DB.give_card(uid, target.id, proper_name, rarity)
+
+  # 6. Achievements
+  check_achievement(event.channel, uid, 'first_givecard')
 
   # 6. UI: Select the rarity emoji for the announcement
   emoji = case rarity
@@ -62,13 +68,12 @@ def execute_givecard(event, target, char_name)
           else '⭐'
           end
 
-  # 7. Messaging: Send the success announcement Embed
-  send_embed(
-    event,
-    title: "🎁 Card Transferred!",
-    description: "#{event.user.mention} generously gave **#{proper_name}** to #{target.mention}! 🌸\n\n" \
-                 "*(Rarity: #{rarity.capitalize} #{emoji})*"
-  )
+  # 7. Messaging: Send the success announcement CV2 message
+  send_cv2(event, [{ type: 17, accent_color: NEON_COLORS.sample, components: [
+    { type: 10, content: "## 🎁 Card Transferred!" },
+    { type: 14, spacing: 1 },
+    { type: 10, content: "#{event.user.mention} generously gave **#{proper_name}** to #{target.mention}! 🌸\n\n*(Rarity: #{rarity.capitalize} #{emoji})*" }
+  ]}])
 end
 
 # ------------------------------------------

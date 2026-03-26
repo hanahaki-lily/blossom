@@ -21,21 +21,36 @@ def execute_remindme(event)
     # --- TURN OFF ---
     # Passing nil clears the channel ID in the database
     DB.toggle_daily_reminder(uid, nil)
-    
-    send_embed(event, 
-      title: "🔔 Daily Reminder", 
-      description: "I have turned **OFF** your daily reminder!"
-    )
+
+    components = [
+      {
+        type: 17,
+        accent_color: 0xFF0000,
+        components: [
+          { type: 10, content: "## 🔔 Daily Reminder" },
+          { type: 14, spacing: 1 },
+          { type: 10, content: "I have turned **OFF** your daily reminder!" }
+        ]
+      }
+    ]
+    send_cv2(event, components)
   else
     # --- TURN ON ---
     # Store the current channel ID so Blossom knows where to send the ping
     DB.toggle_daily_reminder(uid, channel_id)
-    
-    send_embed(event, 
-      title: "🔔 Daily Reminder", 
-      description: "I have turned **ON** your daily reminder! 🌸\n" \
-                   "I will ping you right here in #{event.channel.mention} when your next daily is ready."
-    )
+
+    components = [
+      {
+        type: 17,
+        accent_color: 0x00FF00,
+        components: [
+          { type: 10, content: "## 🔔 Daily Reminder" },
+          { type: 14, spacing: 1 },
+          { type: 10, content: "I have turned **ON** your daily reminder! 🌸\nI will ping you right here in #{event.channel.mention} when your next daily is ready." }
+        ]
+      }
+    ]
+    send_cv2(event, components)
   end
 end
 

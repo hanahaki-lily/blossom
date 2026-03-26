@@ -13,15 +13,20 @@ def execute_slots(event, amount)
 
   # 2. Validation: Ensure the bet is valid and the user is "good for it"
   if amount <= 0 || DB.get_coins(uid) < amount
-    return send_embed(event, 
-      title: "#{EMOJIS['error']} Invalid Bet", 
-      description: "You don't have enough coins or entered an invalid amount!\nYou currently have **#{DB.get_coins(uid)}** #{EMOJIS['s_coin']}."
-    )
+    return send_cv2(event, [{
+      type: 17, accent_color: 0xFF0000,
+      components: [
+        { type: 10, content: "## ❌ Invalid Bet" },
+        { type: 14, spacing: 1 },
+        { type: 10, content: "You don't have enough coins or entered an invalid amount!\nYou currently have **#{DB.get_coins(uid)}** 🪙." }
+      ]
+    }])
   end
 
   # 3. Database & Progression: Deduct the bet and track the spin achievement
   DB.add_coins(uid, -amount)
-  check_achievement(event.channel, event.user.id, 'slots_spin')
+  check_achievement(event.channel, uid, 'slots_spin')
+  check_achievement(event.channel, uid, 'gamble_10k') if amount >= 10000
 
   # 4. Simulation: Define the reel icons and spin the 3 reels
   slot_icons = ['🍒', '🍋', '🔔', '💎', '7️⃣']
@@ -32,28 +37,41 @@ def execute_slots(event, amount)
     # JACKPOT: All three symbols match (5x Payout)
     winnings = amount * 5
     DB.add_coins(uid, winnings)
-    
-    send_embed(event, 
-      title: "🎰 Neon Slots", 
-      description: "[ #{spin.join(' | ')} ]\n\n**JACKPOT!** #{EMOJIS['sparkle']}\nYou won **#{winnings}** #{EMOJIS['s_coin']}!\nNew Balance: **#{DB.get_coins(uid)}** #{EMOJIS['s_coin']}"
-    )
+    check_achievement(event.channel, uid, 'slots_jackpot')
+
+    send_cv2(event, [{
+      type: 17, accent_color: 0x00FF00,
+      components: [
+        { type: 10, content: "## 🎰 Neon Slots" },
+        { type: 14, spacing: 1 },
+        { type: 10, content: "[ #{spin.join(' | ')} ]\n\n**JACKPOT!** ✨\nYou won **#{winnings}** 🪙!\nNew Balance: **#{DB.get_coins(uid)}** 🪙" }
+      ]
+    }])
 
   elsif spin.uniq.size == 2
     # PARTIAL MATCH: Two symbols match (2x Payout)
     winnings = amount * 2
     DB.add_coins(uid, winnings)
-    
-    send_embed(event, 
-      title: "🎰 Neon Slots", 
-      description: "[ #{spin.join(' | ')} ]\n\nNice! You matched two and won **#{winnings}** #{EMOJIS['s_coin']}!\nNew Balance: **#{DB.get_coins(uid)}** #{EMOJIS['s_coin']}"
-    )
+
+    send_cv2(event, [{
+      type: 17, accent_color: 0x00FF00,
+      components: [
+        { type: 10, content: "## 🎰 Neon Slots" },
+        { type: 14, spacing: 1 },
+        { type: 10, content: "[ #{spin.join(' | ')} ]\n\nNice! You matched two and won **#{winnings}** 🪙!\nNew Balance: **#{DB.get_coins(uid)}** 🪙" }
+      ]
+    }])
 
   else
     # LOSS: No matches found
-    send_embed(event, 
-      title: "🎰 Neon Slots", 
-      description: "[ #{spin.join(' | ')} ]\n\nYou lost your bet... Better luck next spin. #{EMOJIS['worktired']}\nNew Balance: **#{DB.get_coins(uid)}** #{EMOJIS['s_coin']}"
-    )
+    send_cv2(event, [{
+      type: 17, accent_color: 0xFF0000,
+      components: [
+        { type: 10, content: "## 🎰 Neon Slots" },
+        { type: 14, spacing: 1 },
+        { type: 10, content: "[ #{spin.join(' | ')} ]\n\nYou lost your bet... Better luck next spin. 😩\nNew Balance: **#{DB.get_coins(uid)}** 🪙" }
+      ]
+    }])
   end
 end
 
@@ -66,10 +84,14 @@ $bot.command(:slots,
 ) do |event, amount_str|
   # Argument Check: Ensure an amount was provided
   if amount_str.nil?
-    send_embed(event, 
-      title: "#{EMOJIS['confused']} Missing Arguments", 
-      description: "You need to drop some coins into the machine first!\n\n**Usage:** `#{PREFIX}slots <amount>`"
-    )
+    send_cv2(event, [{
+      type: 17, accent_color: 0xFF0000,
+      components: [
+        { type: 10, content: "## 😕 Missing Arguments" },
+        { type: 14, spacing: 1 },
+        { type: 10, content: "You need to drop some coins into the machine first!\n\n**Usage:** `#{PREFIX}slots <amount>`" }
+      ]
+    }])
     next
   end
 

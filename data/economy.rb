@@ -25,6 +25,7 @@ COLLAB_COOLDOWN = 30 * 60
 SUMMON_COST = 100
 
 SHOP_PRICES = { 'common' => 1_000, 'rare' => 5_000, 'legendary' => 25_000 }.freeze
+GODDESS_PRISMA_PRICE = 100
 SELL_PRICES = { 'common' => 50, 'rare' => 250, 'legendary' => 1_000, 'goddess' => 5_000 }.freeze
 
 BLACK_MARKET_ITEMS = {

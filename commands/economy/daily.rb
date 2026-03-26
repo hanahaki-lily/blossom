@@ -22,10 +22,18 @@ def execute_daily(event)
   # 3. Validation: Cooldown Check (24-hour gate)
   if last_used && (now - last_used) < DAILY_COOLDOWN
     remaining = DAILY_COOLDOWN - (now - last_used)
-    return send_embed(event, 
-      title: "#{EMOJIS['coin']} Daily Reward", 
-      description: "You already claimed your daily revenue! #{EMOJIS['worktired']}\nTry again in **#{format_time_delta(remaining)}**."
-    )
+    components = [
+      {
+        type: 17,
+        accent_color: 0xFF0000,
+        components: [
+          { type: 10, content: "## 🪙 Daily Reward" },
+          { type: 14, spacing: 1 },
+          { type: 10, content: "You already claimed your daily revenue! 😩\nTry again in **#{format_time_delta(remaining)}**." }
+        ]
+      }
+    ]
+    return send_cv2(event, components)
   end
 
   # 4. Logic: Streak Calculation (Reset if > 48 hours since last claim)
@@ -71,13 +79,19 @@ def execute_daily(event)
   check_achievement(event.channel, uid, 'streak_100') if new_streak == 100
   check_achievement(event.channel, uid, 'streak_365') if new_streak == 365
   
-  # 10. UI: Send Final Confirmation Embed
-  send_embed(
-    event, 
-    title: "#{EMOJIS['coin']} Daily Reward", 
-    description: "You claimed **#{final_reward}** #{EMOJIS['s_coin']}!#{streak_msg}#{bonus_text}\n\n" \
-                 "New balance: **#{DB.get_coins(uid)}** #{EMOJIS['s_coin']}."
-  )
+  # 10. UI: Send Final Confirmation via CV2
+  components = [
+    {
+      type: 17,
+      accent_color: 0x00FF00,
+      components: [
+        { type: 10, content: "## 🪙 Daily Reward" },
+        { type: 14, spacing: 1 },
+        { type: 10, content: "You claimed **#{final_reward}** 🪙!#{streak_msg}#{bonus_text}\n\nNew balance: **#{DB.get_coins(uid)}** 🪙." }
+      ]
+    }
+  ]
+  send_cv2(event, components)
 end
 
 # ------------------------------------------

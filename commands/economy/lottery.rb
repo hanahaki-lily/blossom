@@ -18,33 +18,51 @@ def execute_lottery(event, amount)
   balance = DB.get_coins(uid)
 
   if balance < cost
-    return send_embed(event, 
-      title: "❌ Not Enough Coins", 
-      description: "You need **#{cost}** #{EMOJIS['s_coin']} for #{amount} tickets!\nYour Balance: **#{balance}**"
-    )
+    components = [
+      {
+        type: 17,
+        accent_color: 0xFF0000,
+        components: [
+          { type: 10, content: "## ❌ Not Enough Coins" },
+          { type: 14, spacing: 1 },
+          { type: 10, content: "You need **#{cost}** 🪙 for #{amount} tickets!\nYour Balance: **#{balance}**" }
+        ]
+      }
+    ]
+    return send_cv2(event, components)
   end
 
   # 3. Database: Deduct the cost and record the lottery entry
   DB.add_coins(uid, -cost)
   DB.enter_lottery(uid, amount)
   
-  # 4. Data Retrieval: Fetch fresh stats for the prize pool calculation
+  # 4. Achievements
+  check_achievement(event.channel, uid, 'lottery_enter')
+
+  # 5. Data Retrieval: Fetch fresh stats for the prize pool calculation
   stats = DB.get_lottery_stats(uid)
   
   # 5. Calculation: Determine the current prize pool 
   # (Base 100 coins + 100 coins for every ticket sold globally)
   pool = 100 + (stats[:total_tickets] * 100)
 
-  # 6. UI: Construct the entry confirmation Embed
-  send_embed(
-    event, 
-    title: "🎟️ Lottery Entered!", 
-    description: "You bought **#{amount}** tickets! 🌸\n\n" \
-                 "💰 **Current Prize Pool:** #{pool} #{EMOJIS['s_coin']}\n" \
-                 "🎫 **Total Tickets Sold:** #{stats[:total_tickets]}\n" \
-                 "👤 **Your Tickets:** #{stats[:user_tickets]}\n\n" \
-                 "*Blossom will DM the winner at the top of the hour!*"
-  )
+  # 6. UI: Construct the entry confirmation via CV2
+  components = [
+    {
+      type: 17,
+      accent_color: 0x00FF00,
+      components: [
+        { type: 10, content: "## 🎟️ Lottery Entered!" },
+        { type: 14, spacing: 1 },
+        { type: 10, content: "You bought **#{amount}** tickets! 🌸\n\n" \
+                             "💰 **Current Prize Pool:** #{pool} 🪙\n" \
+                             "🎫 **Total Tickets Sold:** #{stats[:total_tickets]}\n" \
+                             "👤 **Your Tickets:** #{stats[:user_tickets]}\n\n" \
+                             "*Blossom will DM the winner at the top of the hour!*" }
+      ]
+    }
+  ]
+  send_cv2(event, components)
 end
 
 # ------------------------------------------
