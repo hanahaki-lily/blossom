@@ -37,7 +37,7 @@ def execute_givecoins(event, target, amount_str)
         components: [
           { type: 10, content: "## #{EMOJI_STRINGS['error']} Invalid Amount" },
           { type: 14, spacing: 1 },
-          { type: 10, content: "You can't give zero coins, that's just embarrassing. At least 1 #{EMOJI_STRINGS['s_coin']}." }
+          { type: 10, content: "Zero coins? Really? That's not generosity, that's an insult. Give at least 1 #{EMOJI_STRINGS['s_coin']} or don't bother." }
         ]
       }
     ]
@@ -76,7 +76,7 @@ def execute_givecoins(event, target, amount_str)
       components: [
         { type: 10, content: "## #{EMOJI_STRINGS['coins']} Coins Transferred!" },
         { type: 14, spacing: 1 },
-        { type: 10, content: "#{event.user.mention} just dropped **#{amount}** #{EMOJI_STRINGS['s_coin']} on #{target.mention}! Big spender energy.\n\nYour balance: **#{DB.get_coins(uid)}** #{EMOJI_STRINGS['s_coin']}" }
+        { type: 10, content: "#{event.user.mention} just dropped **#{amount}** #{EMOJI_STRINGS['s_coin']} on #{target.mention}! Big spender energy.\n\nYour balance: **#{DB.get_coins(uid)}** #{EMOJI_STRINGS['s_coin']}#{mom_remark(uid, 'economy')}" }
       ]
     }
   ]
@@ -86,7 +86,7 @@ end
 # ------------------------------------------
 # TRIGGER: Prefix Command (b!givecoins)
 # ------------------------------------------
-$bot.command(:givecoins, 
+$bot.command(:givecoins, aliases: [:give],
   description: 'Give your coins to another user', 
   category: 'Economy'
 ) do |event, mention, amount|

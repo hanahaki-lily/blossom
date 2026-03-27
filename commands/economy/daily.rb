@@ -85,9 +85,9 @@ def execute_daily(event)
       type: 17,
       accent_color: 0x00FF00,
       components: [
-        { type: 10, content: "## #{EMOJI_STRINGS['s_coin']} Daily Reward" },
+        { type: 10, content: "## #{EMOJI_STRINGS['checkmark']} Daily Reward" },
         { type: 14, spacing: 1 },
-        { type: 10, content: "GG, chat! You snagged **#{final_reward}** #{EMOJI_STRINGS['s_coin']}!#{streak_msg}#{bonus_text}\n\nBalance: **#{DB.get_coins(uid)}** #{EMOJI_STRINGS['s_coin']}." }
+        { type: 10, content: "GG, chat! You snagged **#{final_reward}** #{EMOJI_STRINGS['s_coin']}!#{streak_msg}#{bonus_text}\n\nBalance: **#{DB.get_coins(uid)}** #{EMOJI_STRINGS['s_coin']}.#{mom_remark(uid, 'economy')}" }
       ]
     }
   ]
@@ -97,7 +97,7 @@ end
 # ------------------------------------------
 # TRIGGER: Prefix Command (b!daily)
 # ------------------------------------------
-$bot.command(:daily, 
+$bot.command(:daily, aliases: [:d],
   description: 'Claim your daily coin reward', 
   category: 'Economy'
 ) do |event|

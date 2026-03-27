@@ -13,3 +13,5 @@ lib/
 CLAUDE.md
 BLOSSOM_PERSONALITY.md
 boot_log.txt
+.claude/
+.idea/

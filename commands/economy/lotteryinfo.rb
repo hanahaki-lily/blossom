@@ -31,7 +31,7 @@ def execute_lotteryinfo(event)
                              "💰 **Prize Pool:** #{pool} #{EMOJI_STRINGS['s_coin']}\n" \
                              "🎫 **Total Tickets:** #{stats[:total_tickets]}\n" \
                              "🌸 **Your Tickets:** #{stats[:user_tickets]}\n\n" \
-                             "*Want better odds? Use `#{PREFIX}lottery <amount>` and stop being a coward.*" }
+                             "*Want better odds? Use `#{PREFIX}lottery <amount>` and stop being a coward.*#{mom_remark(event.user.id, 'arcade')}" }
       ]
     }
   ]
@@ -41,7 +41,7 @@ end
 # ------------------------------------------
 # TRIGGER: Prefix Command (b!lotteryinfo)
 # ------------------------------------------
-$bot.command(:lotteryinfo, 
+$bot.command(:lotteryinfo, aliases: [:lotinfo],
   description: 'View current lottery stats and your tickets', 
   category: 'Economy'
 ) do |event|

@@ -14,7 +14,7 @@ def is_premium?(bot, user_id)
   return true if DB.is_lifetime_premium?(user_id)
 
   PREMIUM_SERVERS.each do |server_id, role_id|
-    server = bot.server(server_id)
+    server = bot.servers[server_id]
     next unless server
 
     member = server.members.find { |m| m.id == user_id }
@@ -62,8 +62,8 @@ def get_current_banner
   base_pool
 end
 
-def find_character_in_pools(search_name)
-  if Time.now.month == SPRING_CARNIVAL[:month]
+def find_character_in_pools(search_name, include_event: false)
+  if include_event || Time.now.month == SPRING_CARNIVAL[:month]
     SPRING_CARNIVAL[:characters].each do |rarity, char_list|
       found = char_list.find { |c| c[:name].downcase == search_name.downcase }
       return { char: found, rarity: rarity.to_s } if found
@@ -83,4 +83,20 @@ def is_event_character?(search_name)
   SPRING_CARNIVAL[:characters].values.flatten.any? do |char|
     char[:name].downcase == search_name.downcase
   end
+end
+
+def find_character_banner(search_name)
+  # Check event characters first
+  if is_event_character?(search_name)
+    return { banner: SPRING_CARNIVAL[:name], event: true }
+  end
+
+  # Search regular banners
+  CHARACTER_POOLS.each do |_key, pool|
+    pool[:characters].each do |_rarity, char_list|
+      found = char_list.find { |c| c[:name].downcase == search_name.downcase }
+      return { banner: pool[:name], event: false } if found
+    end
+  end
+  nil
 end

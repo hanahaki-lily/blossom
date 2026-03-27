@@ -20,13 +20,13 @@ def execute_interactions(event)
       components: [
         { type: 10, content: "## 📊 #{event.user.display_name}'s Interaction Stats" },
         { type: 14, spacing: 1 },
-        { type: 10, content: "Here is your history of social interactions on the server!" },
+        { type: 10, content: "Your social history in the Neon Arcade. Are you a lover, a fighter, or a head-patter? Let's find out." },
         { type: 14, spacing: 1 },
-        # Hugs Field: Sent vs Received
-        { type: 10, content: "**💕 Hugs**\nSent: **#{data['hug']['sent']}**\nReceived: **#{data['hug']['received']}**" },
+        { type: 10, content: "**💕 Hugs**\nSent: **#{data['hug']['sent']}** | Received: **#{data['hug']['received']}**" },
         { type: 14, spacing: 1 },
-        # Slaps Field: Sent vs Received
-        { type: 10, content: "**🔨 Slaps**\nSent: **#{data['slap']['sent']}**\nReceived: **#{data['slap']['received']}**" }
+        { type: 10, content: "**🔨 Slaps**\nSent: **#{data['slap']['sent']}** | Received: **#{data['slap']['received']}**" },
+        { type: 14, spacing: 1 },
+        { type: 10, content: "**#{EMOJI_STRINGS['hearts']} Pats**\nSent: **#{data['pat']['sent']}** | Received: **#{data['pat']['received']}**#{mom_remark(event.user.id, 'general')}" }
       ]
     }
   ]
@@ -36,7 +36,7 @@ end
 # ------------------------------------------
 # TRIGGER: Prefix Command (b!interactions)
 # ------------------------------------------
-$bot.command(:interactions, 
+$bot.command(:interactions, aliases: [:int, :stats],
   description: 'Show your hug/slap stats', 
   category: 'Fun'
 ) do |event|

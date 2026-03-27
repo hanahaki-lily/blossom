@@ -56,7 +56,7 @@ def execute_scratch(event)
       components: [
         { type: 10, content: "## 🎫 Scratch-Off Ticket" },
         { type: 14, spacing: 1 },
-        { type: 10, content: "**[ #{result.join(' | ')} ]**\n\nACTUALLY POG?! Triple **#{result[0]}**!! You just snagged **#{payout}** #{EMOJI_STRINGS['s_coin']}!\nNew Balance: **#{DB.get_coins(uid)}** #{EMOJI_STRINGS['s_coin']}" }
+        { type: 10, content: "**[ #{result.join(' | ')} ]**\n\nACTUALLY POG?! Triple **#{result[0]}**!! You just snagged **#{payout}** #{EMOJI_STRINGS['s_coin']}!\nNew Balance: **#{DB.get_coins(uid)}** #{EMOJI_STRINGS['s_coin']}#{mom_remark(uid, 'arcade')}" }
       ]
     }])
   else
@@ -66,7 +66,7 @@ def execute_scratch(event)
       components: [
         { type: 10, content: "## 🎫 Scratch-Off Ticket" },
         { type: 14, spacing: 1 },
-        { type: 10, content: "**[ #{result.join(' | ')} ]**\n\nNothing. Not even close. Thanks for the donation tho~ 😩\nNew Balance: **#{DB.get_coins(uid)}** #{EMOJI_STRINGS['s_coin']}" }
+        { type: 10, content: "**[ #{result.join(' | ')} ]**\n\nNothing. Not even close. Thanks for the donation tho~ 😩\nNew Balance: **#{DB.get_coins(uid)}** #{EMOJI_STRINGS['s_coin']}#{mom_remark(uid, 'arcade')}" }
       ]
     }])
   end
@@ -75,7 +75,7 @@ end
 # ------------------------------------------
 # TRIGGER: Prefix Command (b!scratch)
 # ------------------------------------------
-$bot.command(:scratch, 
+$bot.command(:scratch, aliases: [:sc],
   description: 'Buy a neon scratch-off ticket for 500 coins!', 
   category: 'Arcade'
 ) do |event|

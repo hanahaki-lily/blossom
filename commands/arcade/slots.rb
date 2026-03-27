@@ -44,7 +44,7 @@ def execute_slots(event, amount)
       components: [
         { type: 10, content: "## 🎰 Neon Slots" },
         { type: 14, spacing: 1 },
-        { type: 10, content: "[ #{spin.join(' | ')} ]\n\nNO WAY. **JACKPOT!!** #{EMOJI_STRINGS['neonsparkle']}\nYou just pulled **#{winnings}** #{EMOJI_STRINGS['s_coin']}!! ACTUALLY POG!!\nNew Balance: **#{DB.get_coins(uid)}** #{EMOJI_STRINGS['s_coin']}" }
+        { type: 10, content: "[ #{spin.join(' | ')} ]\n\nNO WAY. **JACKPOT!!** #{EMOJI_STRINGS['neonsparkle']}\nYou just pulled **#{winnings}** #{EMOJI_STRINGS['s_coin']}!! ACTUALLY POG!!\nNew Balance: **#{DB.get_coins(uid)}** #{EMOJI_STRINGS['s_coin']}#{mom_remark(uid, 'arcade')}" }
       ]
     }])
 
@@ -58,7 +58,7 @@ def execute_slots(event, amount)
       components: [
         { type: 10, content: "## 🎰 Neon Slots" },
         { type: 14, spacing: 1 },
-        { type: 10, content: "[ #{spin.join(' | ')} ]\n\nTwo outta three, not bad chat~ You grabbed **#{winnings}** #{EMOJI_STRINGS['s_coin']}.\nNew Balance: **#{DB.get_coins(uid)}** #{EMOJI_STRINGS['s_coin']}" }
+        { type: 10, content: "[ #{spin.join(' | ')} ]\n\nTwo outta three, not bad chat~ You grabbed **#{winnings}** #{EMOJI_STRINGS['s_coin']}.\nNew Balance: **#{DB.get_coins(uid)}** #{EMOJI_STRINGS['s_coin']}#{mom_remark(uid, 'arcade')}" }
       ]
     }])
 
@@ -69,7 +69,7 @@ def execute_slots(event, amount)
       components: [
         { type: 10, content: "## 🎰 Neon Slots" },
         { type: 14, spacing: 1 },
-        { type: 10, content: "[ #{spin.join(' | ')} ]\n\nLOL nothing. Skill issue, better luck next spin I guess~ 😩\nNew Balance: **#{DB.get_coins(uid)}** #{EMOJI_STRINGS['s_coin']}" }
+        { type: 10, content: "[ #{spin.join(' | ')} ]\n\nLOL nothing. Skill issue, better luck next spin I guess~ 😩\nNew Balance: **#{DB.get_coins(uid)}** #{EMOJI_STRINGS['s_coin']}#{mom_remark(uid, 'arcade')}" }
       ]
     }])
   end
@@ -78,7 +78,7 @@ end
 # ------------------------------------------
 # TRIGGER: Prefix Command (b!slots)
 # ------------------------------------------
-$bot.command(:slots, 
+$bot.command(:slots, aliases: [:slot],
   description: 'Spin the neon slots!', 
   category: 'Arcade'
 ) do |event, amount_str|

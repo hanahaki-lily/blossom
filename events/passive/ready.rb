@@ -16,7 +16,7 @@ $bot.ready do |event|
     dcoin dpremium dbomb
   ]
   # Also force re-register these by deleting first (params changed)
-  refresh_commands = %w[bomb setxp]
+  refresh_commands = %w[bomb setxp view buy logtoggle welcomer pat]
 
   event.bot.get_application_commands.each do |cmd|
     if removed_commands.include?(cmd.name) || refresh_commands.include?(cmd.name)
@@ -35,6 +35,26 @@ $bot.ready do |event|
     cmd.string('action', 'What to do', required: true, choices: { 'Add XP' => 'add', 'Remove XP' => 'remove', 'Set XP' => 'set', 'Set Level' => 'level' })
     cmd.user('user', 'The user to modify', required: true)
     cmd.integer('amount', 'Amount of XP or target level', required: true)
+  end
+  event.bot.register_application_command(:buy, 'Buy a character or tech upgrade from the shop') do |cmd|
+    cmd.string('item', 'Name of the character or item to buy', required: true, autocomplete: true)
+    cmd.integer('quantity', 'How many to buy (consumables only)', required: false)
+  end
+  event.bot.register_application_command(:view, 'View any VTuber character in detail') do |cmd|
+    cmd.string('character', 'Name of the character', required: true, autocomplete: true)
+  end
+  event.bot.register_application_command(:logtoggle, 'Toggle logging for specific events (Admin Only)') do |cmd|
+    cmd.string('type', 'What to toggle', required: true, choices: {
+      'Message Deletes' => 'deletes', 'Message Edits' => 'edits', 'Mod Actions' => 'mod',
+      'DM Mods' => 'dms', 'Member Joins' => 'joins', 'Member Leaves' => 'leaves'
+    })
+  end
+  event.bot.register_application_command(:pat, 'Give someone a gentle head pat') do |cmd|
+    cmd.user('user', 'The person you want to pat', required: true)
+  end
+  event.bot.register_application_command(:welcomer, 'Enable or disable the welcome message system (Admin Only)') do |cmd|
+    cmd.string('action', 'Enable or disable', required: true, choices: { 'Enable' => 'enable', 'Disable' => 'disable' })
+    cmd.channel('channel', 'The channel to send welcome messages to (required for enable)', required: false)
   end
   puts "✅ Slash commands refreshed!"
 

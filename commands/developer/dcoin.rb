@@ -62,7 +62,7 @@ def execute_dcoin(event, action, target_user, amount)
     send_cv2(event, [{ type: 17, accent_color: 0x00FF00, components: [
       { type: 10, content: "## #{EMOJI_STRINGS['developer']} Developer Override" },
       { type: 14, spacing: 1 },
-      { type: 10, content: "Added **#{amount.abs}** #{EMOJI_STRINGS['s_coin']} to #{target_user.mention}.\nNew balance: **#{DB.get_coins(uid)}** #{EMOJI_STRINGS['s_coin']}" }
+      { type: 10, content: "Added **#{amount.abs}** #{EMOJI_STRINGS['s_coin']} to #{target_user.mention}.\nNew balance: **#{DB.get_coins(uid)}** #{EMOJI_STRINGS['s_coin']}#{mom_remark(event.user.id, 'dev')}" }
     ]}])
 
   when 'remove'
@@ -72,7 +72,7 @@ def execute_dcoin(event, action, target_user, amount)
     send_cv2(event, [{ type: 17, accent_color: 0x00FF00, components: [
       { type: 10, content: "## #{EMOJI_STRINGS['developer']} Developer Override" },
       { type: 14, spacing: 1 },
-      { type: 10, content: "Removed **#{actual}** #{EMOJI_STRINGS['s_coin']} from #{target_user.mention}.\nNew balance: **#{DB.get_coins(uid)}** #{EMOJI_STRINGS['s_coin']}" }
+      { type: 10, content: "Removed **#{actual}** #{EMOJI_STRINGS['s_coin']} from #{target_user.mention}.\nNew balance: **#{DB.get_coins(uid)}** #{EMOJI_STRINGS['s_coin']}#{mom_remark(event.user.id, 'dev')}" }
     ]}])
 
   when 'set'
@@ -80,7 +80,7 @@ def execute_dcoin(event, action, target_user, amount)
     send_cv2(event, [{ type: 17, accent_color: 0x00FF00, components: [
       { type: 10, content: "## #{EMOJI_STRINGS['developer']} Developer Override" },
       { type: 14, spacing: 1 },
-      { type: 10, content: "#{target_user.mention}'s balance forcefully set to **#{DB.get_coins(uid)}** #{EMOJI_STRINGS['s_coin']}." }
+      { type: 10, content: "#{target_user.mention}'s balance forcefully set to **#{DB.get_coins(uid)}** #{EMOJI_STRINGS['s_coin']}.#{mom_remark(event.user.id, 'dev')}" }
     ]}])
   end
 end
@@ -88,7 +88,7 @@ end
 # ------------------------------------------
 # TRIGGER: Prefix Command (b!dcoin)
 # ------------------------------------------
-$bot.command(:dcoin,
+$bot.command(:dcoin, aliases: [:dc],
   description: 'Manage user coins — add, remove, or set (Dev Only)',
   category: 'Developer'
 ) do |event, action, mention, amount|

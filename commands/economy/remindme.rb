@@ -11,7 +11,16 @@ def execute_remindme(event)
   # 1. Initialization: Get user ID and the current channel ID
   uid = event.user.id
   channel_id = event.channel.id
-  
+
+  # 1b. Premium Gate
+  unless is_premium?(event.bot, uid)
+    return send_cv2(event, [{ type: 17, accent_color: NEON_COLORS.sample, components: [
+      { type: 10, content: "## #{EMOJI_STRINGS['prisma']} Premium Perk" },
+      { type: 14, spacing: 1 },
+      { type: 10, content: "Daily reminders are a **Blossom Premium** feature! I'm not everyone's personal alarm clock, chat — only the VIPs get that treatment.\n\nCheck out `/premium` to see what you're missing." }
+    ]}])
+  end
+
   # 2. Data Retrieval: Check if the user already has a reminder channel set
   daily_info = DB.get_daily_info(uid)
   is_currently_on = !daily_info['channel'].nil?
@@ -29,7 +38,7 @@ def execute_remindme(event)
         components: [
           { type: 10, content: "## 🔔 Daily Reminder" },
           { type: 14, spacing: 1 },
-          { type: 10, content: "I have turned **OFF** your daily reminder!" }
+          { type: 10, content: "Fine, I'll stop bugging you. Daily reminder is **OFF**. Don't come crying to me when you break your streak though.#{mom_remark(uid, 'general')}" }
         ]
       }
     ]
@@ -46,7 +55,7 @@ def execute_remindme(event)
         components: [
           { type: 10, content: "## 🔔 Daily Reminder" },
           { type: 14, spacing: 1 },
-          { type: 10, content: "I have turned **ON** your daily reminder! 🌸\nI will ping you right here in #{event.channel.mention} when your next daily is ready." }
+          { type: 10, content: "Daily reminder is **ON**! I'll ping you right here in #{event.channel.mention} when your reward is ready. Consider me your personal alarm clock — you're welcome.#{mom_remark(uid, 'general')}" }
         ]
       }
     ]
@@ -57,7 +66,7 @@ end
 # ------------------------------------------
 # TRIGGER: Prefix Command (b!remindme)
 # ------------------------------------------
-$bot.command(:remindme, 
+$bot.command(:remindme, aliases: [:remind],
   description: 'Toggle your daily reward reminder', 
   category: 'Economy'
 ) do |event|

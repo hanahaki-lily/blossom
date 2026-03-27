@@ -62,27 +62,29 @@ def execute_givecard(event, target, char_name)
 
   # 6. UI: Select the rarity emoji for the announcement
   emoji = case rarity
-          when 'goddess'   then '💎'
-          when 'legendary' then '🌟'
-          when 'rare'      then EMOJI_STRINGS['neonsparkle']
-          else '⭐'
+          when 'goddess'   then EMOJI_STRINGS['goddess']
+          when 'legendary' then EMOJI_STRINGS['legendary']
+          when 'rare'      then EMOJI_STRINGS['rare']
+          else EMOJI_STRINGS['common']
           end
 
   # Easter egg: Envvy is Blossom's creator (mom)
   envvy_comment = proper_name == 'Envvy' ? "\n\n*Excuse me?? You're just GIVING my mom away?! #{target.mention}, you better take good care of her or we're gonna have problems.*" : ""
+  # Easter egg: Blossom is self-aware
+  envvy_comment = "\n\n*You're giving ME away?? A card of ME?? I'm not even mad, I'm just disappointed. #{target.mention}, congrats I guess — you now own the most powerful card in the game and you didn't even earn it.*" if proper_name == 'Blossom'
 
   # 7. Messaging: Send the success announcement CV2 message
   send_cv2(event, [{ type: 17, accent_color: NEON_COLORS.sample, components: [
     { type: 10, content: "## #{EMOJI_STRINGS['surprise']} Card Gifted!" },
     { type: 14, spacing: 1 },
-    { type: 10, content: "#{event.user.mention} just handed over **#{proper_name}** to #{target.mention}! W friend tbh.\n\n*(Rarity: #{rarity.capitalize} #{emoji})*#{envvy_comment}" }
+    { type: 10, content: "#{event.user.mention} just handed over **#{proper_name}** to #{target.mention}! W friend tbh.\n\n*(Rarity: #{rarity.capitalize} #{emoji})*#{envvy_comment}#{mom_remark(uid, 'gacha')}" }
   ]}])
 end
 
 # ------------------------------------------
 # TRIGGERS: Prefix & Slash Support
 # ------------------------------------------
-$bot.command(:givecard, 
+$bot.command(:givecard, aliases: [:gift],
   description: 'Give a VTuber card to another user', 
   category: 'Gacha'
 ) do |event, mention, *char_parts|

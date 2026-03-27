@@ -34,7 +34,7 @@ BLACK_MARKET_ITEMS = {
   'mic'             => { name: '🎙️ Studio Mic',               price: 10000, type: 'upgrade',    desc: 'Professional audio! Grants +10% to !stream payouts.' },
   'neon sign'       => { name: '✨ Holographic Neon Sign',  price: 25000, type: 'upgrade',    desc: 'Attracts massive attention! Doubles your !daily reward (x2).' },
   'gacha pass'      => { name: '🎟️ Gacha Pass',              price: 15000, type: 'upgrade',    desc: 'Permanently cuts your summon cooldown in half!' },
-  'stamina pill'    => { name: '💊 Stamina Pill',            price: 1500,  type: 'consumable', desc: 'Instantly resets your summon cooldown!' },
-  'gamer fuel'      => { name: '🥫 Gamer Fuel',              price: 2500,  type: 'consumable', desc: 'Instantly resets your stream, post, and collab cooldowns!' },
-  'rng manipulator' => { name: '🔮 RNG Manipulator',         price: 5000,  type: 'consumable', desc: 'Guarantees your next !summon is a Rare or higher!' }
+  'stamina pill'    => { name: "#{EMOJI_STRINGS['stamina_pill']} Stamina Pill",            price: 1500,  type: 'consumable', desc: 'Auto-consumed when you summon on cooldown. Bypasses cooldown once!' },
+  'gamer fuel'      => { name: "#{EMOJI_STRINGS['gamer_fuel']} Gamer Fuel",              price: 2500,  type: 'consumable', desc: 'Auto-consumed when you use a content command on cooldown. Bypasses cooldown once!' },
+  'rng manipulator' => { name: "#{EMOJI_STRINGS['rng_manipulator']} RNG Manipulator",         price: 5000,  type: 'consumable', desc: 'Guarantees your next !summon is a Rare or higher!' }
 }.freeze

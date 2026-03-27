@@ -34,7 +34,7 @@ end
 # ------------------------------------------
 # TRIGGER: Prefix Command (b!shop)
 # ------------------------------------------
-$bot.command(:shop, 
+$bot.command(:shop, aliases: [:store],
   description: 'View the character shop and direct-buy prices!', 
   category: 'Economy'
 ) do |event|

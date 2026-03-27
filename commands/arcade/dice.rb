@@ -62,7 +62,7 @@ def execute_dice(event, amount, bet)
       components: [
         { type: 10, content: "## 🎲 High Roller Dice" },
         { type: 14, spacing: 1 },
-        { type: 10, content: "The dice roll... **#{die1}** and **#{die2}**! (Total: **#{total}**)\n\nOkay not bad, chat. You called **#{bet}** and walked away with **#{payout}** #{EMOJI_STRINGS['s_coin']}.\nNew Balance: **#{DB.get_coins(uid)}** #{EMOJI_STRINGS['s_coin']}" }
+        { type: 10, content: "The dice roll... **#{die1}** and **#{die2}**! (Total: **#{total}**)\n\nOkay not bad, chat. You called **#{bet}** and walked away with **#{payout}** #{EMOJI_STRINGS['s_coin']}.\nNew Balance: **#{DB.get_coins(uid)}** #{EMOJI_STRINGS['s_coin']}#{mom_remark(uid, 'arcade')}" }
       ]
     }])
   else
@@ -72,7 +72,7 @@ def execute_dice(event, amount, bet)
       components: [
         { type: 10, content: "## 🎲 High Roller Dice" },
         { type: 14, spacing: 1 },
-        { type: 10, content: "The dice roll... **#{die1}** and **#{die2}**! (Total: **#{total}**)\n\nYou bet **#{bet}** and ate it HARD. **#{amount}** #{EMOJI_STRINGS['s_coin']} gone. Tragic.\nNew Balance: **#{DB.get_coins(uid)}** #{EMOJI_STRINGS['s_coin']}" }
+        { type: 10, content: "The dice roll... **#{die1}** and **#{die2}**! (Total: **#{total}**)\n\nYou bet **#{bet}** and ate it HARD. **#{amount}** #{EMOJI_STRINGS['s_coin']} gone. Tragic.\nNew Balance: **#{DB.get_coins(uid)}** #{EMOJI_STRINGS['s_coin']}#{mom_remark(uid, 'arcade')}" }
       ]
     }])
   end
@@ -81,7 +81,7 @@ end
 # ------------------------------------------
 # TRIGGER: Prefix Command (b!dice)
 # ------------------------------------------
-$bot.command(:dice, 
+$bot.command(:dice, aliases: [:di],
   description: 'Roll 2d6! Bet on high (8-12), low (2-6), or 7.', 
   category: 'Arcade'
 ) do |event, amount_str, bet|

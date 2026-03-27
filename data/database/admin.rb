@@ -38,7 +38,9 @@ module DatabaseAdmin
       'log_channel' => row['log_channel'] ? row['log_channel'].to_i : nil,
       'log_deletes' => row['log_deletes'].to_i == 1,
       'log_edits' => row['log_edits'].to_i == 1,
-      'log_mod' => row['log_mod'].to_i == 1
+      'log_mod' => row['log_mod'].to_i == 1,
+      'log_joins' => row['log_joins'].to_i == 1,
+      'log_leaves' => row['log_leaves'].to_i == 1
     }
   end
 
@@ -50,7 +52,7 @@ module DatabaseAdmin
   end
 
   def toggle_log_setting(server_id, column)
-    valid_columns = %w[log_deletes log_edits log_mod dm_mods]
+    valid_columns = %w[log_deletes log_edits log_mod dm_mods log_joins log_leaves]
     raise ArgumentError, "Invalid log column" unless valid_columns.include?(column)
 
     @db.exec_params("INSERT INTO server_logs (server_id) VALUES ($1) ON CONFLICT (server_id) DO NOTHING", [server_id])
@@ -72,6 +74,38 @@ module DatabaseAdmin
   def get_verify_role(server_id)
     row = @db.exec_params("SELECT verify_role FROM server_configs WHERE server_id = $1", [server_id]).first
     row && row['verify_role'] ? row['verify_role'].to_i : nil
+  end
+
+  # --- ACHIEVEMENT NOTIFICATIONS ---
+  def achievements_enabled?(server_id)
+    row = @db.exec_params("SELECT achievements_enabled FROM server_configs WHERE server_id = $1", [server_id]).first
+    row ? row['achievements_enabled'].to_i == 1 : false
+  end
+
+  def toggle_achievements(server_id)
+    @db.exec_params("INSERT INTO server_configs (server_id, achievements_enabled) VALUES ($1, 0) ON CONFLICT (server_id) DO NOTHING", [server_id])
+    @db.exec_params("UPDATE server_configs SET achievements_enabled = 1 - COALESCE(achievements_enabled, 0) WHERE server_id = $1", [server_id])
+    row = @db.exec_params("SELECT achievements_enabled FROM server_configs WHERE server_id = $1", [server_id]).first
+    row && row['achievements_enabled'].to_i == 1
+  end
+
+  # --- WELCOMER CONFIGURATION ---
+  def get_welcome_config(server_id)
+    row = @db.exec_params("SELECT welcome_channel, welcome_enabled FROM server_configs WHERE server_id = $1", [server_id]).first
+    return { enabled: false, channel: nil } unless row
+    {
+      enabled: row['welcome_enabled'].to_i == 1,
+      channel: row['welcome_channel'] ? row['welcome_channel'].to_i : nil
+    }
+  end
+
+  def set_welcome_config(server_id, channel_id, enabled)
+    val = enabled ? 1 : 0
+    @db.exec_params(
+      "INSERT INTO server_configs (server_id, welcome_channel, welcome_enabled) VALUES ($1, $2, $3) " \
+      "ON CONFLICT (server_id) DO UPDATE SET welcome_channel = $2, welcome_enabled = $3",
+      [server_id, channel_id, val]
+    )
   end
 
   # --- BOMB CONFIGURATION ---

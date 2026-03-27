@@ -76,13 +76,14 @@ $bot.button(custom_id: /^trade_\d+_\d+_(accept|decline)$/) do |event|
   check_achievement(event.channel, uid_a, 'first_trade')
   check_achievement(event.channel, uid_b, 'first_trade')
 
-  # Easter egg: Envvy is Blossom's creator (mom)
+  # Easter eggs
   envvy_comment = ""
   envvy_comment = "\n\n*...you're trading away my MOM?? I'm watching you. She better be going to a good home.*" if char_a == 'Envvy' || char_b == 'Envvy'
+  envvy_comment = "\n\n*Hold up— I'M being traded?? Like a Pokémon card at recess?? This is so dehumanizing. ...Debot-izing? Whatever. I hope whoever got me knows they're holding ROYALTY.*" if char_a == 'Blossom' || char_b == 'Blossom'
 
   success_embed = Discordrb::Webhooks::Embed.new(
     title: "#{EMOJI_STRINGS['surprise']} Trade Complete!",
-    description: "Not bad, chat. Not bad at all.\n\n<@#{uid_a}> snagged **#{char_b}**.\n<@#{uid_b}> snagged **#{char_a}**.#{envvy_comment}",
+    description: "Not bad, chat. Not bad at all.\n\n<@#{uid_a}> snagged **#{char_b}**.\n<@#{uid_b}> snagged **#{char_a}**.#{envvy_comment}#{mom_remark(uid_a, 'gacha')}#{mom_remark(uid_b, 'gacha')}",
     color: 0x00FF00
   )
   

@@ -58,7 +58,7 @@ def execute_cooldowns(event)
       components: [
         { type: 10, content: "## #{EMOJI_STRINGS['info']} #{event.user.display_name}'s Cooldowns" },
         { type: 14, spacing: 1 },
-        { type: 10, content: "Ugh, fine. Here are your timers, impatient much?#{streak_text}#{reminder_text}" },
+        { type: 10, content: "Ugh, fine. Here are your timers, impatient much?#{streak_text}#{reminder_text}#{mom_remark(event.user.id, 'economy')}" },
         { type: 14, spacing: 1 },
         { type: 10, content: cd_lines }
       ]
@@ -70,7 +70,7 @@ end
 # ------------------------------------------
 # TRIGGER: Prefix Command (b!cooldowns)
 # ------------------------------------------
-$bot.command(:cooldowns, 
+$bot.command(:cooldowns, aliases: [:cd, :timers],
   description: 'Check your active timers for economy commands', 
   category: 'Economy'
 ) do |event|

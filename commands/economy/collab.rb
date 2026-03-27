@@ -14,14 +14,23 @@ def execute_collab(event)
   
   # 2. Cooldown Check: Verify the user isn't on "Collab Burnout"
   last_used = DB.get_cooldown(uid, 'collab')
+  used_fuel = false
 
   if last_used && (now - last_used) < COLLAB_COOLDOWN
-    remaining = COLLAB_COOLDOWN - (now - last_used)
-    return send_cv2(event, [{ type: 17, accent_color: 0xFF0000, components: [
-      { type: 10, content: "## #{EMOJI_STRINGS['worktired']} Collab Burnout" },
-      { type: 14, spacing: 1 },
-      { type: 10, content: "You're collab-spamming, chill out. Try again in **#{format_time_delta(remaining)}**." }
-    ]}])
+    inv_array = DB.get_inventory(uid)
+    inv = inv_array.each_with_object({}) { |item, h| h[item['item_id']] = item['quantity'] }
+    if inv['gamer fuel'] && inv['gamer fuel'] > 0
+      DB.remove_inventory(uid, 'gamer fuel', 1)
+      used_fuel = true
+      check_achievement(event.channel, uid, 'use_fuel')
+    else
+      remaining = COLLAB_COOLDOWN - (now - last_used)
+      return send_cv2(event, [{ type: 17, accent_color: 0xFF0000, components: [
+        { type: 10, content: "## #{EMOJI_STRINGS['worktired']} Collab Burnout" },
+        { type: 14, spacing: 1 },
+        { type: 10, content: "You're collab-spamming, chill out. Try again in **#{format_time_delta(remaining)}**." }
+      ]}])
+    end
   end
 
   # 3. Database: Update the cooldown timestamp immediately
@@ -39,7 +48,7 @@ def execute_collab(event)
   embed = Discordrb::Webhooks::Embed.new(
     title: "#{EMOJI_STRINGS['stream']} Collab Request!",
     description: "#{event.user.mention} wants a collab partner! Any takers?\n\n" \
-                 "Smash that button before it expires **#{discord_timestamp}**!",
+                 "Smash that button before it expires **#{discord_timestamp}**!#{mom_remark(uid, 'economy')}",
     color: NEON_COLORS.sample
   )
 
@@ -79,7 +88,7 @@ end
 # ------------------------------------------
 # TRIGGER: Prefix Command (b!collab)
 # ------------------------------------------
-$bot.command(:collab, 
+$bot.command(:collab, aliases: [:colab],
   description: 'Ask the server to do a collab stream! (30m cooldown)', 
   category: 'Economy'
 ) do |event|

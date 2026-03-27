@@ -51,7 +51,7 @@ def execute_suggest(event, suggestion_text)
     send_cv2(event, [{ type: 17, accent_color: NEON_COLORS.sample, components: [
       { type: 10, content: "## ✅ Suggestion Sent!" },
       { type: 14, spacing: 1 },
-      { type: 10, content: "Thank you! Your suggestion has been sent directly to my developer. 🌸" }
+      { type: 10, content: "Thank you! Your suggestion has been sent directly to my developer. 🌸#{mom_remark(event.user.id, 'general')}" }
     ]}])
   rescue => e
     # 7. Error Handling: Catch instances where the developer has DMs disabled
@@ -67,7 +67,7 @@ end
 # ------------------------------------------
 # TRIGGER: Prefix Command (b!suggest)
 # ------------------------------------------
-$bot.command(:suggest, 
+$bot.command(:suggest, aliases: [:idea],
   description: 'Send a suggestion directly to the developer!', 
   category: 'Utility'
 ) do |event, *args|

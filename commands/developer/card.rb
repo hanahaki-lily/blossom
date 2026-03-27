@@ -51,7 +51,7 @@ def execute_card(event, action, target_user, name_query)
     send_cv2(event, [{ type: 17, accent_color: 0x00FF00, components: [
       { type: 10, content: "## #{EMOJI_STRINGS['surprise']} Card Added" },
       { type: 14, spacing: 1 },
-      { type: 10, content: "Added **#{real_name}** to #{target_user.mention}'s collection!" }
+      { type: 10, content: "Added **#{real_name}** to #{target_user.mention}'s collection!#{mom_remark(event.user.id, 'dev')}" }
     ]}])
 
   # --- REMOVE REGULAR CARD ---
@@ -60,7 +60,7 @@ def execute_card(event, action, target_user, name_query)
     send_cv2(event, [{ type: 17, accent_color: 0x00FF00, components: [
       { type: 10, content: "## 🗑️ Card Removed" },
       { type: 14, spacing: 1 },
-      { type: 10, content: "Removed one copy of **#{real_name}** from #{target_user.mention}." }
+      { type: 10, content: "Removed one copy of **#{real_name}** from #{target_user.mention}.#{mom_remark(event.user.id, 'dev')}" }
     ]}])
 
   # --- GRANT ASCENDED VERSION ---
@@ -76,7 +76,7 @@ def execute_card(event, action, target_user, name_query)
     send_cv2(event, [{ type: 17, accent_color: 0x00FF00, components: [
       { type: 10, content: "## #{EMOJI_STRINGS['neonsparkle']} Ascended Card Granted" },
       { type: 14, spacing: 1 },
-      { type: 10, content: "Successfully granted an **Ascended #{real_name}** to #{target_user.mention}!" }
+      { type: 10, content: "Successfully granted an **Ascended #{real_name}** to #{target_user.mention}!#{mom_remark(event.user.id, 'dev')}" }
     ]}])
 
   # --- REMOVE ASCENDED VERSION ---
@@ -90,7 +90,7 @@ def execute_card(event, action, target_user, name_query)
     send_cv2(event, [{ type: 17, accent_color: 0x00FF00, components: [
       { type: 10, content: "## ♻️ Ascended Card Removed" },
       { type: 14, spacing: 1 },
-      { type: 10, content: "Removed one #{EMOJI_STRINGS['neonsparkle']} star from #{target_user.mention}'s **#{real_name}**." }
+      { type: 10, content: "Removed one #{EMOJI_STRINGS['neonsparkle']} star from #{target_user.mention}'s **#{real_name}**.#{mom_remark(event.user.id, 'dev')}" }
     ]}])
 
   # --- FALLBACK ---

@@ -34,6 +34,9 @@ end
 bot.register_application_command(:slap, 'Send a playful slap with a random GIF') do |cmd|
   cmd.user('user', 'The person you want to slap', required: true)
 end
+bot.register_application_command(:pat, 'Give someone a gentle head pat') do |cmd|
+  cmd.user('user', 'The person you want to pat', required: true)
+end
 
 # =========================
 # ECONOMY & ARCADE
@@ -95,11 +98,9 @@ bot.register_application_command(:collection, 'View all the characters you own')
 end
 bot.register_application_command(:banner, 'Check which characters are in the gacha pool this week!')
 bot.register_application_command(:shop, 'View the character shop and direct-buy prices!')
-bot.register_application_command(:buy, 'Buy a character or tech upgrade') do |cmd|
-  cmd.string('item', 'Name of the character or item to buy', required: true)
-end
-bot.register_application_command(:view, 'Look at a specific character you own') do |cmd|
-  cmd.string('character', 'Name of the character', required: true)
+bot.register_application_command(:shop, 'View the character shop and direct-buy prices!')
+bot.register_application_command(:view, 'View any VTuber character in detail') do |cmd|
+  cmd.string('character', 'Name of the character', required: true, autocomplete: true)
 end
 bot.register_application_command(:ascend, 'Fuse 5 duplicate characters into a Shiny Ascended version!') do |cmd|
   cmd.string('character', 'Name of the character', required: true)
@@ -166,12 +167,20 @@ bot.register_application_command(:logsetup, 'Set the channel for server logs (Ad
   cmd.channel('channel', 'The channel to send logs to', required: true)
 end
 bot.register_application_command(:logtoggle, 'Toggle logging for specific events (Admin Only)') do |cmd|
-  cmd.string('type', 'What to toggle', required: true, choices: { 'Message Deletes' => 'deletes', 'Message Edits' => 'edits', 'Mod Actions' => 'mod' })
+  cmd.string('type', 'What to toggle', required: true, choices: {
+    'Message Deletes' => 'deletes', 'Message Edits' => 'edits', 'Mod Actions' => 'mod',
+    'DM Mods' => 'dms', 'Member Joins' => 'joins', 'Member Leaves' => 'leaves'
+  })
+end
+bot.register_application_command(:welcomer, 'Enable or disable the welcome message system (Admin Only)') do |cmd|
+  cmd.string('action', 'Enable or disable', required: true, choices: { 'Enable' => 'enable', 'Disable' => 'disable' })
+  cmd.channel('channel', 'The channel to send welcome messages to (required for enable)', required: false)
 end
 bot.register_application_command(:verifysetup, 'Set up a verification panel (Admin Only)') do |cmd|
   cmd.channel('channel', 'The channel to send the panel to', required: true)
   cmd.role('role', 'The role to give verified members', required: true)
 end
+bot.register_application_command(:achievements, 'Toggle achievement notifications for this server (Admin Only)')
 
 # =========================
 bot.register_application_command(:addcoins, 'Add or remove coins from a user (Dev Only)') do |cmd|

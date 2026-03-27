@@ -13,7 +13,17 @@ $bot.select_menu(custom_id: /^event_hub_/) do |event|
 
   if selection == "spring_carnival"
     if Time.now.month != SPRING_CARNIVAL[:month]
-      next event.update_message(content: "#{EMOJI_STRINGS['x_']} The **Spring Carnival** is currently closed! It will return in April.", embeds: [], components: [])
+      closed_embed = Discordrb::Webhooks::Embed.new(
+        title: "🎪 Spring Carnival — Closed",
+        description: "The carnival gates are shut, chat. The **Spring Carnival** only runs during **April**.\n\n" \
+                     "Come back when the flowers bloom and the rides are spinning! Until then... go grind coins or something.",
+        color: 0x808080,
+        image: Discordrb::Webhooks::EmbedImage.new(url: "https://media.discordapp.net/attachments/1475890017443516476/1487108458405957785/CityView_ThemePark_01.jpg?ex=69c7f12d&is=69c69fad&hm=fdad6bd53c0fafcbba320b871a9ef735a136c062e26d5b69f2b2acff9e775fd5&=&format=webp")
+      )
+      back_view = Discordrb::Components::View.new do |v|
+        v.row { |r| r.button(custom_id: "event_back_#{owner_id}", label: "Back to Event Hub", style: :secondary, emoji: "🔙") }
+      end
+      next event.update_message(embeds: [closed_embed], components: back_view)
     end
 
     uid = event.user.id
@@ -23,7 +33,7 @@ $bot.select_menu(custom_id: /^event_hub_/) do |event|
       title: "🎪 Welcome to the Spring Carnival!",
       description: "Step right up! Play minigames to earn **#{SPRING_CARNIVAL[:currency]}** and spend them in the event shops.\n\n🎟️ **Your Balance:** #{tickets} #{SPRING_CARNIVAL[:emoji]}\n\n*Use the buttons below to explore the carnival grounds!*",
       color: 0xFF69B4,
-      image: Discordrb::Webhooks::EmbedImage.new(url: "https://media.discordapp.net/attachments/1475890017443516476/1485732167983173713/CityView_ThemePark_01.jpg")
+      image: Discordrb::Webhooks::EmbedImage.new(url: "https://media.discordapp.net/attachments/1475890017443516476/1487108458405957785/CityView_ThemePark_01.jpg?ex=69c7f12d&is=69c69fad&hm=fdad6bd53c0fafcbba320b871a9ef735a136c062e26d5b69f2b2acff9e775fd5&=&format=webp")
     )
 
     view = Discordrb::Components::View.new do |v|
@@ -236,7 +246,7 @@ $bot.button(custom_id: /^carnival_hub_/) do |event|
     title: "🎪 Welcome to the Spring Carnival!",
     description: "Step right up! Play minigames to earn **#{SPRING_CARNIVAL[:currency]}** and spend them in the event shops.\n\n🎟️ **Your Balance:** #{tickets} #{SPRING_CARNIVAL[:emoji]}\n\n*Use the buttons below to explore the carnival grounds!*",
     color: 0xFF69B4,
-    image: Discordrb::Webhooks::EmbedImage.new(url: "https://media.discordapp.net/attachments/1475890017443516476/1485732167983173713/CityView_ThemePark_01.jpg")
+    image: Discordrb::Webhooks::EmbedImage.new(url: "https://media.discordapp.net/attachments/1475890017443516476/1487108458405957785/CityView_ThemePark_01.jpg?ex=69c7f12d&is=69c69fad&hm=fdad6bd53c0fafcbba320b871a9ef735a136c062e26d5b69f2b2acff9e775fd5&=&format=webp")
   )
 
   view = Discordrb::Components::View.new do |v|
@@ -251,4 +261,27 @@ $bot.button(custom_id: /^carnival_hub_/) do |event|
   end
 
   event.update_message(content: nil, embeds: [embed], components: view)
+end
+
+# 7. Back to Event Hub from closed carnival
+$bot.button(custom_id: /^event_back_/) do |event|
+  owner_id = event.custom_id.split('_').last
+  next event.respond(content: "🌸 *Not your menu!*", ephemeral: true) if event.user.id.to_s != owner_id
+
+  embed = Discordrb::Webhooks::Embed.new(
+    title: "🗓️ Blossom Event Hub",
+    description: "Yo chat, you found the secret menu! Well, not secret, but definitely exclusive. 🌸\n\n" \
+                 "This is where the LIMITED TIME stuff lives — seasonal minigames, event currency, and VTubers you literally CANNOT get anywhere else. Pick an event from the dropdown and let's see what's poppin'.",
+    color: 0xFF69B4
+  )
+
+  view = Discordrb::Components::View.new do |v|
+    v.row do |r|
+      r.select_menu(custom_id: "event_hub_#{owner_id}", placeholder: "Pick an event, I dare you...", max_values: 1) do |s|
+        s.option(label: "Spring Carnival", value: "spring_carnival", emoji: "🎪", description: "April Exclusive Event!")
+      end
+    end
+  end
+
+  event.update_message(embeds: [embed], components: view)
 end

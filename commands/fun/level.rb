@@ -10,7 +10,7 @@ def execute_level(event, target_user)
     if event.is_a?(Discordrb::Events::ApplicationCommandEvent)
       return event.respond(content: error_msg, ephemeral: true)
     else
-      return event.respond(error_msg)
+      return event.channel.send_message(error_msg, false, nil, nil, nil, event.message)
     end
   end
 
@@ -37,23 +37,46 @@ def execute_level(event, target_user)
   badges << "#{EMOJI_STRINGS['prisma']} **Blossom Premium**" if is_sub
   badge_line = badges.empty? ? "" : badges.join("  ") + "\n"
 
-  components = [
-    {
-      type: 17,
-      accent_color: NEON_COLORS.sample,
-      components: [
-        { type: 10, content: "## #{target_user.display_name}'s Stats" },
-        { type: 14, spacing: 1 },
-        {
-          type: 10,
-          content: badge_line +
-            "**Level** #{level}  ·  **XP** #{xp}/#{needed}  ·  #{EMOJI_STRINGS['s_coin']} #{coins}\n" \
-            "`#{bar}` #{((xp.to_f / [needed, 1].max) * 100).round}%\n" \
-            "🔥 **#{streak}** day streak"
-        }
-      ]
-    }
+  avatar_url = target_user.avatar_url || ''
+
+  # Favorite card display (premium feature only)
+  fav_name = is_sub ? DB.get_favorite_card(uid) : nil
+  fav_line = nil
+  if fav_name
+    fav_result = find_character_in_pools(fav_name)
+    if fav_result
+      fav_rarity = fav_result[:rarity]
+      fav_emoji = case fav_rarity
+                  when 'goddess'   then EMOJI_STRINGS['goddess']
+                  when 'legendary' then EMOJI_STRINGS['legendary']
+                  when 'rare'      then EMOJI_STRINGS['rare']
+                  else EMOJI_STRINGS['common']
+                  end
+      fav_line = "#{EMOJI_STRINGS['hearts']} **Favorite** #{fav_emoji} #{fav_name}"
+    end
+  end
+
+  inner = [
+    { type: 9, components: [
+      { type: 10, content: "## #{EMOJI_STRINGS['neonsparkle']} #{target_user.display_name}" },
+      { type: 10, content: badge_line.empty? ? "Server profile" : badge_line.strip }
+    ], accessory: { type: 11, media: { url: avatar_url } } },
+    { type: 14, spacing: 1 },
+    { type: 10, content: "#{EMOJI_STRINGS['level_heart']} **Level** #{level}\n`#{bar}` #{((xp.to_f / [needed, 1].max) * 100).round}%" },
+    { type: 10, content: "#{EMOJI_STRINGS['up_arrow']} **XP** #{xp} / #{needed}" },
+    { type: 10, content: "#{EMOJI_STRINGS['s_coin']} **Coins** #{coins}" },
+    { type: 10, content: "**Streak** #{streak} day#{'s' unless streak == 1}" }
   ]
+
+  if fav_line
+    inner << { type: 14, spacing: 1 }
+    inner << { type: 10, content: fav_line }
+  end
+
+  mama_note = mom_remark(uid, 'general')
+  inner << { type: 10, content: mama_note } if mama_note
+
+  components = [{ type: 17, accent_color: NEON_COLORS.sample, components: inner }]
 
   send_cv2(event, components)
 end
@@ -61,7 +84,7 @@ end
 # ------------------------------------------
 # TRIGGER: Prefix Command (b!level)
 # ------------------------------------------
-$bot.command(:level,
+$bot.command(:level, aliases: [:lvl, :rank],
   description: 'Show a user\'s level and XP for this server',
   category: 'Fun'
 ) do |event|

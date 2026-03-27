@@ -33,24 +33,26 @@ def execute_serverinfo(event)
   next_level_xp = (100 * (current_level ** 2)) + (1000 * current_level)
 
   # 5. Messaging: Construct and send the final Server Info CV2 message
+  # Uses Section (type 9) + Thumbnail accessory (type 11) for a clean icon-beside-text layout
+  icon_url = server.icon_url || ''
+
   send_cv2(event, [{ type: 17, accent_color: NEON_COLORS.sample, components: [
-    { type: 10, content: "## 📊 #{server.name} — The Rundown" },
+    { type: 9, components: [
+      { type: 10, content: "## #{EMOJI_STRINGS['info']} #{server.name}" },
+      { type: 10, content: "Alright, here's what we're working with, chat." }
+    ], accessory: { type: 11, media: { url: icon_url } } },
     { type: 14, spacing: 1 },
-    { type: 10, content: "Alright, here's what we're working with in **#{server.name}**:" },
-    { type: 14, spacing: 1 },
-    { type: 10, content: "**#{EMOJI_STRINGS['crown']} Server Owner:** #{owner ? owner.mention : "Unknown"}" },
-    { type: 10, content: "**👥 Total Members:** #{server.member_count}" },
-    { type: 10, content: "**#{EMOJI_STRINGS['neonsparkle']} Community Rank:** **Level #{current_level}**\n*(#{current_xp} / #{next_level_xp} XP)*" },
-    { type: 10, content: "**📅 Created On:** <t:#{created_time}:D> (<t:#{created_time}:R>)" },
-    { type: 14, spacing: 1 },
-    { type: 12, items: [{ media: { url: server.icon_url } }] }
+    { type: 10, content: "#{EMOJI_STRINGS['crown']} **Server Owner**\n#{owner ? owner.mention : 'Unknown'}" },
+    { type: 10, content: "👥 **Total Members**\n#{server.member_count}" },
+    { type: 10, content: "#{EMOJI_STRINGS['neonsparkle']} **Community Rank**\nLevel **#{current_level}** — #{current_xp} / #{next_level_xp} XP" },
+    { type: 10, content: "#{EMOJI_STRINGS['stream']} **Created**\n<t:#{created_time}:D> (<t:#{created_time}:R>)#{mom_remark(event.user.id, 'general')}" }
   ]}])
 end
 
 # ------------------------------------------
 # TRIGGER: Prefix Command (b!serverinfo)
 # ------------------------------------------
-$bot.command(:serverinfo, 
+$bot.command(:serverinfo, aliases: [:si, :server],
   description: 'Displays information about the current server', 
   category: 'Utility'
 ) do |event|

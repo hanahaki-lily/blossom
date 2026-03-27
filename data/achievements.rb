@@ -35,13 +35,13 @@ ACHIEVEMENTS = {
 
   # --- GACHA & COLLECTION ---
   'first_pull'     => { name: "Gacha Addict in Training", desc: "Roll the gacha.", emoji: "🎲", reward: 500 },
-  'goddess_luck'   => { name: "Divine Luck", desc: "Pull a Goddess-tier character.", emoji: "💎", reward: 5000 },
+  'goddess_luck'   => { name: "Divine Luck", desc: "Pull a Goddess-tier character.", emoji: EMOJI_STRINGS['goddess'], reward: 5000 },
   'summon_100'     => { name: "Gacha Addict", desc: "Roll the gacha 100 times.", emoji: "🎰", reward: 5000 },
   'summon_500'     => { name: "Wallet Warrior", desc: "Roll the gacha 500 times.", emoji: "💸", reward: 15000 },
   'summon_1000'    => { name: "Down Bad", desc: "Roll the gacha 1,000 times.", emoji: "🕳️", reward: 50000 },
-  'leg_pull'       => { name: "Golden Ticket", desc: "Pull a Legendary-tier character.", emoji: "🌟", reward: 2500 },
+  'leg_pull'       => { name: "Golden Ticket", desc: "Pull a Legendary-tier character.", emoji: EMOJI_STRINGS['legendary'], reward: 2500 },
   'back_to_back'   => { name: "Double Rainbow", desc: "Pull two Rare+ characters in a row.", emoji: "🌈", reward: 3000 },
-  'first_goddess_buy' => { name: "Prisma Shopper", desc: "Buy a Goddess from the Prisma Shop.", emoji: "💎", reward: 5000 },
+  'first_goddess_buy' => { name: "Prisma Shopper", desc: "Buy a Goddess from the Prisma Shop.", emoji: EMOJI_STRINGS['goddess'], reward: 5000 },
 
   'coll_10'        => { name: "Collector", desc: "Hold 10 unique VTubers.", emoji: "📚", reward: 1000 },
   'coll_50'        => { name: "Archivist", desc: "Hold 50 unique VTubers.", emoji: "🏛️", reward: 5000 },
@@ -70,10 +70,10 @@ ACHIEVEMENTS = {
   'buy_upgrade'    => { name: "Tech Support", desc: "Buy a permanent stream upgrade.", emoji: "🖥️", reward: 1000 },
   'max_upgrades'   => { name: "The Perfect Setup", desc: "Buy all 5 permanent stream upgrades.", emoji: "🎛️", reward: 10000 },
   'buy_consumable' => { name: "Time to Mix Drinks", desc: "Buy a consumable item.", emoji: "🍹", reward: 500 },
-  'use_fuel'       => { name: "Caffeine Crash", desc: "Drink a Gamer Fuel.", emoji: "🥫", reward: 1000 },
+  'use_fuel'       => { name: "Caffeine Crash", desc: "Drink a Gamer Fuel.", emoji: EMOJI_STRINGS['gamer_fuel'], reward: 1000 },
   'use_pill'       => { name: "Questionable Medicine", desc: "Swallow a Stamina Pill.", emoji: "💊", reward: 1000 },
   'hoard_10_cons'  => { name: "Pharmacy", desc: "Hold 10 consumables in your inventory.", emoji: "🏥", reward: 2500 },
-  'use_rng'        => { name: "Rigging the System", desc: "Use an RNG Manipulator.", emoji: "🔮", reward: 1000 },
+  'use_rng'        => { name: "Rigging the System", desc: "Use an RNG Manipulator.", emoji: EMOJI_STRINGS['rng_manipulator'], reward: 1000 },
 
   # --- SOCIAL & INTERACTIONS ---
   'first_hug'      => { name: "Spreading Joy", desc: "Hug someone.", emoji: "🫂", reward: 100 },
@@ -91,6 +91,14 @@ ACHIEVEMENTS = {
   'slap_rec_10'    => { name: "Punching Bag", desc: "Receive 10 slaps.", emoji: "🩹", reward: 1000 },
   'slap_rec_50'    => { name: "Victim", desc: "Receive 50 slaps.", emoji: "🤕", reward: 5000 },
   'slap_rec_100'   => { name: "Martyrdom", desc: "Receive 100 slaps.", emoji: "⚰️", reward: 10000 },
+
+  'first_pat'      => { name: "Gentle Soul", desc: "Pat someone on the head.", emoji: "🌸", reward: 100 },
+  'pat_sent_10'    => { name: "Headpatter", desc: "Send 10 pats.", emoji: "😊", reward: 1000 },
+  'pat_sent_50'    => { name: "Comfort Main", desc: "Send 50 pats.", emoji: "🥺", reward: 5000 },
+  'pat_sent_100'   => { name: "Certified Therapist", desc: "Send 100 pats.", emoji: "💆", reward: 10000 },
+  'pat_rec_10'     => { name: "Pampered", desc: "Receive 10 pats.", emoji: "😌", reward: 1000 },
+  'pat_rec_50'     => { name: "Golden Child", desc: "Receive 50 pats.", emoji: "👼", reward: 5000 },
+  'pat_rec_100'    => { name: "Head Pat Royalty", desc: "Receive 100 pats.", emoji: "👑", reward: 10000 },
 
   'giveaway_win'   => { name: "Lucky Winner", desc: "Win a server giveaway.", emoji: "🎉", reward: 5000 },
 

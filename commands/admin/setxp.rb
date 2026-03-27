@@ -86,7 +86,7 @@ def execute_setxp(event, action, target_user, amount)
     send_cv2(event, [{ type: 17, accent_color: 0x00FF00, components: [
       { type: 10, content: "## #{EMOJI_STRINGS['developer']} Admin Override" },
       { type: 14, spacing: 1 },
-      { type: 10, content: "Added **#{amount.abs}** XP to #{target_user.mention}.\nThey're now **Level #{new_level}** with **#{new_xp}** XP." }
+      { type: 10, content: "Added **#{amount.abs}** XP to #{target_user.mention}.\nThey're now **Level #{new_level}** with **#{new_xp}** XP.#{mom_remark(event.user.id, 'admin')}" }
     ]}])
 
   when 'remove'
@@ -101,7 +101,7 @@ def execute_setxp(event, action, target_user, amount)
     send_cv2(event, [{ type: 17, accent_color: 0x00FF00, components: [
       { type: 10, content: "## #{EMOJI_STRINGS['developer']} Admin Override" },
       { type: 14, spacing: 1 },
-      { type: 10, content: "Removed **#{amount.abs}** XP from #{target_user.mention}.\nThey're now **Level #{new_level}** with **#{new_xp}** XP." }
+      { type: 10, content: "Removed **#{amount.abs}** XP from #{target_user.mention}.\nThey're now **Level #{new_level}** with **#{new_xp}** XP.#{mom_remark(event.user.id, 'admin')}" }
     ]}])
 
   when 'set'
@@ -118,7 +118,7 @@ def execute_setxp(event, action, target_user, amount)
     send_cv2(event, [{ type: 17, accent_color: 0x00FF00, components: [
       { type: 10, content: "## #{EMOJI_STRINGS['developer']} Admin Override" },
       { type: 14, spacing: 1 },
-      { type: 10, content: "Set #{target_user.mention}'s total XP to **#{amount.abs}**.\nThat puts them at **Level #{new_level}** with **#{remaining}** XP." }
+      { type: 10, content: "Set #{target_user.mention}'s total XP to **#{amount.abs}**.\nThat puts them at **Level #{new_level}** with **#{remaining}** XP.#{mom_remark(event.user.id, 'admin')}" }
     ]}])
 
   when 'level'
@@ -127,7 +127,7 @@ def execute_setxp(event, action, target_user, amount)
     send_cv2(event, [{ type: 17, accent_color: 0x00FF00, components: [
       { type: 10, content: "## #{EMOJI_STRINGS['developer']} Admin Override" },
       { type: 14, spacing: 1 },
-      { type: 10, content: "Set #{target_user.mention}'s level to **#{new_level}**. XP progress preserved." }
+      { type: 10, content: "Set #{target_user.mention}'s level to **#{new_level}**. XP progress preserved.#{mom_remark(event.user.id, 'admin')}" }
     ]}])
   end
 end
@@ -135,7 +135,7 @@ end
 # ------------------------------------------
 # TRIGGER: Prefix Command (b!setxp)
 # ------------------------------------------
-$bot.command(:setxp,
+$bot.command(:setxp, aliases: [:xp],
   description: 'Manage user XP/Level — add, remove, set, or level (Admin Only)',
   category: 'Admin'
 ) do |event, action, mention, amount|

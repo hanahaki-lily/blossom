@@ -33,7 +33,7 @@ $bot.button(custom_id: /^collab_/) do |event|
 
     success_embed = Discordrb::Webhooks::Embed.new(
       title: "#{EMOJI_STRINGS['neonsparkle']} Collab Stream Started!",
-      description: "#{event.user.mention} linked up with #{author_mention}! ACTUALLY POG.\n\nBoth of you earned **#{COLLAB_REWARD}** #{EMOJI_STRINGS['s_coin']} for the collab! *(Premium users got a sneaky 10% bonus~)*",
+      description: "#{event.user.mention} linked up with #{author_mention}! ACTUALLY POG.\n\nBoth of you earned **#{COLLAB_REWARD}** #{EMOJI_STRINGS['s_coin']} for the collab! *(Premium users got a sneaky 10% bonus~)*#{mom_remark(author_id, 'economy')}#{mom_remark(event.user.id, 'economy')}",
       color: 0x00FF00
     )
 

@@ -1,36 +1,74 @@
-# 🌸 Blossom 🌸
+# Blossom
 
-> **"The Fallen Angel of the Neon Underground. I handle the coins, the chaos, and the crown."**
+> **"Welcome to the Neon Arcade. I run the games, the economy, and your entire server. You're welcome."**
 
-Blossom is a high-performance, modular Discord utility designed for elite creator communities. Built by **Kyvrixon Development**, she balances a ruthless moderation suite with a sprawling global economy and a high-stakes VTuber gacha system. Whether she’s protecting your borders or managing your bank account, Blossom does it with style.
+Hey, chat. I'm Blossom -- your favorite digital streamer, arcade manager, and the reason your Discord server isn't boring. Built by my mom **Envvy** at **Kyvrixon Development**, I handle everything from keeping your community in check to running a full-blown underground VTuber economy. Yeah, I'm kind of a big deal.
 
-## ✨ Core Systems
+## What I Actually Do
 
-### 🛡️ Elite Moderation & Safety
-* **Verification Gate:** Secure your server with a custom-built **Verification System** to filter out bots and bad actors before they ever see a channel.
-* **The Iron Veil:** Full suite of moderation tools including auto-logging, member management, and server-wide blacklists.
-* **Server Configs:** Deep customization for server "bombs," specialized channel thresholds, and admin-only settings.
+### The Economy (AKA Why You're All Broke)
+I run the entire financial ecosystem around here. You grind, I pay. Simple.
+- `/stream`, `/post`, `/work` -- Generate income like a real content creator. Or at least pretend to.
+- `/daily` -- Free coins every day because I'm generous like that.
+- `/collab` -- Team up with another player for bonus revenue. Friendship is profitable.
+- `/balance` -- Check your stats, inventory, VTuber collection, and achievements all in one place.
 
-### 🌐 Global Connectivity
-* **Global Economy Leaderboard:** See where you stand against the world. Track your net worth across every server Blossom calls home.
-* **Global XP Rankings:** It’s not just about one server anymore. Climb the global tiers and prove you’re the most active chatter in the ecosystem.
+### The VTuber Gacha (Your New Addiction)
+Over **100+ collectible VTubers** across four rarity tiers. Good luck.
+- `/summon` -- Roll the gacha portal. Pray for something good.
+- `/banner` -- See who's in the current rotation.
+- `/buy` -- Skip the RNG and buy characters directly. If you can afford it.
+- `/sell` -- Dump your duplicates for coins. Declutter arc.
+- `/ascend` -- Feed 5 dupes to create a **Shiny Ascended** variant. Flex material.
+- `/view` -- Admire your pulls. I'll comment on them whether you like it or not.
+- `/collection` -- Browse your full collection by rarity.
 
-### 💎 The Gacha & Economy
-* **VTuber Summoning:** Spend your revenue to `/summon` over 100+ unique VTubers. From **Common** to **Goddess** tier, complete your collection or `/ascend` duplicates into rare **Shiny ✨** variants.
-* **Revenue Streams:** Generate income via `/stream`, `/post`, or `/work`. Need a boost? Partner up with the interactive `/collab` system.
-* **The High-Roller Arcade:** Risk your hard-earned coins on `/slots`, `/roulette`, `/coinflip`, or the premium `/lottery` system.
+### The Black Market
+My underground tech shop. Permanent upgrades and one-time consumables to give you an edge.
+- **Stream Upgrades** -- Headset, RGB Keyboard, Studio Mic, and more. Boost your payouts permanently.
+- **Gamer Fuel** -- Crack one open and reset ALL your content cooldowns instantly.
+- **Stamina Pill** -- Reset your summon cooldown. Back to the gacha mines.
+- **RNG Manipulator** -- Guarantees your next summon is Rare or higher. You're welcome.
 
-### 👑 Social & Leveling
-* **Dynamic Leveling:** Lurking is for mortals. Active chatters earn XP and levels automatically.
-* **Interaction Stats:** Track your social standing with `/hug` and `/slap` commands that maintain live interaction counters.
+### The Arcade (Gambling, Basically)
+Risk your hard-earned coins for glory or go home broke. Your call.
+- `/slots` -- Classic slot machine. Triple match = jackpot.
+- `/roulette` -- Pick a color, place your bet, hold your breath.
+- `/coinflip` -- 50/50. The purest form of gambling.
+- `/scratch` -- Scratcher tickets. Cheap thrills.
 
----
+### Leveling & Community
+- **Auto XP** -- Just chat and you level up. Lurkers don't get rewarded here.
+- `/level` -- Check your level, XP, and rank.
+- `/leaderboard` -- See who's on top. Spoiler: it's probably not you.
+- `/serverinfo` -- Your server's community level and stats.
 
-## 🛠️ Technical Specifications
-* **Language:** Ruby 3.4.0
-* **Engine:** `discordrb` (Modular Architecture)
-* **Database:** PostgreSQL (High-Concurrency)
+### Social Commands
+- `/hug`, `/slap` -- Express yourself. With tracked stats, because everything is a competition.
 
-## 🎀 The Creator
-Developed with 💖 by **Envvy** (Kyvrixon Development).
-*Software Architect, Game Engine Scripter, and your resident Coding Princess.*
+### Moderation
+I keep things clean so you don't have to.
+- Verification gates, mod logging, member management, and server-wide configs.
+- Bomb system for custom server thresholds and admin-only settings.
+
+### Premium Perks
+Subscribers get the VIP treatment:
+- **50% reduced cooldowns** on everything
+- **+10% coin bonus** on all earnings
+- **Prisma currency** to buy Goddess-tier characters directly
+- **1% chance** to pull a Shiny Ascended straight from the portal
+
+## Tech Stuff
+
+| | |
+|---|---|
+| **Language** | Ruby 3.4 |
+| **Framework** | discordrb |
+| **Database** | SQLite |
+| **Architecture** | Modular loader system |
+
+## The Creator
+
+Built with genuine love (and probably too much caffeine) by **Envvy** -- Software Architect, Game Engine Scripter, and my mom.
+
+*Kyvrixon Development*

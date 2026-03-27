@@ -33,7 +33,7 @@ def execute_purge(event, amount)
     delete_count = is_slash ? amt : amt + 1
     event.channel.prune(delete_count)
 
-    success_msg = ":broom: Successfully swept away **#{amt}** messages!"
+    success_msg = "#{EMOJI_STRINGS['sparkle']} Poof! **#{amt}** messages just got sent to the shadow realm. You're welcome."
 
     # 5. UI: Handle success feedback
     if is_slash
@@ -41,7 +41,7 @@ def execute_purge(event, amount)
       event.edit_response(content: success_msg)
     else
       # Send a fresh message and delete it after 3 seconds to keep the chat clean
-      msg = event.respond(success_msg)
+      msg = event.channel.send_message(success_msg, false, nil, nil, nil, event.message)
       sleep 3
       msg.delete rescue nil
     end
@@ -52,7 +52,7 @@ def execute_purge(event, amount)
     if is_slash
       event.edit_response(content: error_msg)
     else
-      event.respond(error_msg)
+      event.channel.send_message(error_msg, false, nil, nil, nil, event.message)
     end
   end
 end
@@ -60,7 +60,7 @@ end
 # ------------------------------------------
 # TRIGGER: Prefix Command (b!purge)
 # ------------------------------------------
-$bot.command(:purge,
+$bot.command(:purge, aliases: [:clear, :prune],
   description: 'Deletes a number of messages',
   required_permissions: [:manage_messages]
 ) do |event, amount|

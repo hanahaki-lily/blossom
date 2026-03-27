@@ -133,5 +133,13 @@ module DatabaseSchema # <--- Changed from 'class' to 'module'
     begin; @db.exec("ALTER TABLE server_configs ADD COLUMN IF NOT EXISTS verify_role BIGINT"); rescue PG::Error; end
     begin; @db.exec("ALTER TABLE community_levels ADD COLUMN IF NOT EXISTS server_name TEXT DEFAULT 'Unknown Arcade'"); rescue PG::Error; end
     begin; @db.exec("ALTER TABLE global_users ADD COLUMN IF NOT EXISTS tickets INTEGER DEFAULT 0"); rescue PG::Error; end
+    begin; @db.exec("ALTER TABLE global_users ADD COLUMN IF NOT EXISTS favorite_card VARCHAR(255)"); rescue PG::Error; end
+    begin; @db.exec("ALTER TABLE server_configs ADD COLUMN IF NOT EXISTS achievements_enabled INTEGER DEFAULT 0"); rescue PG::Error; end
+    begin; @db.exec("ALTER TABLE interactions ADD COLUMN IF NOT EXISTS pat_sent INTEGER DEFAULT 0"); rescue PG::Error; end
+    begin; @db.exec("ALTER TABLE interactions ADD COLUMN IF NOT EXISTS pat_received INTEGER DEFAULT 0"); rescue PG::Error; end
+    begin; @db.exec("ALTER TABLE server_configs ADD COLUMN IF NOT EXISTS welcome_channel BIGINT"); rescue PG::Error; end
+    begin; @db.exec("ALTER TABLE server_configs ADD COLUMN IF NOT EXISTS welcome_enabled INTEGER DEFAULT 0"); rescue PG::Error; end
+    begin; @db.exec("ALTER TABLE server_logs ADD COLUMN IF NOT EXISTS log_joins INTEGER DEFAULT 0"); rescue PG::Error; end
+    begin; @db.exec("ALTER TABLE server_logs ADD COLUMN IF NOT EXISTS log_leaves INTEGER DEFAULT 0"); rescue PG::Error; end
   end # Closes 'def setup_schema'
 end # Closes 'module DatabaseSchema'

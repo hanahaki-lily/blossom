@@ -31,7 +31,5 @@ def load_blossom_modules
     end
   end
 
-  # Write a boot log so we can diagnose issues on remote hosts
-  File.write('boot_log.txt', "Blossom Boot Log - #{Time.now}\n\nLoaded (#{loaded.size}):\n#{loaded.join("\n")}\n\nFailed (#{failed.size}):\n#{failed.join("\n")}\n")
-  puts "\n📋 Boot log written to boot_log.txt (#{loaded.size} loaded, #{failed.size} failed)"
+  puts "\n📋 Boot complete: #{loaded.size} loaded, #{failed.size} failed"
 end

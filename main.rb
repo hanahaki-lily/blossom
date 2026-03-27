@@ -26,8 +26,8 @@ end
 
 # 1. From the old 'config.rb' split:
 require_relative 'data/settings'      # Core IDs and Prefixes
-require_relative 'data/economy'       # Rewards and Prices
 require_relative 'data/assets'        # Emojis and Colors
+require_relative 'data/economy'       # Rewards and Prices
 require_relative 'data/achievements'   # Trophy Definitions
 require_relative 'data/constants'     # Global States/Categories
 

@@ -57,7 +57,7 @@ def execute_cups(event, amount, guess)
       components: [
         { type: 10, content: "## 🥤 The Shell Game" },
         { type: 14, spacing: 1 },
-        { type: 10, content: "I lift cup ##{winning_cup}...\n\n**#{cups_display}**\n\nNO WAY you actually found it?! GG, take your **#{payout}** #{EMOJI_STRINGS['s_coin']}.\nNew Balance: **#{DB.get_coins(uid)}** #{EMOJI_STRINGS['s_coin']}" }
+        { type: 10, content: "I lift cup ##{winning_cup}...\n\n**#{cups_display}**\n\nNO WAY you actually found it?! GG, take your **#{payout}** #{EMOJI_STRINGS['s_coin']}.\nNew Balance: **#{DB.get_coins(uid)}** #{EMOJI_STRINGS['s_coin']}#{mom_remark(uid, 'arcade')}" }
       ]
     }])
   else
@@ -67,7 +67,7 @@ def execute_cups(event, amount, guess)
       components: [
         { type: 10, content: "## 🥤 The Shell Game" },
         { type: 14, spacing: 1 },
-        { type: 10, content: "I lift cup ##{guess} and... NOTHING. LOL it was under cup ##{winning_cup} the whole time.\n\n**#{cups_display}**\n\nSkill issue. **#{amount}** #{EMOJI_STRINGS['s_coin']} mine now.\nNew Balance: **#{DB.get_coins(uid)}** #{EMOJI_STRINGS['s_coin']}" }
+        { type: 10, content: "I lift cup ##{guess} and... NOTHING. LOL it was under cup ##{winning_cup} the whole time.\n\n**#{cups_display}**\n\nSkill issue. **#{amount}** #{EMOJI_STRINGS['s_coin']} mine now.\nNew Balance: **#{DB.get_coins(uid)}** #{EMOJI_STRINGS['s_coin']}#{mom_remark(uid, 'arcade')}" }
       ]
     }])
   end
@@ -76,7 +76,7 @@ end
 # ------------------------------------------
 # TRIGGER: Prefix Command (b!cups)
 # ------------------------------------------
-$bot.command(:cups, 
+$bot.command(:cups, aliases: [:cup],
   description: 'Guess which cup hides the coin (1, 2, or 3)!', 
   category: 'Arcade'
 ) do |event, amount_str, guess_str|

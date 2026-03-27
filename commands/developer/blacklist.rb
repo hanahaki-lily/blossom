@@ -48,7 +48,7 @@ def execute_blacklist(event, target_user)
     send_cv2(event, [{ type: 17, accent_color: 0xFF0000, components: [
       { type: 10, content: "## 🚫 User Blacklisted" },
       { type: 14, spacing: 1 },
-      { type: 10, content: "#{target_user.mention} has been added to the blacklist. I will now ignore all messages and commands from them." }
+      { type: 10, content: "#{target_user.mention} has been added to the blacklist. I will now ignore all messages and commands from them.#{mom_remark(event.user.id, 'dev')}" }
     ]}])
   else
     # Remove the user ID from the bot's internal ignore list
@@ -57,7 +57,7 @@ def execute_blacklist(event, target_user)
     send_cv2(event, [{ type: 17, accent_color: 0x00FF00, components: [
       { type: 10, content: "## ✅ User Forgiven" },
       { type: 14, spacing: 1 },
-      { type: 10, content: "#{target_user.mention} has been removed from the blacklist. They are free to interact again." }
+      { type: 10, content: "#{target_user.mention} has been removed from the blacklist. They are free to interact again.#{mom_remark(event.user.id, 'dev')}" }
     ]}])
   end
 end
@@ -65,7 +65,7 @@ end
 # ------------------------------------------
 # TRIGGER: Prefix Command (b!blacklist)
 # ------------------------------------------
-$bot.command(:blacklist,
+$bot.command(:blacklist, aliases: [:bl],
   description: 'Toggle blacklist for a user (Dev Only)',
   category: 'Developer'
 ) do |event, mention|

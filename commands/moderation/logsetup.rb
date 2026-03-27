@@ -19,7 +19,7 @@ def execute_logsetup(event, channel)
     return send_cv2(event, [{ type: 17, accent_color: 0xFF0000, components: [
       { type: 10, content: "## #{EMOJI_STRINGS['confused']} Which Channel?" },
       { type: 14, spacing: 1 },
-      { type: 10, content: "Tag the channel you want logs sent to.\n`#{PREFIX}logsetup #logs`" }
+      { type: 10, content: "You gotta tell me WHERE to dump the logs, chat. Tag a channel.\n`#{PREFIX}logsetup #logs`" }
     ]}])
   end
 
@@ -29,16 +29,16 @@ def execute_logsetup(event, channel)
 
   # 4. UI: Confirm the setup and nudge the user toward the next step
   send_cv2(event, [{ type: 17, accent_color: 0x00FF00, components: [
-    { type: 10, content: "## :white_check_mark: Logging Configured" },
+    { type: 10, content: "## #{EMOJI_STRINGS['checkmark']} Logging Configured" },
     { type: 14, spacing: 1 },
-    { type: 10, content: "All server logs will now be sent to #{channel.mention}.\nUse `#{PREFIX}logtoggle` to choose what gets logged!" }
+    { type: 10, content: "Logs are locked in to #{channel.mention}. I see EVERYTHING now.\nUse `#{PREFIX}logtoggle` to pick what I'm watching — deletes, edits, mod actions, joins, leaves, the works.#{mom_remark(event.user.id, 'mod')}" }
   ]}])
 end
 
 # ------------------------------------------
 # TRIGGER: Prefix Command (b!logsetup)
 # ------------------------------------------
-$bot.command(:logsetup,
+$bot.command(:logsetup, aliases: [:logs],
   description: 'Set the channel for server logs (Admin)',
   category: 'Moderation'
 ) do |event, channel_mention|

@@ -24,14 +24,15 @@ module DatabaseSocial
     if row
       {
         'hug' => { 'sent' => row['hug_sent'].to_i, 'received' => row['hug_received'].to_i },
-        'slap' => { 'sent' => row['slap_sent'].to_i, 'received' => row['slap_received'].to_i }
+        'slap' => { 'sent' => row['slap_sent'].to_i, 'received' => row['slap_received'].to_i },
+        'pat' => { 'sent' => row['pat_sent'].to_i, 'received' => row['pat_received'].to_i }
       }
     else
-      { 'hug' => { 'sent' => 0, 'received' => 0 }, 'slap' => { 'sent' => 0, 'received' => 0 } }
+      { 'hug' => { 'sent' => 0, 'received' => 0 }, 'slap' => { 'sent' => 0, 'received' => 0 }, 'pat' => { 'sent' => 0, 'received' => 0 } }
     end
   end
 
-  VALID_INTERACTION_COLUMNS = %w[hug_sent hug_received slap_sent slap_received].freeze
+  VALID_INTERACTION_COLUMNS = %w[hug_sent hug_received slap_sent slap_received pat_sent pat_received].freeze
 
   def add_interaction(uid, type, role)
     col = "#{type}_#{role}" # e.g., 'hug_sent' or 'slap_received'

@@ -71,14 +71,14 @@ def execute_giveaway(event, channel_id, time_str, prize)
   if event.is_a?(Discordrb::Events::ApplicationCommandEvent)
     event.respond(content: response_text, ephemeral: true)
   else
-    event.respond(response_text)
+    event.channel.send_message(response_text, false, nil, nil, nil, event.message)
   end
 end
 
 # ------------------------------------------
 # TRIGGER: Prefix Command (b!giveaway)
 # ------------------------------------------
-$bot.command(:giveaway,
+$bot.command(:giveaway, aliases: [:gw],
   description: 'Start a giveaway (Admin only)',
   category: 'Admin'
 ) do |event, channel_mention, time_str, *prize_args|

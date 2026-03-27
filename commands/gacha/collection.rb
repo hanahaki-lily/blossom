@@ -35,7 +35,7 @@ def build_collection_page(event, target_user, col, current_rarity, page, is_edit
 
   # 4. UI: Construct the Collection Embed
   embed = Discordrb::Webhooks::Embed.new(
-    title: "🌟 #{username}'s VTubers: #{current_rarity.capitalize}",
+    title: "#{EMOJI_STRINGS[current_rarity] || EMOJI_STRINGS['neonsparkle']} #{username}'s VTubers: #{current_rarity.capitalize}",
     color: 0xFFB6C1 # Blossom Pink
   )
 
@@ -78,7 +78,7 @@ def build_collection_page(event, target_user, col, current_rarity, page, is_edit
   elsif event.is_a?(Discordrb::Events::ApplicationCommandEvent)
     event.respond(embeds: [embed], components: view)
   else
-    event.channel.send_message(nil, false, embed, nil, nil, nil, view)
+    event.channel.send_message(nil, false, embed, nil, nil, event.message, view)
   end
 end
 
@@ -92,7 +92,7 @@ def execute_collection(event, target_user)
   # A. Safety: Handle users with empty collections
   if col.empty?
     error_msg = "🌸 *#{target_user.display_name} has zero VTubers. Literally empty. Go summon something!*"
-    return event.is_a?(Discordrb::Events::ApplicationCommandEvent) ? event.respond(content: error_msg) : event.respond(error_msg)
+    return event.is_a?(Discordrb::Events::ApplicationCommandEvent) ? event.respond(content: error_msg) : event.channel.send_message(error_msg, false, nil, nil, nil, event.message)
   end
 
   # B. Initial Landing: Find the first rarity the user actually owns to show first
@@ -107,7 +107,7 @@ end
 # ------------------------------------------
 # TRIGGERS: Prefix & Slash
 # ------------------------------------------
-$bot.command(:collection, description: 'View all the characters you own', category: 'Gacha') do |event|
+$bot.command(:collection, aliases: [:coll, :cards], description: 'View all the characters you own', category: 'Gacha') do |event|
   execute_collection(event, event.message.mentions.first || event.user)
   nil
 end

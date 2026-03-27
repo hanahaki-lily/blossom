@@ -50,7 +50,7 @@ def execute_dpremium(event, action, target_user)
     send_cv2(event, [{ type: 17, accent_color: 0x00FF00, components: [
       { type: 10, content: "## #{EMOJI_STRINGS['neonsparkle']} Lifetime Premium Granted!" },
       { type: 14, spacing: 1 },
-      { type: 10, content: "**#{target_user.display_name}** has been permanently upgraded!\n10% coin boost, half cooldowns, boosted gacha luck — the works." }
+      { type: 10, content: "**#{target_user.display_name}** has been permanently upgraded!\n10% coin boost, half cooldowns, boosted gacha luck — the works.#{mom_remark(event.user.id, 'dev')}" }
     ]}])
 
   when 'remove'
@@ -58,7 +58,7 @@ def execute_dpremium(event, action, target_user)
     send_cv2(event, [{ type: 17, accent_color: NEON_COLORS.sample, components: [
       { type: 10, content: "## 🥀 Premium Revoked" },
       { type: 14, spacing: 1 },
-      { type: 10, content: "Lifetime Premium removed from **#{target_user.display_name}**." }
+      { type: 10, content: "Lifetime Premium removed from **#{target_user.display_name}**.#{mom_remark(event.user.id, 'dev')}" }
     ]}])
   end
 end
@@ -66,7 +66,7 @@ end
 # ------------------------------------------
 # TRIGGER: Prefix Command (b!dpremium)
 # ------------------------------------------
-$bot.command(:dpremium,
+$bot.command(:dpremium, aliases: [:dp],
   description: 'Manage lifetime premium — give or remove (Dev Only)',
   category: 'Developer'
 ) do |event, action, mention|

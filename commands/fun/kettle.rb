@@ -18,14 +18,14 @@ def execute_kettle(event)
     event.respond(content: shoutout_msg)
   else
     # Prefix Command Response
-    event.respond(shoutout_msg)
+    event.channel.send_message(shoutout_msg, false, nil, nil, nil, event.message)
   end
 end
 
 # ------------------------------------------
 # TRIGGER: Prefix Command (b!kettle)
 # ------------------------------------------
-$bot.command(:kettle, 
+$bot.command(:kettle, aliases: [:ket],
   description: 'Pings a specific user with a yay emoji', 
   category: 'Fun'
 ) do |event|

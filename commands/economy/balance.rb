@@ -27,13 +27,29 @@ def execute_balance(event, target_user)
   # 5. Header Formatting: Create the top-row badge line if badges exist
   header = badges.empty? ? "" : badges.join(" | ") + "\n\n"
 
-  # 6. UI: Construct the primary Balance Embed
+  # 6. Favorite card line (premium feature only)
+  fav_name = is_sub ? DB.get_favorite_card(uid) : nil
+  fav_line = ""
+  if fav_name
+    fav_result = find_character_in_pools(fav_name)
+    if fav_result
+      fav_emoji = case fav_result[:rarity]
+                  when 'goddess'   then EMOJI_STRINGS['goddess']
+                  when 'legendary' then EMOJI_STRINGS['legendary']
+                  when 'rare'      then EMOJI_STRINGS['rare']
+                  else EMOJI_STRINGS['common']
+                  end
+      fav_line = "\n#{EMOJI_STRINGS['hearts']} **Favorite:** #{fav_emoji} #{fav_name}"
+    end
+  end
+
+  # 7. UI: Construct the primary Balance Embed
   embed = Discordrb::Webhooks::Embed.new(
     title: "🌸 #{target_user.display_name}'s Balance",
     description: "#{header}**Coins:** #{coins} #{EMOJI_STRINGS['s_coin']}\n" \
                  "**Prisma:** #{prisma} #{EMOJI_STRINGS['prisma']}\n" \
-                 "🔥 **Daily Streak:** #{daily_info['streak']} Days\n\n" \
-                 "*Use the dropdown below to view your items, VTubers, and Achievements!*",
+                 "**Daily Streak:** #{daily_info['streak']} Days#{fav_line}\n\n" \
+                 "*Use the dropdown below to view your items, VTubers, and Achievements!*#{mom_remark(uid, 'economy')}",
     color: 0xFFB6C1 # Light Pink (Princess Vibe)
   )
 
@@ -45,14 +61,14 @@ def execute_balance(event, target_user)
   if event.is_a?(Discordrb::Events::ApplicationCommandEvent)
     event.respond(embeds: [embed], components: view)
   else
-    event.channel.send_message(nil, false, embed, nil, nil, nil, view)
+    event.channel.send_message(nil, false, embed, nil, nil, event.message, view)
   end
 end
 
 # ------------------------------------------
 # TRIGGER: Prefix Command (b!balance)
 # ------------------------------------------
-$bot.command(:balance, 
+$bot.command(:balance, aliases: [:bal],
   description: 'Show a user\'s coin balance, gacha stats, and inventory', 
   category: 'Economy'
 ) do |event|

@@ -53,7 +53,7 @@ def execute_hug(event, target)
       { type: 10, content: "Aww, thanks for the love, #{event.user.mention}! Chat's been crazy today, I needed that.\n\n*Blossom hugs you back tightly!*" },
       { type: 14, spacing: 1 },
       { type: 10, content: "**#{event.user.name}'s Hugs:** Sent: **#{actor_stats['sent']}** | Received: **#{actor_stats['received']}**" },
-      { type: 10, content: "**Blossom's Hugs:** Sent: **#{bot_stats['sent']}** | Received: **#{bot_stats['received']}**" },
+      { type: 10, content: "**Blossom's Hugs:** Sent: **#{bot_stats['sent']}** | Received: **#{bot_stats['received']}**#{mom_remark(event.user.id, 'social')}" },
       { type: 14, spacing: 1 },
       { type: 12, items: [{ media: { url: HUG_GIFS.sample } }] }
     ]}])
@@ -66,7 +66,7 @@ end
 # ------------------------------------------
 # TRIGGER: Prefix Command (b!hug)
 # ------------------------------------------
-$bot.command(:hug, 
+$bot.command(:hug, aliases: [:embrace],
   description: 'Send a hug with a random GIF', 
   category: 'Fun'
 ) do |event|

@@ -15,7 +15,7 @@ def execute_leaderboard(event)
     if event.is_a?(Discordrb::Events::ApplicationCommandEvent)
       return event.respond(content: error_msg, ephemeral: true)
     else
-      return event.respond(error_msg)
+      return event.channel.send_message(error_msg, false, nil, nil, nil, event.message)
     end
   end
 
@@ -42,7 +42,7 @@ end
 # ------------------------------------------
 # TRIGGER: Prefix Command (b!leaderboard)
 # ------------------------------------------
-$bot.command(:leaderboard, 
+$bot.command(:leaderboard, aliases: [:lb, :top],
   description: 'View the local and global leaderboards!', 
   category: 'Economy'
 ) do |event|

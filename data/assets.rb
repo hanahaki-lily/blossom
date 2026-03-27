@@ -40,6 +40,10 @@ EMOJI_STRINGS = {
   'info'         => '<a:info:1476318560123879626>',         # Neon info symbol
   'confuse'      => '<a:confuse:1476318602272444468>',      # Question marks
   'bomb'         => '<a:bomb:1476321595877232802>',         # Bomb exploding in neon colors
+  'achievement'  => '<a:achievement:1486947047889305740>',  # Achievement logo
+  'up_arrow'     => '<a:up_arrow:1486946937033723974>',     # Neon up arrow
+  'stamina_pill' => '<a:stamina_pill:1486946718753751150>', # Stamina pill logo
+  'gamer_fuel'   => '<a:gamer_fuel:1486997330627526696>',   # Gamer fuel icon
 
   # Static neon/UI emojis
   'x_'           => '<:x_:1476317931099914271>',            # Red X
@@ -50,6 +54,15 @@ EMOJI_STRINGS = {
   'developer'    => '<:developer:1476318256200552528>',     # Developer logo
   's_coin'       => '<:s_coin:1476318407044628664>',        # Currency logo
   'prisma'       => '<:prisma:1486142162805723196>',        # Premium logo
+  'checkmark'    => '<:checkmark:1486947004360691817>',     # Neon checkmark
+  'twitter'      => '<:twitter:1486946903320035379>',       # Twitter logo
+  'youtube'      => '<:youtube:1486946777407164417>',       # YouTube logo
+  'level_heart'  => '<:level_heart:1486946848357744650>',   # Heart for level icon
+  'rng_manipulator' => '<:rng_manipulator:1486997282028126370>', # RNG manipulator icon
+  'goddess'      => '<:goddess:1486996095270780928>',      # Goddess rarity icon
+  'legendary'    => '<:legendary:1486996058671415346>',    # Legendary rarity icon
+  'rare'         => '<:rare:1486996034008780820>',         # Rare rarity icon
+  'common'       => '<:common:1486995990685810718>',       # Common rarity icon
 }.freeze
 
 # Backwards-compatible alias
@@ -80,6 +93,10 @@ EMOJI_OBJECTS = {
   'info'         => { name: 'info',         id: '1476318560123879626', animated: true },
   'confuse'      => { name: 'confuse',      id: '1476318602272444468', animated: true },
   'bomb'         => { name: 'bomb',         id: '1476321595877232802', animated: true },
+  'achievement'  => { name: 'achievement',  id: '1486947047889305740', animated: true },
+  'up_arrow'     => { name: 'up_arrow',     id: '1486946937033723974', animated: true },
+  'stamina_pill' => { name: 'stamina_pill', id: '1486946718753751150', animated: true },
+  'gamer_fuel'   => { name: 'gamer_fuel',   id: '1486997330627526696', animated: true },
   # Static
   'knife'        => { name: 'knife',        id: '1476300339887214754' },
   'hearts'       => { name: 'hearts',       id: '1476300374993408080' },
@@ -95,4 +112,13 @@ EMOJI_OBJECTS = {
   'developer'    => { name: 'developer',    id: '1476318256200552528' },
   's_coin'       => { name: 's_coin',       id: '1476318407044628664' },
   'prisma'       => { name: 'prisma',       id: '1486142162805723196' },
+  'checkmark'    => { name: 'checkmark',    id: '1486947004360691817' },
+  'twitter'      => { name: 'twitter',      id: '1486946903320035379' },
+  'youtube'      => { name: 'youtube',      id: '1486946777407164417' },
+  'level_heart'  => { name: 'level_heart',  id: '1486946848357744650' },
+  'rng_manipulator' => { name: 'rng_manipulator', id: '1486997282028126370' },
+  'goddess'      => { name: 'goddess',      id: '1486996095270780928' },
+  'legendary'    => { name: 'legendary',    id: '1486996058671415346' },
+  'rare'         => { name: 'rare',         id: '1486996034008780820' },
+  'common'       => { name: 'common',       id: '1486995990685810718' },
 }.freeze

@@ -16,7 +16,7 @@ def execute_support(event)
           type: 10,
           content: "Something broke? Skill issue... jk, jk. Maybe.\n" \
                    "Come yell at us in the Tsukiyo Server:\n\n" \
-                   "**https://discord.gg/tsukiyo**"
+                   "**https://discord.gg/tsukiyo**#{mom_remark(event.user.id, 'general')}"
         }
       ]
     }
@@ -28,7 +28,7 @@ end
 # ------------------------------------------
 # TRIGGERS
 # ------------------------------------------
-$bot.command(:support,
+$bot.command(:support, aliases: [:sup],
   description: 'Get a link to the official support server',
   category: 'Utility'
 ) do |event|

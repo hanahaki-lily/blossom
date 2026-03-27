@@ -70,11 +70,16 @@ def execute_trade(event, target_user, offer_str, request_str)
   }
 
   # 6. UI: Construct the Trade Proposal Embed
+  trade_desc = "#{target_user.mention}, yo! #{event.user.mention} wants to make a deal.\n\n" \
+               "They're putting up **#{my_char_real}** and want your **#{their_char_real}**.\n\n" \
+               "Accept or dodge? Clock's ticking — expires <t:#{expire_time.to_i}:R>."
+  trade_desc += "\n\n*Excuse me?? Someone's putting ME on the trading block?? I am NOT a bargaining chip, chat. ...But like, make sure I go to someone cool at least.*" if my_char_real == 'Blossom' || their_char_real == 'Blossom'
+
+  trade_desc += mom_remark(uid_a, 'gacha').to_s
+
   embed = Discordrb::Webhooks::Embed.new(
     title: '🤝 Trade Offer!',
-    description: "#{target_user.mention}, yo! #{event.user.mention} wants to make a deal.\n\n" \
-                 "They're putting up **#{my_char_real}** and want your **#{their_char_real}**.\n\n" \
-                 "Accept or dodge? Clock's ticking — expires <t:#{expire_time.to_i}:R>.",
+    description: trade_desc,
     color: NEON_COLORS.sample
   )
 
@@ -108,7 +113,7 @@ end
 # ------------------------------------------
 # TRIGGER: Prefix Command (b!trade)
 # ------------------------------------------
-$bot.command(:trade, 
+$bot.command(:trade, aliases: [:tr],
   description: 'Trade a character with someone (Usage: !trade @user <My Char> for <Their Char>)', 
   category: 'Gacha'
 ) do |event, *args|

@@ -89,7 +89,7 @@ def execute_roulette(event, amount, bet)
       components: [
         { type: 10, content: "## 🎰 Roulette Spin" },
         { type: 14, spacing: 1 },
-        { type: 10, content: "I spin the wheel... it lands on **#{color_emoji} #{spin}**!\n\nYou called **#{bet}** and it ACTUALLY hit. Pog. **#{payout}** #{EMOJI_STRINGS['s_coin']} yours.\nNew Balance: **#{DB.get_coins(uid)}** #{EMOJI_STRINGS['s_coin']}" }
+        { type: 10, content: "I spin the wheel... it lands on **#{color_emoji} #{spin}**!\n\nYou called **#{bet}** and it ACTUALLY hit. Pog. **#{payout}** #{EMOJI_STRINGS['s_coin']} yours.\nNew Balance: **#{DB.get_coins(uid)}** #{EMOJI_STRINGS['s_coin']}#{mom_remark(uid, 'arcade')}" }
       ]
     }])
   else
@@ -99,7 +99,7 @@ def execute_roulette(event, amount, bet)
       components: [
         { type: 10, content: "## 🎰 Roulette Spin" },
         { type: 14, spacing: 1 },
-        { type: 10, content: "I spin the wheel... it lands on **#{color_emoji} #{spin}**.\n\nYou bet **#{bet}**. Not even close. **#{amount}** #{EMOJI_STRINGS['s_coin']} evaporated.\nNew Balance: **#{DB.get_coins(uid)}** #{EMOJI_STRINGS['s_coin']}" }
+        { type: 10, content: "I spin the wheel... it lands on **#{color_emoji} #{spin}**.\n\nYou bet **#{bet}**. Not even close. **#{amount}** #{EMOJI_STRINGS['s_coin']} evaporated.\nNew Balance: **#{DB.get_coins(uid)}** #{EMOJI_STRINGS['s_coin']}#{mom_remark(uid, 'arcade')}" }
       ]
     }])
   end
@@ -108,7 +108,7 @@ end
 # ------------------------------------------
 # TRIGGER: Prefix Command (b!roulette)
 # ------------------------------------------
-$bot.command(:roulette, 
+$bot.command(:roulette, aliases: [:rl],
   description: 'Bet on the roulette wheel!', 
   category: 'Arcade'
 ) do |event, amount_str, bet_str|

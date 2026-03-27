@@ -23,7 +23,7 @@ def execute_bomb_admin(event, action, channel_id = nil)
     return send_cv2(event, [{ type: 17, accent_color: 0xFF0000, components: [
       { type: 10, content: "## #{EMOJI_STRINGS['confused']} What Do I Do?" },
       { type: 14, spacing: 1 },
-      { type: 10, content: "What do you want me to do? Use `enable` or `disable`.\n`#{PREFIX}bomb enable #channel` or `#{PREFIX}bomb disable`" }
+      { type: 10, content: "Enable or disable, chat. Pick one. I'm not a mind reader.\n`#{PREFIX}bomb enable #channel` or `#{PREFIX}bomb disable`" }
     ]}])
   end
 
@@ -34,7 +34,7 @@ def execute_bomb_admin(event, action, channel_id = nil)
       return send_cv2(event, [{ type: 17, accent_color: 0xFF0000, components: [
         { type: 10, content: "## #{EMOJI_STRINGS['confused']} Enable WHERE?" },
         { type: 14, spacing: 1 },
-        { type: 10, content: "Mention a channel!\n`#{PREFIX}bomb enable #channel`" }
+        { type: 10, content: "Where do you want me dropping bombs?? Tag a channel!\n`#{PREFIX}bomb enable #channel`" }
       ]}])
     end
 
@@ -43,7 +43,7 @@ def execute_bomb_admin(event, action, channel_id = nil)
       return send_cv2(event, [{ type: 17, accent_color: 0xFF0000, components: [
         { type: 10, content: "## #{EMOJI_STRINGS['x_']} Invalid Channel" },
         { type: 14, spacing: 1 },
-        { type: 10, content: "That channel doesn't exist. Try again, chat." }
+        { type: 10, content: "That channel doesn't exist in this server. Are you making up channels now? Try again." }
       ]}])
     end
 
@@ -60,7 +60,7 @@ def execute_bomb_admin(event, action, channel_id = nil)
     send_cv2(event, [{ type: 17, accent_color: 0x00FF00, components: [
       { type: 10, content: "## #{EMOJI_STRINGS['bomb']} Bomb Drops Enabled!" },
       { type: 14, spacing: 1 },
-      { type: 10, content: "Bombs are now live in <##{channel_id}>! Chat at your own risk~" }
+      { type: 10, content: "Bombs are now live in <##{channel_id}>! Chat at your own risk~#{mom_remark(event.user.id, 'admin')}" }
     ]}])
 
   when 'disable', 'off'
@@ -72,14 +72,14 @@ def execute_bomb_admin(event, action, channel_id = nil)
     send_cv2(event, [{ type: 17, accent_color: NEON_COLORS.sample, components: [
       { type: 10, content: "## #{EMOJI_STRINGS['bomb']} Bomb Drops Disabled" },
       { type: 14, spacing: 1 },
-      { type: 10, content: "Bomb drops disabled. The arcade is safe... for now." }
+      { type: 10, content: "Bomb drops disabled. The arcade is safe... for now.#{mom_remark(event.user.id, 'admin')}" }
     ]}])
 
   else
     send_cv2(event, [{ type: 17, accent_color: 0xFF0000, components: [
       { type: 10, content: "## #{EMOJI_STRINGS['confused']} Invalid Action" },
       { type: 14, spacing: 1 },
-      { type: 10, content: "Use `enable` or `disable`, chat.\n`#{PREFIX}bomb enable #channel` or `#{PREFIX}bomb disable`" }
+      { type: 10, content: "That's not a valid option. I only speak `enable` or `disable`. Try again, galaxy brain.\n`#{PREFIX}bomb enable #channel` or `#{PREFIX}bomb disable`" }
     ]}])
   end
 end
@@ -87,7 +87,7 @@ end
 # ------------------------------------------
 # TRIGGER: Prefix Command (b!bomb)
 # ------------------------------------------
-$bot.command(:bomb,
+$bot.command(:bomb, aliases: [:bombs],
   description: 'Enable or disable bomb drops (Admin Only)',
   category: 'Admin'
 ) do |event, action, channel_mention|

@@ -8,9 +8,9 @@ def build_shop_home(user_id)
   embed = Discordrb::Webhooks::Embed.new
   embed.title = "#{EMOJI_STRINGS['rich']} The VTuber Black Market"
   embed.description = "Tired of bad gacha luck? Save up your stream revenue and buy exactly who you want!\n\n" \
-                      "⭐ **Common:** #{SHOP_PRICES['common']} #{EMOJI_STRINGS['s_coin']} *(Sells for #{SELL_PRICES['common']})*\n" \
-                      "#{EMOJI_STRINGS['neonsparkle']} **Rare:** #{SHOP_PRICES['rare']} #{EMOJI_STRINGS['s_coin']} *(Sells for #{SELL_PRICES['rare']})*\n" \
-                      "🌟 **Legendary:** #{SHOP_PRICES['legendary']} #{EMOJI_STRINGS['s_coin']} *(Sells for #{SELL_PRICES['legendary']})*\n\n" \
+                      "#{EMOJI_STRINGS['common']} **Common:** #{SHOP_PRICES['common']} #{EMOJI_STRINGS['s_coin']} *(Sells for #{SELL_PRICES['common']})*\n" \
+                      "#{EMOJI_STRINGS['rare']} **Rare:** #{SHOP_PRICES['rare']} #{EMOJI_STRINGS['s_coin']} *(Sells for #{SELL_PRICES['rare']})*\n" \
+                      "#{EMOJI_STRINGS['legendary']} **Legendary:** #{SHOP_PRICES['legendary']} #{EMOJI_STRINGS['s_coin']} *(Sells for #{SELL_PRICES['legendary']})*\n\n" \
                       "Use `#{PREFIX}buy <Name>` to purchase characters or tech upgrades!"
   embed.color = NEON_COLORS.sample
   embed.image = Discordrb::Webhooks::EmbedImage.new(url: 'https://media.discordapp.net/attachments/1475890017443516476/1476244926638592050/d60459-53-0076f9af74811878db01-0.jpg')
@@ -34,9 +34,9 @@ def build_shop_catalog(user_id, page)
   chars = chars.uniq.sort
 
   emoji = case target_rarity
-          when 'legendary' then '🌟'
-          when 'rare'      then EMOJI_STRINGS['neonsparkle']
-          else '⭐'
+          when 'legendary' then EMOJI_STRINGS['legendary']
+          when 'rare'      then EMOJI_STRINGS['rare']
+          else EMOJI_STRINGS['common']
           end
 
   embed = Discordrb::Webhooks::Embed.new
@@ -65,7 +65,7 @@ def build_blackmarket_page(user_id)
     end
   end
 
-  desc += "\n**🎒 Consumables (One-Time Use)**\n"
+  desc += "\n**#{EMOJI_STRINGS['stamina_pill']} Consumables (Auto-Use)**\n"
   BLACK_MARKET_ITEMS.each do |key, data|
     if data[:type] == 'consumable'
       desc += "`#{key}` — **#{data[:name]}** (#{data[:price]} #{EMOJI_STRINGS['s_coin']})\n> *#{data[:desc]}*\n"
@@ -125,10 +125,10 @@ def generate_collection_page(user_obj, rarity_page)
   total_available = TOTAL_UNIQUE_CHARS[rarity_page]
   
   emoji = case rarity_page
-          when 'goddess'   then '💎'
-          when 'legendary' then '🌟'
-          when 'rare'      then EMOJI_STRINGS['neonsparkle']
-          else '⭐'
+          when 'goddess'   then EMOJI_STRINGS['goddess']
+          when 'legendary' then EMOJI_STRINGS['legendary']
+          when 'rare'      then EMOJI_STRINGS['rare']
+          else EMOJI_STRINGS['common']
           end
           
   desc = "You have collected **#{total_collected} / #{total_available}** unique #{rarity_page.capitalize} characters.\n\n"
@@ -157,11 +157,11 @@ def collection_view(target_uid, current_page)
 
   Discordrb::Components::View.new do |v|
     v.row do |r|
-      r.button(custom_id: "coll_common_#{target_uid}", label: 'Common', style: current_page == 'common' ? :success : :secondary, emoji: '⭐', disabled: current_page == 'common')
-      r.button(custom_id: "coll_rare_#{target_uid}", label: 'Rare', style: current_page == 'rare' ? :success : :secondary, emoji: EMOJI_OBJECTS['neonsparkle'], disabled: current_page == 'rare')
-      r.button(custom_id: "coll_legendary_#{target_uid}", label: 'Legendary', style: current_page == 'legendary' ? :success : :secondary, emoji: '🌟', disabled: current_page == 'legendary')
+      r.button(custom_id: "coll_common_#{target_uid}", label: 'Common', style: current_page == 'common' ? :success : :secondary, emoji: EMOJI_OBJECTS['common'], disabled: current_page == 'common')
+      r.button(custom_id: "coll_rare_#{target_uid}", label: 'Rare', style: current_page == 'rare' ? :success : :secondary, emoji: EMOJI_OBJECTS['rare'], disabled: current_page == 'rare')
+      r.button(custom_id: "coll_legendary_#{target_uid}", label: 'Legendary', style: current_page == 'legendary' ? :success : :secondary, emoji: EMOJI_OBJECTS['legendary'], disabled: current_page == 'legendary')
       if owns_goddess
-        r.button(custom_id: "coll_goddess_#{target_uid}", label: 'Goddess', style: current_page == 'goddess' ? :success : :secondary, emoji: '💎', disabled: current_page == 'goddess')
+        r.button(custom_id: "coll_goddess_#{target_uid}", label: 'Goddess', style: current_page == 'goddess' ? :success : :secondary, emoji: EMOJI_OBJECTS['goddess'], disabled: current_page == 'goddess')
       end
     end
   end

@@ -113,7 +113,7 @@ def execute_sell(event, filter, rarity_opt = nil)
         { type: 14, spacing: 1 },
         { type: 10, content: "Dumped **#{sold_count}** dupes. Declutter arc activated.\n\n" \
                              "💰 **Earned:** #{coins_earned} #{EMOJI_STRINGS['s_coin']}\n" \
-                             "💳 **Balance:** #{DB.get_coins(uid)} #{EMOJI_STRINGS['s_coin']}" }
+                             "💳 **Balance:** #{DB.get_coins(uid)} #{EMOJI_STRINGS['s_coin']}#{mom_remark(uid, 'economy')}" }
       ]
     }
   ]
@@ -123,7 +123,7 @@ end
 # ------------------------------------------
 # TRIGGER: Prefix Command (b!sell)
 # ------------------------------------------
-$bot.command(:sell, 
+$bot.command(:sell, aliases: [:selldupes],
   description: 'Mass sell duplicates based on filters', 
   category: 'Economy'
 ) do |event, filter, rarity_opt|

@@ -61,7 +61,7 @@ def execute_coinflip(event, amount, choice)
       components: [
         { type: 10, content: "## #{EMOJI_STRINGS['s_coin']} Coinflip: #{result.capitalize}!" },
         { type: 14, spacing: 1 },
-        { type: 10, content: "Okay wait, you actually hit?? GG, you doubled up and snagged **#{amount}** #{EMOJI_STRINGS['s_coin']}.\nNew Balance: **#{DB.get_coins(uid)}** #{EMOJI_STRINGS['s_coin']}" }
+        { type: 10, content: "Okay wait, you actually hit?? GG, you doubled up and snagged **#{amount}** #{EMOJI_STRINGS['s_coin']}.\nNew Balance: **#{DB.get_coins(uid)}** #{EMOJI_STRINGS['s_coin']}#{mom_remark(uid, 'arcade')}" }
       ]
     }])
     check_achievement(event.channel, uid, 'gamble_win')
@@ -72,7 +72,7 @@ def execute_coinflip(event, amount, choice)
       components: [
         { type: 10, content: "## #{EMOJI_STRINGS['s_coin']} Coinflip: #{result.capitalize}!" },
         { type: 14, spacing: 1 },
-        { type: 10, content: "Tragic. Absolutely tragic. **#{amount}** #{EMOJI_STRINGS['s_coin']} gone, just like that.\nNew Balance: **#{DB.get_coins(uid)}** #{EMOJI_STRINGS['s_coin']}" }
+        { type: 10, content: "Tragic. Absolutely tragic. **#{amount}** #{EMOJI_STRINGS['s_coin']} gone, just like that.\nNew Balance: **#{DB.get_coins(uid)}** #{EMOJI_STRINGS['s_coin']}#{mom_remark(uid, 'arcade')}" }
       ]
     }])
   end
@@ -81,7 +81,7 @@ end
 # ------------------------------------------
 # TRIGGER: Prefix Command (b!coinflip)
 # ------------------------------------------
-$bot.command(:coinflip, 
+$bot.command(:coinflip, aliases: [:cf, :flip],
   description: 'Bet your stream revenue on a coinflip!', 
   category: 'Arcade'
 ) do |event, amount_str, choice|

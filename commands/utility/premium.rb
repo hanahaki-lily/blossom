@@ -25,7 +25,7 @@ def execute_premium(event)
         {
           type: 10,
           content: "Boost the Tsukiyo Server to unlock all this. Do it. You won't.\n" \
-                   "**https://discord.gg/tsukiyo**"
+                   "**https://discord.gg/tsukiyo**#{mom_remark(event.user.id, 'general')}"
         }
       ]
     }
@@ -37,7 +37,7 @@ end
 # ------------------------------------------
 # TRIGGERS
 # ------------------------------------------
-$bot.command(:premium,
+$bot.command(:premium, aliases: [:prem, :vip],
   description: 'View the benefits of Blossom Premium!',
   category: 'Utility'
 ) do |event|

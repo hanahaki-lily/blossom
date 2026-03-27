@@ -20,13 +20,20 @@ def execute_summon(event)
   last_used = DB.get_cooldown(uid, 'summon')
 
   # 2. Validation: Check if the portal is still recharging
+  used_pill = false
   if last_used && (now - last_used) < cooldown_duration
-    ready_time = (last_used + cooldown_duration).to_i
-    return send_cv2(event, [{ type: 17, accent_color: 0xFF0000, components: [
-      { type: 10, content: "## #{EMOJI_STRINGS['drink']} Portal Recharging" },
-      { type: 14, spacing: 1 },
-      { type: 10, content: "Chill, chat. The portal's still recharging.\nTry again <t:#{ready_time}:R>. Go touch grass or something." }
-    ]}])
+    if inv['stamina pill'] && inv['stamina pill'] > 0
+      DB.remove_inventory(uid, 'stamina pill', 1)
+      used_pill = true
+      check_achievement(event.channel, uid, 'use_pill')
+    else
+      ready_time = (last_used + cooldown_duration).to_i
+      return send_cv2(event, [{ type: 17, accent_color: 0xFF0000, components: [
+        { type: 10, content: "## #{EMOJI_STRINGS['drink']} Portal Recharging" },
+        { type: 14, spacing: 1 },
+        { type: 10, content: "Chill, chat. The portal's still recharging.\nTry again <t:#{ready_time}:R>. Go touch grass or something." }
+      ]}])
+    end
   end
 
   # 3. Validation: Economy Check
@@ -84,8 +91,10 @@ def execute_summon(event)
   new_asc_count = user_chars[name]['ascended'].to_i
 
   # 9. UI: Final Embed Construction
-  emoji = { goddess: '💎', legendary: '🌟', rare: EMOJI_STRINGS['neonsparkle'] }.fetch(rarity, '⭐')
-  buff_text = used_manipulator ? "\n\n*🔮 RNG Manipulator burned! No commons for you this time, chat.*" : ""
+  emoji = { goddess: EMOJI_STRINGS['goddess'], legendary: EMOJI_STRINGS['legendary'], rare: EMOJI_STRINGS['rare'] }.fetch(rarity, EMOJI_STRINGS['common'])
+  buff_text = ""
+  buff_text += "\n\n*#{EMOJI_STRINGS['stamina_pill']} Stamina Pill popped! Cooldown bypassed.*" if used_pill
+  buff_text += "\n\n*#{EMOJI_STRINGS['rng_manipulator']} RNG Manipulator burned! No commons for you this time, chat.*" if used_manipulator
 
   # Rarity-flavored pull messages
   pull_flavor = case rarity
@@ -96,6 +105,8 @@ def execute_summon(event)
                 end
   # Easter egg: Envvy is Blossom's creator (mom)
   pull_flavor += "\n\n*...wait, MOM?! You pulled my creator?? Treat her well or I'm rigging your next 50 pulls to commons.*" if name == 'Envvy'
+  # Easter egg: Blossom is self-aware
+  pull_flavor += "\n\n*WAIT— YOU PULLED ME?? A card of ME?? Okay that's actually kinda flattering... don't let it go to your head though. I'm still YOUR manager, not the other way around.*" if name == 'Blossom'
   desc = "#{emoji} You summoned **#{name}** (#{rarity.to_s.capitalize})!\n#{pull_flavor}\n"
 
   if is_ascended
@@ -116,7 +127,7 @@ def execute_summon(event)
     { type: 14, spacing: 1 },
     { type: 10, content: desc },
     { type: 14, spacing: 1 },
-    { type: 10, content: "**Wallet Damage**\n#{DB.get_coins(uid)} #{EMOJI_STRINGS['s_coin']}" },
+    { type: 10, content: "**Wallet Damage**\n#{DB.get_coins(uid)} #{EMOJI_STRINGS['s_coin']}#{mom_remark(uid, 'gacha')}" },
     { type: 14, spacing: 1 },
     { type: 12, items: [{ media: { url: gif_url } }] }
   ]}])
@@ -125,5 +136,5 @@ end
 # ------------------------------------------
 # TRIGGERS: Prefix & Slash Support
 # ------------------------------------------
-$bot.command(:summon, description: 'Roll the gacha!', category: 'Gacha') { |e| execute_summon(e); nil }
+$bot.command(:summon, aliases: [:pull, :roll], description: 'Roll the gacha!', category: 'Gacha') { |e| execute_summon(e); nil }
 $bot.application_command(:summon) { |e| execute_summon(e) }

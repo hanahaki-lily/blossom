@@ -4,20 +4,33 @@
 # for Blossom's general navigation tools.
 # ==========================================
 
+HELP_EMOJI_MAP = { 'Economy' => '💰', 'Gacha' => '🌟', 'Arcade' => '🕹️', 'Fun' => '🎉', 'Utility' => '🔧', 'Admin' => '🛡️' }.freeze
+HELP_PER_PAGE = 5
+
+# Blossom's category-specific remarks for the help menu
+HELP_REMARKS = {
+  'Home'     => "*You're staring at the menu like it's gonna order for you. Pick something already.*",
+  'Economy'  => "*Grind coins, flex wealth, repeat. Welcome to capitalism, Neon Arcade edition.*",
+  'Gacha'    => "*This is where your coins go to die. Don't say I didn't warn you, chat.*",
+  'Arcade'   => "*Feeling lucky? Spoiler: you're probably not. But go off.*",
+  'Fun'      => "*The chill zone. Hug your friends, slap your enemies, check your stats. Vibes only.*",
+  'Utility'  => "*The boring-but-necessary stuff. You're welcome for organizing all of this, by the way.*",
+  'Admin'    => "*Power tools for the people in charge. Don't break anything or I'm telling mom.*"
+}.freeze
+
 # Builds the raw CV2 select menu action row for the help menu dropdown.
 def help_select_menu_raw(user_id)
-  emoji_map = { 'Economy' => '💰', 'Gacha' => '🌟', 'Arcade' => '🕹️', 'Fun' => '🎉', 'Utility' => '🔧', 'Admin' => '🛡️' }
   visible_categories = COMMAND_CATEGORIES.keys - ['Developer']
 
   options = [{ label: 'Home', value: 'Home', emoji: { name: '🏠' }, description: 'Back to the lobby~' }]
   visible_categories.each do |cat|
-    options << { label: cat, value: cat, emoji: { name: emoji_map[cat] || '🌸' } }
+    options << { label: cat, value: cat, emoji: { name: HELP_EMOJI_MAP[cat] || '🌸' } }
   end
 
   {
-    type: 1, # Action Row
+    type: 1,
     components: [{
-      type: 3, # String Select Menu
+      type: 3,
       custom_id: "help_menu_#{user_id}",
       placeholder: 'Pick a category, I dare you...',
       max_values: 1,
@@ -26,41 +39,84 @@ def help_select_menu_raw(user_id)
   }
 end
 
-# Generates the full CV2 component array for a help page (container + select menu).
-def help_cv2_components(bot, user_id, category)
+# Builds pagination buttons for help pages
+def help_page_buttons(user_id, category, page, total_pages)
+  return nil if total_pages <= 1
+
+  {
+    type: 1,
+    components: [
+      { type: 2, custom_id: "helppg_#{user_id}_#{category}_#{page - 1}", label: '◀ Prev', style: 2, disabled: page <= 1 },
+      { type: 2, custom_id: "helppg_noop", label: "#{page}/#{total_pages}", style: 2, disabled: true },
+      { type: 2, custom_id: "helppg_#{user_id}_#{category}_#{page + 1}", label: 'Next ▶', style: 2, disabled: page >= total_pages }
+    ]
+  }
+end
+
+# Generates the full CV2 component array for a help page (container + select menu + pagination).
+def help_cv2_components(bot, user_id, category, page = 1)
+  remark = HELP_REMARKS[category] || HELP_REMARKS['Home']
+
   if category == 'Home'
     text_content = "Okay look, since you clearly need me to spell it out... welcome to the Neon Arcade. 🌸\n\n" \
                    "**Prefix:** `#{PREFIX}`\n" \
                    "*Everything works as Slash (`/`) or Prefix — I'm versatile like that.*\n\n" \
-                   "Pick a category from the dropdown. Try not to get lost."
+                   "Pick a category from the dropdown, or use `#{PREFIX}help <category>` to jump straight there.\n" \
+                   "Categories: `economy`, `gacha`, `arcade`, `fun`, `utility`, `admin`"
     inner = [
       { type: 10, content: "## #{EMOJI_STRINGS['info']} Blossom Help Menu" },
       { type: 14, spacing: 1 },
-      { type: 10, content: text_content }
+      { type: 10, content: text_content },
+      { type: 14, spacing: 1 },
+      { type: 10, content: remark }
+    ]
+
+    mama_note = mom_remark(user_id, 'general')
+    inner << { type: 10, content: mama_note } if mama_note
+
+    [
+      { type: 17, accent_color: NEON_COLORS.sample, components: inner },
+      help_select_menu_raw(user_id)
     ]
   else
-    if COMMAND_CATEGORIES[category]
-      cmd_list = COMMAND_CATEGORIES[category].map do |cmd_sym|
-        cmd = bot.commands[cmd_sym]
-        desc = cmd ? (cmd.attributes[:description] || 'No description provided.') : 'No description provided.'
-        "`#{cmd_sym}` — #{desc}"
-      end
-      text_content = "**Prefix:** `#{PREFIX}` | **Slash:** `/`\n\n" + cmd_list.join("\n")
-    else
-      text_content = "*Nothing here yet. Weird. That's on them, not me.*"
+    cmds = COMMAND_CATEGORIES[category] || []
+    total_pages = [(cmds.size / HELP_PER_PAGE.to_f).ceil, 1].max
+    page = [[page, 1].max, total_pages].min
+
+    start_idx = (page - 1) * HELP_PER_PAGE
+    page_cmds = cmds[start_idx, HELP_PER_PAGE] || []
+
+    cmd_lines = page_cmds.map do |cmd_sym|
+      cmd = bot.commands[cmd_sym]
+      desc = cmd ? (cmd.attributes[:description] || 'No description provided.') : 'No description provided.'
+      aliases = cmd&.attributes&.dig(:aliases)
+      alias_text = aliases && !aliases.empty? ? " *(#{aliases.map { |a| "`#{a}`" }.join(', ')})*" : ""
+      "**`#{PREFIX}#{cmd_sym}`**#{alias_text}\n> #{desc}"
     end
 
-    inner = [
-      { type: 10, content: "## 🌸 Help: #{category}" },
-      { type: 14, spacing: 1 },
-      { type: 10, content: text_content }
-    ]
-  end
+    cat_emoji = HELP_EMOJI_MAP[category] || '🌸'
+    text_content = cmd_lines.join("\n\n")
 
-  [
-    { type: 17, accent_color: NEON_COLORS.sample, components: inner },
-    help_select_menu_raw(user_id)
-  ]
+    inner = [
+      { type: 10, content: "## #{cat_emoji} #{category} Commands" },
+      { type: 14, spacing: 1 },
+      { type: 10, content: text_content },
+      { type: 14, spacing: 1 },
+      { type: 10, content: remark }
+    ]
+
+    mama_note = mom_remark(user_id, 'general')
+    inner << { type: 10, content: mama_note } if mama_note
+
+    result = [{ type: 17, accent_color: NEON_COLORS.sample, components: inner }]
+
+    # Add pagination buttons if needed
+    page_btns = help_page_buttons(user_id, category, page, total_pages)
+    result << page_btns if page_btns
+
+    result << help_select_menu_raw(user_id)
+    result
+  end
 end
 
 def generate_category_embed(bot, user_obj, category)
@@ -69,16 +125,19 @@ def generate_category_embed(bot, user_obj, category)
   embed.timestamp = Time.now
   embed.footer = Discordrb::Webhooks::EmbedFooter.new(text: "Requested by #{user_obj.display_name}", icon_url: user_obj.avatar_url)
 
+  remark = HELP_REMARKS[category] || HELP_REMARKS['Home']
+
   if category == 'Home'
     embed.title = "#{EMOJI_STRINGS['info']} Blossom Help Menu"
     embed.description = "Okay look, since you clearly need me to spell it out... welcome to the Neon Arcade. 🌸\n\n" \
                         "**Prefix:** `#{PREFIX}`\n" \
                         "*Everything works as Slash (`/`) or Prefix — I'm versatile like that.* \n\n" \
-                        "Pick a category from the dropdown. Try not to get lost."
+                        "Pick a category from the dropdown, or use `#{PREFIX}help <category>` to jump straight there.\n\n" \
+                        "#{remark}#{mom_remark(user_obj.id, 'general')}"
   else
     embed.title = "🌸 Help Category: #{category}"
     embed.description = "**Prefix:** `#{PREFIX}` | **Slash:** `/`\n\n"
-    
+
     if COMMAND_CATEGORIES[category]
       cmd_list = COMMAND_CATEGORIES[category].map do |cmd_sym|
         cmd = bot.commands[cmd_sym]
@@ -89,7 +148,9 @@ def generate_category_embed(bot, user_obj, category)
     else
       embed.description += "*Nothing here yet. Weird. That's on them, not me.*"
     end
+    embed.description += "\n\n#{remark}"
   end
+  embed.description += mom_remark(user_obj.id, 'general').to_s
   embed
 end
 
@@ -166,8 +227,9 @@ def generate_leaderboard_page(bot, server, action)
       desc = active_humans.each_with_index.map do |row, index|
         user_obj = bot.user(row['user_id'])
         name = user_obj.display_name
+        premium_badge = is_premium?(bot, row['user_id']) ? " #{EMOJI_STRINGS['prisma']}" : ""
         medal = ["🥇", "🥈", "🥉"][index] || "🏅"
-        "**#{index + 1}.** #{medal} **#{name}** — Level **#{row['level']}** *(#{row['xp']} XP)*"
+        "**#{index + 1}.** #{medal} **#{name}**#{premium_badge} — Level **#{row['level']}** *(#{row['xp']} XP)*"
       end.join("\n\n")
       embed.description = desc
     end
@@ -212,9 +274,10 @@ def generate_leaderboard_page(bot, server, action)
       desc = active_humans.each_with_index.map do |row, index|
         user_obj = bot.user(row['user_id'])
         name = user_obj ? user_obj.username : "User #{row['user_id']}"
+        premium_badge = user_obj && is_premium?(bot, row['user_id']) ? " #{EMOJI_STRINGS['prisma']}" : ""
         medal = ["🥇", "🥈", "🥉"][index] || "🏅"
-        
-        "**#{index + 1}.** #{medal} **#{name}** — **#{row['coins']}** #{EMOJI_STRINGS['s_coin']}" 
+
+        "**#{index + 1}.** #{medal} **#{name}**#{premium_badge} — **#{row['coins']}** #{EMOJI_STRINGS['s_coin']}"
       end.join("\n\n")
       embed.description = desc
     end

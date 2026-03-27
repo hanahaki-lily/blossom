@@ -42,7 +42,7 @@ def execute_ban(event, user_input, reason)
     send_cv2(event, [{ type: 17, accent_color: 0x00FF00, components: [
       { type: 10, content: "## :hammer: Ban Confirmed" },
       { type: 14, spacing: 1 },
-      { type: 10, content: "Successfully banned ID **#{target_id}**.\n**Reason:** #{reason}" }
+      { type: 10, content: "Successfully banned ID **#{target_id}**.\n**Reason:** #{reason}#{mom_remark(event.user.id, 'mod')}" }
     ]}])
 
     # 7. Metadata: Prepare data for the log entry

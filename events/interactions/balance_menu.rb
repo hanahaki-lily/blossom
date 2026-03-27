@@ -32,8 +32,24 @@ $bot.select_menu(custom_id: /^bal_menu_/) do |event|
     
     header = badges.empty? ? "" : badges.join(" | ") + "\n\n"
 
+    # Favorite card (premium feature only)
+    fav_name = is_sub ? DB.get_favorite_card(uid) : nil
+    fav_line = ""
+    if fav_name
+      fav_result = find_character_in_pools(fav_name)
+      if fav_result
+        fav_emoji = case fav_result[:rarity]
+                    when 'goddess'   then EMOJI_STRINGS['goddess']
+                    when 'legendary' then EMOJI_STRINGS['legendary']
+                    when 'rare'      then EMOJI_STRINGS['rare']
+                    else EMOJI_STRINGS['common']
+                    end
+        fav_line = "\n#{EMOJI_STRINGS['hearts']} **Favorite:** #{fav_emoji} #{fav_name}"
+      end
+    end
+
     new_embed.title = "🌸 #{username}'s Balance"
-    new_embed.description = "#{header}**Coins:** #{coins} #{EMOJI_STRINGS['s_coin']}\n**Prisma:** #{prisma} #{EMOJI_STRINGS['prisma']}\n🔥 **Daily Streak:** #{daily_info['streak']} Days\n\n*Use the dropdown below to view your items and VTubers!*"
+    new_embed.description = "#{header}**Coins:** #{coins} #{EMOJI_STRINGS['s_coin']}\n**Prisma:** #{prisma} #{EMOJI_STRINGS['prisma']}\n**Daily Streak:** #{daily_info['streak']} Days#{fav_line}\n\n*Use the dropdown below to view your items and VTubers!*#{mom_remark(uid, 'economy')}"
 
   when 'inv'
     inv = DB.get_inventory(uid)
@@ -49,23 +65,25 @@ $bot.select_menu(custom_id: /^bal_menu_/) do |event|
       inv.each do |row|
         item = row['item_id']
         count = row['quantity']
+        # Use the custom emoji from BLACK_MARKET_ITEMS name if available
+        display_name = BLACK_MARKET_ITEMS[item] ? BLACK_MARKET_ITEMS[item][:name] : item
         is_upgrade = upgrade_keywords.any? { |kw| item.downcase.include?(kw) }
         if is_upgrade
-          upgrades << "**#{item}**: #{count}"
+          upgrades << "#{display_name}: **#{count}**"
         else
-          consumables << "**#{item}**: #{count}"
+          consumables << "#{display_name}: **x#{count}**"
         end
       end
 
       desc = ""
       desc += "🎙️ **Stream Upgrades (Permanent)**\n" + upgrades.join("\n") + "\n\n" unless upgrades.empty?
-      desc += "💊 **Consumables (One-Time Use)**\n" + consumables.join("\n") unless consumables.empty?
+      desc += "#{EMOJI_STRINGS['stamina_pill']} **Consumables (Auto-Use)**\n" + consumables.join("\n") unless consumables.empty?
       new_embed.description = desc.strip
     end
 
   when 'vtubers'
     col = DB.get_collection(uid)
-    new_embed.title = "🌟 #{username}'s VTuber Collection"
+    new_embed.title = "#{EMOJI_STRINGS['neonsparkle']} #{username}'s VTuber Collection"
 
     if col.empty?
       new_embed.description = "*You haven't pulled any VTubers yet!*"
@@ -91,12 +109,14 @@ $bot.select_menu(custom_id: /^bal_menu_/) do |event|
       sorted_rarity = rarity_counts.sort_by { |r, _| rarity_order.index(r.downcase) || 99 }
       sorted_ascended = ascended_rarity_counts.sort_by { |r, _| rarity_order.index(r.downcase) || 99 }
 
-      desc = "#{EMOJI_STRINGS['neonsparkle']} **Unique VTubers:** #{unique_vtubers}\n🌟 **Unique Ascended:** #{unique_ascended}\n\n📊 **Total by Rarity:**\n"
-      sorted_rarity.each { |r, c| desc += "• #{r.capitalize}: **#{c}**\n" }
+      rarity_emoji_map = { 'common' => EMOJI_STRINGS['common'], 'rare' => EMOJI_STRINGS['rare'], 'legendary' => EMOJI_STRINGS['legendary'], 'goddess' => EMOJI_STRINGS['goddess'] }
+
+      desc = "#{EMOJI_STRINGS['neonsparkle']} **Unique VTubers:** #{unique_vtubers}\n#{EMOJI_STRINGS['neonsparkle']} **Unique Ascended:** #{unique_ascended}\n\n📊 **Total by Rarity:**\n"
+      sorted_rarity.each { |r, c| desc += "#{rarity_emoji_map[r.downcase] || '•'} #{r.capitalize}: **#{c}**\n" }
 
       if sorted_ascended.any?
         desc += "\n🔥 **Ascended by Rarity:**\n"
-        sorted_ascended.each { |r, c| desc += "• #{r.capitalize}: **#{c}**\n" }
+        sorted_ascended.each { |r, c| desc += "#{rarity_emoji_map[r.downcase] || '•'} #{r.capitalize}: **#{c}**\n" }
       end
       new_embed.description = desc.strip
     end

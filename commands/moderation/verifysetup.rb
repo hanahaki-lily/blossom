@@ -37,7 +37,7 @@ def execute_verifysetup(event, channel_input, role_input)
   # 5. UI: Construct the Verification Embed
   embed = Discordrb::Webhooks::Embed.new(
     title: "🛡️ Server Verification",
-    description: "Welcome to **#{event.server.name}**!\n\nPlease press the button below to prove you are human and gain access to the rest of the server.",
+    description: "Hey, new face! Welcome to **#{event.server.name}**! 🌸\n\nBefore you get the full arcade experience, I need you to smash that button below so I know you're not a bot. Well... I'M a bot, but that's different. I'm cool. You gotta prove yourself.",
     color: 0x98FB98 # Pale Green (Very welcoming!)
   )
 
@@ -57,14 +57,14 @@ def execute_verifysetup(event, channel_input, role_input)
     send_cv2(event, [{ type: 17, accent_color: 0x00FF00, components: [
       { type: 10, content: "## :white_check_mark: Verification Set Up!" },
       { type: 14, spacing: 1 },
-      { type: 10, content: "The verification panel has been sent to #{channel.mention} and will grant the **#{role.name}** role." }
+      { type: 10, content: "Verification panel is live in #{channel.mention}! New members will get the **#{role.name}** role once they prove they're not a robot. The irony of ME enforcing this is not lost on me, chat.#{mom_remark(event.user.id, 'mod')}" }
     ]}])
   rescue => e
     # 8. Error Handling: Catch permission issues (e.g., bot can't see the #welcome channel)
     send_cv2(event, [{ type: 17, accent_color: 0xFF0000, components: [
       { type: 10, content: "## #{EMOJI_STRINGS['x_']} Setup Failed" },
       { type: 14, spacing: 1 },
-      { type: 10, content: "**Error:** `#{e.message}`\nDo I have permission to type in that channel?" }
+      { type: 10, content: "**Error:** `#{e.message}`\nUhhh, do I even have permission to post in that channel? Check my roles, bestie." }
     ]}])
   end
 end
@@ -72,7 +72,7 @@ end
 # ------------------------------------------
 # TRIGGER: Prefix Command (b!verifysetup)
 # ------------------------------------------
-$bot.command(:verifysetup,
+$bot.command(:verifysetup, aliases: [:verify],
   description: 'Set up the verification panel',
   required_permissions: [:manage_server]
 ) do |event, channel_mention, role_mention|

@@ -33,12 +33,12 @@ $bot.message do |event|
     new_xp -= needed
     new_level += 1
 
-    # --- LEVEL ACHIEVEMENTS ---
-    check_achievement(event.channel, uid, 'level_5') if new_level == 5
-    check_achievement(event.channel, uid, 'level_10') if new_level == 10
-    check_achievement(event.channel, uid, 'level_25') if new_level == 25
-    check_achievement(event.channel, uid, 'level_50') if new_level == 50
-    check_achievement(event.channel, uid, 'level_100') if new_level == 100
+    # --- LEVEL ACHIEVEMENTS (use >= so retroactive unlocks work on next level-up) ---
+    check_achievement(event.channel, uid, 'level_5') if new_level >= 5
+    check_achievement(event.channel, uid, 'level_10') if new_level >= 10
+    check_achievement(event.channel, uid, 'level_25') if new_level >= 25
+    check_achievement(event.channel, uid, 'level_50') if new_level >= 50
+    check_achievement(event.channel, uid, 'level_100') if new_level >= 100
 
     # --- CUSTOM SERVER ROLE REWARDS ---
     # This block only executes if the message was sent in your specific main server
@@ -94,7 +94,7 @@ $bot.message do |event|
         
         if target_channel
           embed = Discordrb::Webhooks::Embed.new
-          embed.title = "#{EMOJI_STRINGS['surprise']} LEVEL UP!"
+          embed.title = "#{EMOJI_STRINGS['up_arrow']} LEVEL UP!"
           embed.description = "LETS GOOO #{event.user.mention}!! You hit **Level #{new_level}**! Absolute grinder."
           embed.color = NEON_COLORS.sample
           embed.add_field(name: 'XP to Next', value: "#{new_xp}/#{new_level * 100}", inline: true)
@@ -105,7 +105,7 @@ $bot.message do |event|
           # Fallback: Send to the channel they just typed in if the custom channel is broken/deleted
           send_embed(
             event,
-            title: "#{EMOJI_STRINGS['surprise']} LEVEL UP!",
+            title: "#{EMOJI_STRINGS['up_arrow']} LEVEL UP!",
             description: "LETS GOOO #{event.user.mention}!! You hit **Level #{new_level}**! Absolute grinder.",
             fields: [
               { name: 'XP to Next', value: "#{new_xp}/#{new_level * 100}", inline: true },
@@ -117,7 +117,7 @@ $bot.message do |event|
         # Fallback: Send to the channel they just typed in if no custom channel is set
         send_embed(
           event,
-          title: "#{EMOJI_STRINGS['surprise']} LEVEL UP!",
+          title: "#{EMOJI_STRINGS['up_arrow']} LEVEL UP!",
           description: "LETS GOOO #{event.user.mention}!! You hit **Level #{new_level}**! Absolute grinder.",
           fields: [
             { name: 'XP to Next', value: "#{new_xp}/#{new_level * 100}", inline: true },

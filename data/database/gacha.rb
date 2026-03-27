@@ -35,4 +35,13 @@ module DatabaseGacha
   def set_card_count(uid, name, count)
     @db.exec_params("UPDATE collections SET count = $3 WHERE user_id = $1 AND character_name = $2", [uid, name, count])
   end
+
+  def get_favorite_card(uid)
+    row = @db.exec_params("SELECT favorite_card FROM global_users WHERE user_id = $1", [uid]).first
+    row ? row['favorite_card'] : nil
+  end
+
+  def set_favorite_card(uid, name)
+    @db.exec_params("INSERT INTO global_users (user_id, favorite_card) VALUES ($1, $2) ON CONFLICT (user_id) DO UPDATE SET favorite_card = $2", [uid, name])
+  end
 end

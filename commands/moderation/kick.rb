@@ -40,7 +40,7 @@ def execute_kick(event, member, reason)
     send_cv2(event, [{ type: 17, accent_color: 0x00FF00, components: [
       { type: 10, content: "## :boot: Kick Confirmed" },
       { type: 14, spacing: 1 },
-      { type: 10, content: "Successfully kicked **#{member.display_name}**.\n**Reason:** #{reason}" }
+      { type: 10, content: "Successfully kicked **#{member.display_name}**.\n**Reason:** #{reason}#{mom_remark(event.user.id, 'mod')}" }
     ]}])
 
     # 7. Logging: Record the event in the server's designated moderation channel

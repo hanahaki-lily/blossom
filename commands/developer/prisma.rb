@@ -61,14 +61,14 @@ def execute_prisma(event, action, target, amount)
   send_cv2(event, [{ type: 17, accent_color: 0x9370DB, components: [
     { type: 10, content: "## #{EMOJI_STRINGS['prisma']} Prisma Updated" },
     { type: 14, spacing: 1 },
-    { type: 10, content: "#{action_word} #{target.mention}!\n\n**New Balance:** #{new_bal} #{EMOJI_STRINGS['prisma']}" }
+    { type: 10, content: "#{action_word} #{target.mention}!\n\n**New Balance:** #{new_bal} #{EMOJI_STRINGS['prisma']}#{mom_remark(event.user.id, 'dev')}" }
   ]}])
 end
 
 # ------------------------------------------
 # TRIGGER: Prefix Command (b!prisma)
 # ------------------------------------------
-$bot.command(:prisma, 
+$bot.command(:prisma, aliases: [:pr],
   description: 'Manage user Prisma (Dev Only)', 
   category: 'Developer'
 ) do |event, action, user_mention, amount|

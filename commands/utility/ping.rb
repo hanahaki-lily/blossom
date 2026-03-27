@@ -15,7 +15,7 @@ def execute_ping(event, timestamp)
       components: [
         { type: 10, content: "## #{EMOJI_STRINGS['play']} Pong!" },
         { type: 14, spacing: 1 },
-        { type: 10, content: "**#{latency_ms}ms** — not bad for a girl running the whole Neon Arcade.\nY'all are lucky I'm this fast." }
+        { type: 10, content: "**#{latency_ms}ms** — not bad for a girl running the whole Neon Arcade.\nY'all are lucky I'm this fast.#{mom_remark(event.user.id, 'general')}" }
       ]
     }
   ]
@@ -26,7 +26,7 @@ end
 # ------------------------------------------
 # TRIGGER: Prefix Command (b!ping)
 # ------------------------------------------
-$bot.command(:ping,
+$bot.command(:ping, aliases: [:pong],
   description: 'Check bot latency',
   category: 'Utility'
 ) do |event|

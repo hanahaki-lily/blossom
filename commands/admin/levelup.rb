@@ -27,7 +27,7 @@ def execute_levelup(event, state, channel_obj = nil)
     send_cv2(event, [{ type: 17, accent_color: 0x00FF00, components: [
       { type: 10, content: "## 📣 Level-Up Channel Set" },
       { type: 14, spacing: 1 },
-      { type: 10, content: "Level-up messages will now be automatically sent to #{channel_obj.mention}!" }
+      { type: 10, content: "Level-up messages will now be automatically sent to #{channel_obj.mention}!#{mom_remark(event.user.id, 'admin')}" }
     ]}])
 
   # 4. Branching Logic: Enable notifications (ON)
@@ -36,7 +36,7 @@ def execute_levelup(event, state, channel_obj = nil)
     send_cv2(event, [{ type: 17, accent_color: 0x00FF00, components: [
       { type: 10, content: "## ✅ Level-Ups Enabled" },
       { type: 14, spacing: 1 },
-      { type: 10, content: "Level-up messages are now turned ON." }
+      { type: 10, content: "Level-up messages are now turned ON.#{mom_remark(event.user.id, 'admin')}" }
     ]}])
 
   # 5. Branching Logic: Disable notifications (OFF)
@@ -45,7 +45,7 @@ def execute_levelup(event, state, channel_obj = nil)
     send_cv2(event, [{ type: 17, accent_color: NEON_COLORS.sample, components: [
       { type: 10, content: "## 🔇 Level-Ups Disabled" },
       { type: 14, spacing: 1 },
-      { type: 10, content: "Level-up messages have been completely turned off for this server." }
+      { type: 10, content: "Level-up messages have been completely turned off for this server.#{mom_remark(event.user.id, 'admin')}" }
     ]}])
 
   # 6. Fallback: Provide usage guidance if input is unrecognized
@@ -61,7 +61,7 @@ end
 # ------------------------------------------
 # TRIGGER: Prefix Command (b!levelup)
 # ------------------------------------------
-$bot.command(:levelup, 
+$bot.command(:levelup, aliases: [:lu],
   description: 'Configure where level-up messages go (Admin Only)', 
   category: 'Admin'
 ) do |event, arg|

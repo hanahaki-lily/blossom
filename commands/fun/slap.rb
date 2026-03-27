@@ -53,7 +53,7 @@ def execute_slap(event, target)
       { type: 10, content: "Hey! #{event.user.mention} just slapped me?! Chat, clip that! That is literal bot abuse.\n\n*Blossom smacks you right back!*" },
       { type: 14, spacing: 1 },
       { type: 10, content: "**#{event.user.name}'s Slaps:** Sent: **#{actor_stats['sent']}** | Received: **#{actor_stats['received']}**" },
-      { type: 10, content: "**Blossom's Slaps:** Sent: **#{bot_stats['sent']}** | Received: **#{bot_stats['received']}**" },
+      { type: 10, content: "**Blossom's Slaps:** Sent: **#{bot_stats['sent']}** | Received: **#{bot_stats['received']}**#{mom_remark(event.user.id, 'social')}" },
       { type: 14, spacing: 1 },
       { type: 12, items: [{ media: { url: SLAP_GIFS.sample } }] }
     ]}])
@@ -66,7 +66,7 @@ end
 # ------------------------------------------
 # TRIGGER: Prefix Command (b!slap)
 # ------------------------------------------
-$bot.command(:slap, 
+$bot.command(:slap, aliases: [:smack],
   description: 'Send a playful slap with a random GIF', 
   category: 'Fun'
 ) do |event|

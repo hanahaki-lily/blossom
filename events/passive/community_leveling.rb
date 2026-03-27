@@ -52,11 +52,11 @@ $bot.message do |event|
 
       if announce_enabled
         cv2_components = [{ type: 17, accent_color: 0x00FF00, components: [
-          { type: 10, content: "## 🎊 Community Level Up!" },
+          { type: 10, content: "## #{EMOJI_STRINGS['up_arrow']} Community Level Up!" },
           { type: 14, spacing: 1 },
           { type: 10, content: "Incredible teamwork! **#{event.server.name}** has reached **Server Level #{new_level}**!" },
           { type: 14, spacing: 1 },
-          { type: 12, items: [{ media: { url: "https://media.discordapp.net/attachments/1475890017443516476/1483149362832871424/Retro-Arcade-Twitch-Overlay-OBS.webp" } }] }
+          { type: 12, items: [{ media: { url: "https://media.discordapp.net/attachments/1475890017443516476/1487108470678229102/Retro-Arcade-Twitch-Overlay-OBS.jpg?ex=69c7f130&is=69c69fb0&hm=eed10da260030be7eb51588fc9868f7875e2486a295698327e709c9c8e1f90ad&=&format=webp" } }] }
         ]}]
         body = { content: '', flags: CV2_FLAG, components: cv2_components }.to_json
         Discordrb::API.request(

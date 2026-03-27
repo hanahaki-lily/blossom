@@ -34,7 +34,7 @@ def mod_reply(event, text, is_ephemeral: false)
   if event.is_a?(Discordrb::Events::ApplicationCommandEvent)
     event.respond(content: text, ephemeral: is_ephemeral)
   else
-    msg = event.respond(text)
+    msg = event.channel.send_message(text, false, nil, nil, nil, event.message)
     
     # Auto-delete the success message for clear/purge commands so it doesn't clutter chat
     if text.include?("swept away") && !is_ephemeral

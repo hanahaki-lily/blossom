@@ -51,7 +51,13 @@ $bot.ready do |event|
         pending_reminders.each do |row|
           uid = row['user_id'].to_i
           chan_id = row['reminder_channel'].to_i
-          
+
+          # Premium gate — if they lapsed, silently disable their reminder
+          unless is_premium?(event.bot, uid)
+            DB.toggle_daily_reminder(uid, nil)
+            next
+          end
+
           channel = event.bot.channel(chan_id)
           if channel
             begin
@@ -60,7 +66,7 @@ $bot.ready do |event|
               # Ignore if bot lacks permission to type in that channel
             end
           end
-          DB.mark_reminder_sent(uid) 
+          DB.mark_reminder_sent(uid)
         end
       rescue => e
         puts "[REMINDER ERROR] #{e.message}"

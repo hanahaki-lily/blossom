@@ -21,11 +21,11 @@ def execute_devhelp(event)
   send_cv2(event, [{ type: 17, accent_color: NEON_COLORS.sample, components: [
     { type: 10, content: "## #{EMOJI_STRINGS['developer']} Developer Commands" },
     { type: 14, spacing: 1 },
-    { type: 10, content: cmd_list }
+    { type: 10, content: "#{cmd_list}#{mom_remark(event.user.id, 'dev')}" }
   ]}])
 end
 
-$bot.command(:devhelp, description: 'List all developer commands (Dev Only)') do |event|
+$bot.command(:devhelp, aliases: [:dh], description: 'List all developer commands (Dev Only)') do |event|
   execute_devhelp(event)
   nil
 end

@@ -12,17 +12,27 @@ def check_achievement(channel_or_event, uid, ach_id, silent: false)
     DB.add_coins(uid, data[:reward]) 
     
     unless silent || channel_or_event.nil?
-      embed = Discordrb::Webhooks::Embed.new(
-        title: "#{EMOJI_STRINGS['crown']} Achievement Unlocked!",
-        description: "Oh? **#{data[:emoji]} #{data[:name]}**\n> #{data[:desc]}\n\n*Not bad. Here's **#{data[:reward]}** #{EMOJI_STRINGS['s_coin'] || '🪙'} for your trouble.*",
-        color: 0xFFD700
-      )
-      
-      # Route appropriately if it's an event or raw channel
-      if channel_or_event.respond_to?(:channel)
-        channel_or_event.channel.send_message(nil, false, embed) rescue nil
-      else
-        channel_or_event.send_message(nil, false, embed) rescue nil
+      # Check if the server has achievement notifications disabled
+      server = if channel_or_event.respond_to?(:server)
+                 channel_or_event.server
+               elsif channel_or_event.respond_to?(:channel) && channel_or_event.channel.respond_to?(:server)
+                 channel_or_event.channel.server
+               end
+      notify = server ? DB.achievements_enabled?(server.id) : true
+
+      if notify
+        embed = Discordrb::Webhooks::Embed.new(
+          title: "#{EMOJI_STRINGS['achievement']} Achievement Unlocked!",
+          description: "Oh? **#{data[:emoji]} #{data[:name]}**\n> #{data[:desc]}\n\n*Not bad. Here's **#{data[:reward]}** #{EMOJI_STRINGS['s_coin'] || '🪙'} for your trouble.*",
+          color: 0xFFD700
+        )
+
+        # Route appropriately if it's an event or raw channel
+        if channel_or_event.respond_to?(:channel)
+          channel_or_event.channel.send_message(nil, false, embed) rescue nil
+        else
+          channel_or_event.send_message(nil, false, embed) rescue nil
+        end
       end
     end
     return true 
@@ -36,7 +46,7 @@ def generate_achievements_page(username, uid, page)
   per_page = 5 
   
   embed = Discordrb::Webhooks::Embed.new(
-    title: "#{EMOJI_STRINGS['crown']} Trophy Case",
+    title: "#{EMOJI_STRINGS['achievement']} Trophy Case",
     color: 0xFFD700
   )
   
@@ -131,30 +141,39 @@ def sync_user_achievements(uid, channel = nil)
     unlocked_count += 1 if col.values.any? { |d| d['count'] >= 100 } && check_achievement(channel, uid, 'dupe_100', silent: true)
   end
 
-  # 5. Interactions (Hugs & Slaps)
+  # 5. Interactions (Hugs, Slaps & Pats)
   stats = DB.get_interactions(uid) || {}
-  
-  hug_sent = stats.dig('hug', 'sent').to_i
-  hug_rec = stats.dig('hug', 'received').to_i
-  unlocked_count += 1 if hug_sent >= 1 && check_achievement(channel, uid, 'first_hug', silent: true)
-  unlocked_count += 1 if hug_sent >= 10 && check_achievement(channel, uid, 'hug_sent_10', silent: true)
-  unlocked_count += 1 if hug_sent >= 50 && check_achievement(channel, uid, 'hug_sent_50', silent: true)
-  unlocked_count += 1 if hug_sent >= 100 && check_achievement(channel, uid, 'hug_sent_100', silent: true)
-  unlocked_count += 1 if hug_rec >= 10 && check_achievement(channel, uid, 'hug_rec_10', silent: true)
-  unlocked_count += 1 if hug_rec >= 50 && check_achievement(channel, uid, 'hug_rec_50', silent: true)
-  unlocked_count += 1 if hug_rec >= 100 && check_achievement(channel, uid, 'hug_rec_100', silent: true)
 
-  slap_sent = stats.dig('slap', 'sent').to_i
-  slap_rec = stats.dig('slap', 'received').to_i
-  unlocked_count += 1 if slap_sent >= 1 && check_achievement(channel, uid, 'first_slap', silent: true)
-  unlocked_count += 1 if slap_sent >= 10 && check_achievement(channel, uid, 'slap_sent_10', silent: true)
-  unlocked_count += 1 if slap_sent >= 50 && check_achievement(channel, uid, 'slap_sent_50', silent: true)
-  unlocked_count += 1 if slap_sent >= 100 && check_achievement(channel, uid, 'slap_sent_100', silent: true)
-  unlocked_count += 1 if slap_rec >= 10 && check_achievement(channel, uid, 'slap_rec_10', silent: true)
-  unlocked_count += 1 if slap_rec >= 50 && check_achievement(channel, uid, 'slap_rec_50', silent: true)
-  unlocked_count += 1 if slap_rec >= 100 && check_achievement(channel, uid, 'slap_rec_100', silent: true)
+  %w[hug slap pat].each do |action|
+    sent = stats.dig(action, 'sent').to_i
+    rec = stats.dig(action, 'received').to_i
+    unlocked_count += 1 if sent >= 1 && check_achievement(channel, uid, "first_#{action}", silent: true)
+    unlocked_count += 1 if sent >= 10 && check_achievement(channel, uid, "#{action}_sent_10", silent: true)
+    unlocked_count += 1 if sent >= 50 && check_achievement(channel, uid, "#{action}_sent_50", silent: true)
+    unlocked_count += 1 if sent >= 100 && check_achievement(channel, uid, "#{action}_sent_100", silent: true)
+    unlocked_count += 1 if rec >= 10 && check_achievement(channel, uid, "#{action}_rec_10", silent: true)
+    unlocked_count += 1 if rec >= 50 && check_achievement(channel, uid, "#{action}_rec_50", silent: true)
+    unlocked_count += 1 if rec >= 100 && check_achievement(channel, uid, "#{action}_rec_100", silent: true)
+  end
 
-  # 6. Meta: Achievement count milestones
+  # 6. Leveling (check across all servers the user has XP in)
+  # We check via the bot's known servers to find the highest level
+  begin
+    highest_level = 0
+    $bot.servers.each_key do |server_id|
+      xp_data = DB.get_user_xp(server_id, uid)
+      highest_level = [highest_level, xp_data['level'].to_i].max
+    end
+    unlocked_count += 1 if highest_level >= 5 && check_achievement(channel, uid, 'level_5', silent: true)
+    unlocked_count += 1 if highest_level >= 10 && check_achievement(channel, uid, 'level_10', silent: true)
+    unlocked_count += 1 if highest_level >= 25 && check_achievement(channel, uid, 'level_25', silent: true)
+    unlocked_count += 1 if highest_level >= 50 && check_achievement(channel, uid, 'level_50', silent: true)
+    unlocked_count += 1 if highest_level >= 100 && check_achievement(channel, uid, 'level_100', silent: true)
+  rescue => e
+    puts "[SYNC] Level check failed for #{uid}: #{e.message}"
+  end
+
+  # 7. Meta: Achievement count milestones
   total_unlocked = DB.get_achievements(uid).size + unlocked_count
   unlocked_count += 1 if total_unlocked >= 10 && check_achievement(channel, uid, 'ach_10', silent: true)
   unlocked_count += 1 if total_unlocked >= 25 && check_achievement(channel, uid, 'ach_25', silent: true)
