@@ -8,53 +8,22 @@ $bot.ready do |event|
   puts "🌸 Blossom is connected and live!"
 
   # --- CLEAN UP OLD/REMOVED SLASH COMMANDS ---
-  # Delete commands that were removed or need to be re-registered with new params
-  removed_commands = %w[
-    addcoins removecoins setcoins givepremium removepremium
-    prisma blacklist card syncachievements
-    addxp setlevel enablebombs disablebombs
-    dcoin dpremium dbomb
-  ]
-  # Also force re-register these by deleting first (params changed)
-  refresh_commands = %w[bomb setxp view buy logtoggle welcomer pat]
+  removed_commands = %w[backup]
 
   event.bot.get_application_commands.each do |cmd|
-    if removed_commands.include?(cmd.name) || refresh_commands.include?(cmd.name)
+    if removed_commands.include?(cmd.name)
       event.bot.delete_application_command(cmd.id)
       puts "🗑️ Deleted slash command: #{cmd.name} (ID: #{cmd.id})"
     end
   end
 
-  # Re-register commands that need fresh params
-  puts "🔄 Re-registering updated slash commands..."
-  event.bot.register_application_command(:bomb, 'Enable or disable bomb drops (Admin Only)') do |cmd|
-    cmd.string('action', 'Enable or disable', required: true, choices: { 'Enable' => 'enable', 'Disable' => 'disable' })
-    cmd.channel('channel', 'The channel to drop bombs in (required for enable)', required: false)
+  # Register new slash commands
+  puts "🔄 Registering new slash commands..."
+  event.bot.register_application_command(:blackjack, 'Play blackjack against Blossom!') do |cmd|
+    cmd.integer('amount', 'How many coins to bet', required: true)
   end
-  event.bot.register_application_command(:setxp, 'Manage user XP/Level (Admin Only)') do |cmd|
-    cmd.string('action', 'What to do', required: true, choices: { 'Add XP' => 'add', 'Remove XP' => 'remove', 'Set XP' => 'set', 'Set Level' => 'level' })
-    cmd.user('user', 'The user to modify', required: true)
-    cmd.integer('amount', 'Amount of XP or target level', required: true)
-  end
-  event.bot.register_application_command(:buy, 'Buy a character or tech upgrade from the shop') do |cmd|
-    cmd.string('item', 'Name of the character or item to buy', required: true, autocomplete: true)
-    cmd.integer('quantity', 'How many to buy (consumables only)', required: false)
-  end
-  event.bot.register_application_command(:view, 'View any VTuber character in detail') do |cmd|
-    cmd.string('character', 'Name of the character', required: true, autocomplete: true)
-  end
-  event.bot.register_application_command(:logtoggle, 'Toggle logging for specific events (Admin Only)') do |cmd|
-    cmd.string('type', 'What to toggle', required: true, choices: {
-      'Message Deletes' => 'deletes', 'Message Edits' => 'edits', 'Mod Actions' => 'mod',
-      'DM Mods' => 'dms', 'Member Joins' => 'joins', 'Member Leaves' => 'leaves'
-    })
-  end
-  event.bot.register_application_command(:pat, 'Give someone a gentle head pat') do |cmd|
-    cmd.user('user', 'The person you want to pat', required: true)
-  end
-  event.bot.register_application_command(:welcomer, 'Enable or disable the welcome message system (Admin Only)') do |cmd|
-    cmd.string('action', 'Enable or disable', required: true, choices: { 'Enable' => 'enable', 'Disable' => 'disable' })
-    cmd.channel('channel', 'The channel to send welcome messages to (required for enable)', required: false)
+  event.bot.register_application_command(:rep, 'Give reputation to a user!') do |cmd|
+    cmd.user('user', 'The user to rep', required: true)
   end
   puts "✅ Slash commands refreshed!"
 
