@@ -32,7 +32,7 @@ def execute_leaderboard(event)
 
   # 5. Messaging: Respond with the Embed and the View
   if event.is_a?(Discordrb::Events::ApplicationCommandEvent)
-    event.respond(embeds: [embed], components: view)
+    event.edit_response(embeds: [embed], components: view)
   else
     # Mentioning the original message in Prefix mode for better UX
     event.channel.send_message(nil, false, embed, nil, nil, event.message, view)
@@ -54,5 +54,6 @@ end
 # TRIGGER: Slash Command (/leaderboard)
 # ------------------------------------------
 $bot.application_command(:leaderboard) do |event|
+  event.defer
   execute_leaderboard(event)
 end
