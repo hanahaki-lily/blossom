@@ -34,7 +34,13 @@ def execute_balance(event, target_user)
 
   # 7. Marriage line
   marriage = DB.get_marriage(uid)
-  marriage_line = marriage ? "\n#{EMOJI_STRINGS['rainbowheart']} **Married to:** <@#{marriage[:partner]}>" : ""
+  if marriage
+    partner_user = event.bot.user(marriage[:partner])
+    partner_name = partner_user ? partner_user.username : "Unknown"
+    marriage_line = "\n#{EMOJI_STRINGS['rainbowheart']} **Married to:** #{partner_name}"
+  else
+    marriage_line = ""
+  end
 
   # 8. Favorite cards (premium: up to 3)
   favs = profile['favorites']

@@ -17,7 +17,11 @@ def is_premium?(bot, user_id)
     server = bot.servers[server_id]
     next unless server
 
-    member = server.members.find { |m| m.id == user_id }
+    begin
+      member = server.member(user_id)
+    rescue
+      next
+    end
     next unless member
 
     return true if member.roles.any? { |role| role.id == role_id }

@@ -126,11 +126,12 @@ CV2_FLAG = 1 << 15 unless defined?(CV2_FLAG)
 
 def send_cv2(event, components)
   if event.is_a?(Discordrb::Events::ApplicationCommandEvent)
-    event.respond(content: '', flags: CV2_FLAG, components: components)
+    event.respond(content: '', flags: CV2_FLAG, components: components, allowed_mentions: { parse: [] })
   else
     body = {
       content: '', flags: CV2_FLAG, components: components,
-      message_reference: { message_id: event.message.id }
+      message_reference: { message_id: event.message.id },
+      allowed_mentions: { parse: [] }
     }.to_json
     Discordrb::API.request(
       :channels_cid_messages_mid,

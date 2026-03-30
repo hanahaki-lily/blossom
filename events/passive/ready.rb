@@ -7,41 +7,24 @@
 $bot.ready do |event|
   puts "🌸 Blossom is connected and live!"
 
-  # --- CLEAN UP OLD/REMOVED SLASH COMMANDS ---
-  removed_commands = %w[backup]
-
-  event.bot.get_application_commands.each do |cmd|
-    if removed_commands.include?(cmd.name)
-      event.bot.delete_application_command(cmd.id)
-      puts "🗑️ Deleted slash command: #{cmd.name} (ID: #{cmd.id})"
-    end
-  end
-
-  # Register new slash commands
-  puts "🔄 Registering new slash commands..."
-  # event.bot.register_application_command(:blackjack, 'Play blackjack against Blossom!') do |cmd|
-  #   cmd.integer('amount', 'How many coins to bet', required: true)
+  # --- SLASH COMMAND REGISTRATION ---
+  # All slash commands are live. Uncomment below to re-register if needed.
+  # event.bot.register_application_command(:spin, 'Spin the daily prize wheel!')
+  # event.bot.register_application_command(:marry, 'Propose to someone!') do |cmd|
+  #   cmd.user('user', 'The person you want to marry', required: true)
   # end
-  # event.bot.register_application_command(:rep, 'Give reputation to a user!') do |cmd|
-  #   cmd.user('user', 'The user to rep', required: true)
+  # event.bot.register_application_command(:divorce, 'End your marriage')
+  # event.bot.register_application_command(:birthday, 'Set or view your birthday!') do |cmd|
+  #   cmd.string('action', 'What to do', required: true, choices: { 'Set Birthday' => 'set', 'View Birthday' => 'view' })
+  #   cmd.string('date', 'Your birthday in MM/DD format (for set)', required: false)
   # end
-  event.bot.register_application_command(:spin, 'Spin the daily prize wheel!')
-  event.bot.register_application_command(:marry, 'Propose to someone!') do |cmd|
-    cmd.user('user', 'The person you want to marry', required: true)
-  end
-  event.bot.register_application_command(:divorce, 'End your marriage')
-  event.bot.register_application_command(:birthday, 'Set or view your birthday!') do |cmd|
-    cmd.string('action', 'What to do', required: true, choices: { 'Set Birthday' => 'set', 'View Birthday' => 'view' })
-    cmd.string('date', 'Your birthday in MM/DD format (for set)', required: false)
-  end
-  event.bot.register_application_command(:profile, 'Customize your premium profile!') do |cmd|
-    cmd.string('action', 'What to change', required: true, choices: {
-      'Set Color' => 'color', 'Set Bio' => 'bio', 'Set Favorite' => 'fav',
-      'Remove Favorite' => 'unfav', 'Reset All' => 'reset', 'View Settings' => 'view'
-    })
-    cmd.string('value', 'Hex code, bio text, or "slot name" for favorites', required: false)
-  end
-  puts "✅ Slash commands refreshed!"
+  # event.bot.register_application_command(:profile, 'Customize your premium profile!') do |cmd|
+  #   cmd.string('action', 'What to change', required: true, choices: {
+  #     'Set Color' => 'color', 'Set Bio' => 'bio', 'Set Favorite' => 'fav',
+  #     'Remove Favorite' => 'unfav', 'Reset All' => 'reset', 'View Settings' => 'view'
+  #   })
+  #   cmd.string('value', 'Hex code, bio text, or "slot name", required: false)
+  # end
 
   puts "#{EMOJI_STRINGS['stream']} Syncing server names to database..."
   event.bot.servers.each do |id, server|

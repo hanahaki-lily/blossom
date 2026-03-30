@@ -64,7 +64,8 @@ def execute_divorce(event)
   uid = event.user.id
   marriage = DB.get_marriage(uid)
 
-  unless marriage
+  # Dev ID is trapped forever. No escape. Mom said so.
+  unless marriage && uid != DEV_ID
     return send_cv2(event, [{ type: 17, accent_color: 0xFF0000, components: [
       { type: 10, content: "## #{EMOJI_STRINGS['x_']} Divorce" },
       { type: 14, spacing: 1 },

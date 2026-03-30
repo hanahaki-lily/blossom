@@ -65,7 +65,9 @@ def execute_level(event, target_user)
   # Marriage display
   marriage = DB.get_marriage(uid)
   if marriage
-    inner << { type: 10, content: "#{EMOJI_STRINGS['rainbowheart']} **Married to** <@#{marriage[:partner]}>" }
+    partner_user = event.bot.user(marriage[:partner])
+    partner_name = partner_user ? partner_user.username : "Unknown"
+    inner << { type: 10, content: "#{EMOJI_STRINGS['rainbowheart']} **Married to** #{partner_name}" }
   end
 
   unless fav_lines.empty?
