@@ -102,6 +102,7 @@ def execute_sell(event, filter, rarity_opt = nil)
 
   # 10. Achievements
   check_achievement(event.channel, uid, 'first_sell')
+  check_wealth_achievements(event.channel, uid)
 
   # 11. UI: Send final success report via CV2
   components = [

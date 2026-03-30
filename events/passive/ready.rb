@@ -42,18 +42,17 @@ $bot.ready do |event|
   # 1. DYNAMIC STATUS UPDATER
   # ------------------------------------------
   Thread.new do
+    # Set status immediately on startup, then refresh every 60 seconds
     loop do
       begin
         server_count = event.bot.servers.size
         total_members = event.bot.servers.values.sum { |server| server.member_count }
 
-        # Updates Blossom's "Playing" status every 60 seconds
         event.bot.playing = "with #{total_members} users in #{server_count} arcades | #{PREFIX}help"
-
-        sleep 60
       rescue => e
-        sleep 15 # If Discord's API hiccups, wait 15 seconds and try again
+        puts "[STATUS] Update failed: #{e.message}"
       end
+      sleep 60
     end
   end
 

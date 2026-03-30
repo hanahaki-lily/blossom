@@ -59,6 +59,8 @@ def execute_givecard(event, target, char_name)
 
   # 6. Achievements
   check_achievement(event.channel, uid, 'first_givecard')
+  total_given = DB.increment_givecard_count(uid)
+  check_achievement(event.channel, uid, 'givecard_10') if total_given >= 10
 
   # 6. UI: Select the rarity emoji for the announcement
   emoji = case rarity

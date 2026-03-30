@@ -85,6 +85,7 @@ def execute_daily(event)
   check_achievement(event.channel, uid, 'streak_69')  if new_streak == 69
   check_achievement(event.channel, uid, 'streak_100') if new_streak == 100
   check_achievement(event.channel, uid, 'streak_365') if new_streak == 365
+  check_wealth_achievements(event.channel, uid)
   
   # 10. UI: Send Final Confirmation via CV2
   components = [

@@ -69,6 +69,7 @@ def execute_post(event)
 
   # 8. Achievements
   check_achievement(event.channel, uid, 'first_post')
+  check_wealth_achievements(event.channel, uid)
 
   # 9. UI: Construct the success CV2 with the new balance
   components = [

@@ -68,6 +68,7 @@ def execute_work(event)
 
   # 8. Achievements
   check_achievement(event.channel, uid, 'first_work')
+  check_wealth_achievements(event.channel, uid)
 
   # 9. UI: Send the success CV2 with the updated balance
   components = [

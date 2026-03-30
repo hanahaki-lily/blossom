@@ -154,6 +154,20 @@ def execute_summon(event)
   check_achievement(event.channel, uid, 'first_pull')
   check_achievement(event.channel, uid, 'leg_pull') if rarity == :legendary
   check_achievement(event.channel, uid, 'goddess_luck') if rarity == :goddess
+
+  # Track pull count and check milestones
+  total_pulls = DB.increment_pull_count(uid)
+  check_achievement(event.channel, uid, 'summon_100') if total_pulls >= 100
+  check_achievement(event.channel, uid, 'summon_500') if total_pulls >= 500
+  check_achievement(event.channel, uid, 'summon_1000') if total_pulls >= 1000
+
+  # Back-to-back: Two Rare+ pulls in a row
+  last_rarity = DB.get_last_pull_rarity(uid)
+  is_rare_plus = [:rare, :legendary, :goddess].include?(rarity)
+  was_rare_plus = %w[rare legendary goddess].include?(last_rarity)
+  check_achievement(event.channel, uid, 'back_to_back') if is_rare_plus && was_rare_plus
+  DB.set_last_pull_rarity(uid, rarity.to_s)
+
   DB.set_cooldown(uid, 'summon', now)
 
   send_cv2(event, [{ type: 17, accent_color: NEON_COLORS.sample, components: [

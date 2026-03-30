@@ -75,4 +75,39 @@ module DatabaseEconomy
   def get_top_coins(limit = 10)
     @db.exec_params("SELECT user_id, coins FROM global_users ORDER BY coins DESC LIMIT $1", [limit]).to_a
   end
+
+  # --- ACHIEVEMENT TRACKING COUNTERS ---
+  def increment_pull_count(uid)
+    @db.exec_params("INSERT INTO global_users (user_id, pull_count) VALUES ($1, 1) ON CONFLICT (user_id) DO UPDATE SET pull_count = global_users.pull_count + 1 RETURNING pull_count", [uid]).first['pull_count'].to_i
+  end
+
+  def increment_trade_count(uid)
+    @db.exec_params("INSERT INTO global_users (user_id, trade_count) VALUES ($1, 1) ON CONFLICT (user_id) DO UPDATE SET trade_count = global_users.trade_count + 1 RETURNING trade_count", [uid]).first['trade_count'].to_i
+  end
+
+  def increment_givecard_count(uid)
+    @db.exec_params("INSERT INTO global_users (user_id, givecard_count) VALUES ($1, 1) ON CONFLICT (user_id) DO UPDATE SET givecard_count = global_users.givecard_count + 1 RETURNING givecard_count", [uid]).first['givecard_count'].to_i
+  end
+
+  def add_coins_given(uid, amount)
+    @db.exec_params("INSERT INTO global_users (user_id, coins_given_total) VALUES ($1, $2) ON CONFLICT (user_id) DO UPDATE SET coins_given_total = global_users.coins_given_total + $2 RETURNING coins_given_total", [uid, amount]).first['coins_given_total'].to_i
+  end
+
+  def set_last_pull_rarity(uid, rarity)
+    @db.exec_params("UPDATE global_users SET last_pull_rarity = $2 WHERE user_id = $1", [uid, rarity])
+  end
+
+  def get_last_pull_rarity(uid)
+    row = @db.exec_params("SELECT last_pull_rarity FROM global_users WHERE user_id = $1", [uid]).first
+    row ? row['last_pull_rarity'] : nil
+  end
+
+  def get_tracking_stats(uid)
+    row = @db.exec_params("SELECT pull_count, trade_count, givecard_count, coins_given_total FROM global_users WHERE user_id = $1", [uid]).first
+    if row
+      { 'pull_count' => row['pull_count'].to_i, 'trade_count' => row['trade_count'].to_i, 'givecard_count' => row['givecard_count'].to_i, 'coins_given_total' => row['coins_given_total'].to_i }
+    else
+      { 'pull_count' => 0, 'trade_count' => 0, 'givecard_count' => 0, 'coins_given_total' => 0 }
+    end
+  end
 end

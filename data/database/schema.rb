@@ -151,6 +151,13 @@ module DatabaseSchema # <--- Changed from 'class' to 'module'
     begin; @db.exec("ALTER TABLE global_users ADD COLUMN IF NOT EXISTS birthday VARCHAR(5)"); rescue PG::Error; end
     begin; @db.exec("ALTER TABLE server_configs ADD COLUMN IF NOT EXISTS welcome_message TEXT"); rescue PG::Error; end
 
+    # Achievement tracking counters
+    begin; @db.exec("ALTER TABLE global_users ADD COLUMN IF NOT EXISTS pull_count INTEGER DEFAULT 0"); rescue PG::Error; end
+    begin; @db.exec("ALTER TABLE global_users ADD COLUMN IF NOT EXISTS trade_count INTEGER DEFAULT 0"); rescue PG::Error; end
+    begin; @db.exec("ALTER TABLE global_users ADD COLUMN IF NOT EXISTS givecard_count INTEGER DEFAULT 0"); rescue PG::Error; end
+    begin; @db.exec("ALTER TABLE global_users ADD COLUMN IF NOT EXISTS coins_given_total INTEGER DEFAULT 0"); rescue PG::Error; end
+    begin; @db.exec("ALTER TABLE global_users ADD COLUMN IF NOT EXISTS last_pull_rarity VARCHAR(20)"); rescue PG::Error; end
+
     # Character name fix: Mirori -> Miori Celesta
     @db.exec("UPDATE collections SET character_name = 'Miori Celesta' WHERE character_name = 'Mirori Celesta'")
     @db.exec("UPDATE global_users SET favorite_card = 'Miori Celesta' WHERE favorite_card = 'Mirori Celesta'")

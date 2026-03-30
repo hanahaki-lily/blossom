@@ -72,9 +72,14 @@ $bot.button(custom_id: /^trade_\d+_\d+_(accept|decline)$/) do |event|
   DB.add_character(uid_a, char_b, rarity_b, 1)
   DB.add_character(uid_b, char_a, rarity_a, 1)
 
-  # Check and award the trading achievement for both players
+  # Check and award the trading achievements for both players
   check_achievement(event.channel, uid_a, 'first_trade')
   check_achievement(event.channel, uid_b, 'first_trade')
+
+  trades_a = DB.increment_trade_count(uid_a)
+  trades_b = DB.increment_trade_count(uid_b)
+  check_achievement(event.channel, uid_a, 'trade_10') if trades_a >= 10
+  check_achievement(event.channel, uid_b, 'trade_10') if trades_b >= 10
 
   # Easter eggs
   envvy_comment = ""

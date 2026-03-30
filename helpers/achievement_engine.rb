@@ -40,6 +40,15 @@ def check_achievement(channel_or_event, uid, ach_id, silent: false)
   false
 end
 
+def check_wealth_achievements(channel_or_event, uid)
+  coins = DB.get_coins(uid)
+  check_achievement(channel_or_event, uid, 'wealth_0') if coins == 0
+  check_achievement(channel_or_event, uid, 'wealth_10k') if coins >= 10_000
+  check_achievement(channel_or_event, uid, 'wealth_100k') if coins >= 100_000
+  check_achievement(channel_or_event, uid, 'wealth_1m') if coins >= 1_000_000
+  check_achievement(channel_or_event, uid, 'wealth_10m') if coins >= 10_000_000
+end
+
 def generate_achievements_page(username, uid, page)
   unlocked_data = DB.get_achievements(uid)
   unlocked_ids = unlocked_data.map { |row| row['achievement_id'] }
@@ -173,7 +182,17 @@ def sync_user_achievements(uid, channel = nil)
     puts "[SYNC] Level check failed for #{uid}: #{e.message}"
   end
 
-  # 7. Meta: Achievement count milestones
+  # 7. Tracking Counters (Pulls, Trades, Givecards, Coins Given)
+  tracking = DB.get_tracking_stats(uid)
+  unlocked_count += 1 if tracking['pull_count'] >= 100 && check_achievement(channel, uid, 'summon_100', silent: true)
+  unlocked_count += 1 if tracking['pull_count'] >= 500 && check_achievement(channel, uid, 'summon_500', silent: true)
+  unlocked_count += 1 if tracking['pull_count'] >= 1000 && check_achievement(channel, uid, 'summon_1000', silent: true)
+  unlocked_count += 1 if tracking['trade_count'] >= 10 && check_achievement(channel, uid, 'trade_10', silent: true)
+  unlocked_count += 1 if tracking['givecard_count'] >= 10 && check_achievement(channel, uid, 'givecard_10', silent: true)
+  unlocked_count += 1 if tracking['coins_given_total'] >= 10_000 && check_achievement(channel, uid, 'give_10k', silent: true)
+  unlocked_count += 1 if tracking['coins_given_total'] >= 100_000 && check_achievement(channel, uid, 'give_100k', silent: true)
+
+  # 8. Meta: Achievement count milestones
   total_unlocked = DB.get_achievements(uid).size + unlocked_count
   unlocked_count += 1 if total_unlocked >= 10 && check_achievement(channel, uid, 'ach_10', silent: true)
   unlocked_count += 1 if total_unlocked >= 25 && check_achievement(channel, uid, 'ach_25', silent: true)

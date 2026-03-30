@@ -67,6 +67,13 @@ def execute_givecoins(event, target, amount_str)
 
   # 6. Achievements
   check_achievement(event.channel, uid, 'first_givecoins')
+  total_given = DB.add_coins_given(uid, amount)
+  check_achievement(event.channel, uid, 'give_10k') if total_given >= 10_000
+  check_achievement(event.channel, uid, 'give_100k') if total_given >= 100_000
+
+  # Wealth milestones for both sender and receiver
+  check_wealth_achievements(event.channel, uid)
+  check_wealth_achievements(event.channel, target.id)
 
   # 7. UI: Confirm the successful transfer via CV2
   components = [
