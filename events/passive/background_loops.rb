@@ -106,16 +106,4 @@ $bot.ready do |event|
     end
   end
 
-  # --- KO-FI SUBSCRIPTION EXPIRY CHECK ---
-  Thread.new do
-    loop do
-      sleep(3600) # Check once per hour
-      begin
-        DB.expire_lapsed_subs
-      rescue => e
-        puts "[KOFI EXPIRY ERROR] #{e.message}"
-      end
-    end
-  end
-
 end

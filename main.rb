@@ -56,17 +56,6 @@ $bot = Discordrb::Commands::CommandBot.new(
 require_relative 'components/loader'
 load_blossom_modules # Pass the 'bot' variable context to the loader
 
-# 5. Start Ko-fi Webhook Server (in background thread)
-if ENV['KOFI_VERIFICATION_TOKEN']
-  require_relative 'components/kofi_webhook'
-  Thread.new do
-    puts "🛒 Ko-fi webhook server starting on port #{ENV.fetch('KOFI_WEBHOOK_PORT', 4567)}..."
-    KofiWebhook.run!
-  end
-else
-  puts "⚠️  KOFI_VERIFICATION_TOKEN not set — Ko-fi webhook server disabled."
-end
-
-# 6. Connect to Discord
+# 5. Connect to Discord
 puts "\n🌸 Blossom is starting with prefix #{PREFIX.inspect}..."
 $bot.run

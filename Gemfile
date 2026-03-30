@@ -7,5 +7,3 @@ gem "colorize"
 gem 'ffi'
 gem 'pg'
 gem 'connection_pool'
-gem 'sinatra'
-gem 'webrick'

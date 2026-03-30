@@ -12,7 +12,6 @@ PREMIUM_SERVERS = {
 
 def is_premium?(bot, user_id)
   return true if DB.is_lifetime_premium?(user_id)
-  return true if DB.has_active_kofi_sub?(user_id)
 
   PREMIUM_SERVERS.each do |server_id, role_id|
     server = bot.servers[server_id]

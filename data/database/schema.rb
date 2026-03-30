@@ -176,20 +176,6 @@ module DatabaseSchema # <--- Changed from 'class' to 'module'
         PRIMARY KEY(giver_id, receiver_id)
       );
 
-      CREATE TABLE IF NOT EXISTS kofi_links (
-        user_id BIGINT PRIMARY KEY,
-        kofi_email VARCHAR(255) NOT NULL,
-        linked_at TIMESTAMP DEFAULT NOW()
-      );
-
-      CREATE TABLE IF NOT EXISTS premium_subscriptions (
-        user_id BIGINT PRIMARY KEY,
-        kofi_transaction_id VARCHAR(255),
-        tier VARCHAR(50) DEFAULT 'monthly',
-        started_at TIMESTAMP DEFAULT NOW(),
-        expires_at TIMESTAMP NOT NULL,
-        active INTEGER DEFAULT 1
-      );
     SQL
   end # Closes 'def setup_schema'
 end # Closes 'module DatabaseSchema'
