@@ -176,6 +176,11 @@ module DatabaseSchema # <--- Changed from 'class' to 'module'
         PRIMARY KEY(giver_id, receiver_id)
       );
 
+      CREATE TABLE IF NOT EXISTS custom_banners (
+        user_id BIGINT PRIMARY KEY,
+        characters_json TEXT NOT NULL,
+        expires_at TIMESTAMP NOT NULL
+      );
     SQL
   end # Closes 'def setup_schema'
 end # Closes 'module DatabaseSchema'

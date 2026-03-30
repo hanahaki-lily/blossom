@@ -19,7 +19,7 @@ def execute_view(event, search_name)
     return send_cv2(event, [{ type: 17, accent_color: 0xFF0000, components: [
       { type: 10, content: "## #{EMOJI_STRINGS['confused']} Who??" },
       { type: 14, spacing: 1 },
-      { type: 10, content: "I don't know any VTuber named **#{search_name}**. Check the spelling or try `/banner` to see who's available." }
+      { type: 10, content: "I don't know any VTuber named **#{search_name}**. Check the spelling or try `/collection` to see who's available." }
     ]}])
   end
 
@@ -100,7 +100,7 @@ def execute_view(event, search_name)
         desc += "Only available during the **#{banner_info[:banner]}** event. If you're seeing this outside of April... tough luck, chat. You missed it.\n"
       else
         desc += "**Available in:** #{banner_info[:banner]}\n"
-        desc += "Try your luck with `/summon` when this banner is active, or `/buy` them from the shop if you've got the coins.\n"
+        desc += "Try your luck with `/summon` or `/buy` them from the shop if you've got the coins.\n"
       end
     end
 
@@ -203,12 +203,10 @@ $bot.autocomplete(:character, command_name: :view) do |event|
   begin
     query = (event.options['character'] || '').to_s.strip.downcase
 
-    # Build a flat list of all character names from every source
+    # Build a flat list of all character names from the universal pool + events
     all_names = []
-    CHARACTER_POOLS.each_value do |pool|
-      pool[:characters].each_value do |char_list|
-        char_list.each { |c| all_names << c[:name] }
-      end
+    UNIVERSAL_POOL[:characters].each_value do |char_list|
+      char_list.each { |c| all_names << c[:name] }
     end
     SPRING_CARNIVAL[:characters].each_value do |char_list|
       char_list.each { |c| all_names << c[:name] }

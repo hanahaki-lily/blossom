@@ -96,7 +96,12 @@ bot.register_application_command(:summon, 'Roll the gacha!')
 bot.register_application_command(:collection, 'View all the characters you own') do |cmd|
   cmd.user('user', 'The user whose collection you want to view', required: false)
 end
-bot.register_application_command(:banner, 'Check which characters are in the gacha pool this week!')
+bot.register_application_command(:custombanner, 'Set a custom pull banner for 1 hour (Premium, 20 Prisma)') do |cmd|
+  cmd.string('commons', '5 common characters (comma-separated)', required: true)
+  cmd.string('rares', '5 rare characters (comma-separated)', required: true)
+  cmd.string('legendaries', '5 legendary characters (comma-separated)', required: true)
+  cmd.string('goddesses', '3 goddess characters (comma-separated)', required: true)
+end
 bot.register_application_command(:shop, 'View the character shop and direct-buy prices!')
 bot.register_application_command(:shop, 'View the character shop and direct-buy prices!')
 bot.register_application_command(:view, 'View any VTuber character in detail') do |cmd|

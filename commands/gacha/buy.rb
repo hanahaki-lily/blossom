@@ -205,17 +205,12 @@ $bot.autocomplete(:item, command_name: :buy) do |event|
       all_items << { display: "#{clean_name} (#{data[:price]} coins)", value: key }
     end
 
-    # All characters from regular banners (deduplicated)
-    seen_chars = {}
-    CHARACTER_POOLS.each_value do |pool|
-      pool[:characters].each do |rarity, char_list|
-        price = SHOP_PRICES[rarity.to_s]
-        char_list.each do |c|
-          next if seen_chars[c[:name].downcase]
-          seen_chars[c[:name].downcase] = true
-          label = price ? "#{c[:name]} — #{rarity.capitalize} (#{price} coins)" : "#{c[:name]} — #{rarity.capitalize}"
-          all_items << { display: label, value: c[:name] }
-        end
+    # All characters from the universal pool
+    UNIVERSAL_POOL[:characters].each do |rarity, char_list|
+      price = SHOP_PRICES[rarity.to_s]
+      char_list.each do |c|
+        label = price ? "#{c[:name]} — #{rarity.capitalize} (#{price} coins)" : "#{c[:name]} — #{rarity.capitalize}"
+        all_items << { display: label, value: c[:name] }
       end
     end
 

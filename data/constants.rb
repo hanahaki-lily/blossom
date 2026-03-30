@@ -12,7 +12,7 @@ ACTIVE_PROPOSALS   = {}
 # Categorization for the Help Menu
 COMMAND_CATEGORIES = {
   'Economy'   => [:balance, :daily, :work, :stream, :post, :collab, :cooldowns, :lottery, :lotteryinfo, :givecoins, :remindme, :event],
-  'Gacha'     => [:summon, :collection, :banner, :shop, :buy, :view, :ascend, :trade, :givecard, :sell],
+  'Gacha'     => [:summon, :collection, :custombanner, :shop, :buy, :view, :ascend, :trade, :givecard, :sell],
   'Arcade'    => [:coinflip, :slots, :roulette, :scratch, :dice, :cups, :blackjack, :spin],
   'Fun'       => [:kettle, :level, :leaderboard, :hug, :slap, :pat, :rep, :marry, :divorce, :birthday, :interactions, :serverinfo],
   'Utility'   => [:ping, :help, :about, :support, :premium, :suggest, :profile],

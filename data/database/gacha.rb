@@ -92,4 +92,41 @@ module DatabaseGacha
   def clear_favorite_slot(uid, slot)
     set_favorite_card_slot(uid, slot, nil)
   end
+
+  # --- CUSTOM BANNERS ---
+  def get_custom_banner(uid)
+    row = @db.exec_params("SELECT characters_json, expires_at FROM custom_banners WHERE user_id = $1", [uid]).first
+    return nil unless row
+
+    expires = Time.parse(row['expires_at'])
+    if expires <= Time.now
+      @db.exec_params("DELETE FROM custom_banners WHERE user_id = $1", [uid])
+      return nil
+    end
+
+    chars = JSON.parse(row['characters_json'], symbolize_names: true)
+    # Rebuild the banner structure with full character data from UNIVERSAL_POOL
+    banner = { name: '🎯 Custom Banner', characters: { common: [], rare: [], legendary: [], goddess: [] }, expires_at: expires }
+    chars.each do |rarity_str, names|
+      rarity = rarity_str.to_sym
+      names.each do |name|
+        found = UNIVERSAL_POOL[:characters][rarity]&.find { |c| c[:name] == name }
+        banner[:characters][rarity] << found if found
+      end
+    end
+    banner
+  end
+
+  def set_custom_banner(uid, characters_hash, duration_seconds = 3600)
+    expires = Time.now + duration_seconds
+    json = JSON.generate(characters_hash)
+    @db.exec_params(
+      "INSERT INTO custom_banners (user_id, characters_json, expires_at) VALUES ($1, $2, $3) ON CONFLICT (user_id) DO UPDATE SET characters_json = $2, expires_at = $3",
+      [uid, json, expires]
+    )
+  end
+
+  def clear_custom_banner(uid)
+    @db.exec_params("DELETE FROM custom_banners WHERE user_id = $1", [uid])
+  end
 end

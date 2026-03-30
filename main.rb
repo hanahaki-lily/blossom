@@ -5,6 +5,8 @@
 
 require 'discordrb'
 require 'dotenv/load'
+require 'json'
+require 'time'
 
 # =========================
 # BOT SETUP & VOICE CHECK

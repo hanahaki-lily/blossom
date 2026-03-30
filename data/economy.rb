@@ -28,6 +28,7 @@ PITY_THRESHOLD = 30
 
 SHOP_PRICES = { 'common' => 1_000, 'rare' => 5_000, 'legendary' => 25_000 }.freeze
 GODDESS_PRISMA_PRICE = 100
+CUSTOM_BANNER_COST = 20
 SELL_PRICES = { 'common' => 50, 'rare' => 250, 'legendary' => 1_000, 'goddess' => 5_000 }.freeze
 
 BLACK_MARKET_ITEMS = {

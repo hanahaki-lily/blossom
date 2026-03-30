@@ -51,11 +51,7 @@ def roll_rarity(premium = false)
 end
 
 def get_current_banner
-  week_number = Time.now.to_i / 604_800 
-  available_pools = CHARACTER_POOLS.keys
-  active_key = available_pools[week_number % available_pools.size]
-  
-  base_pool = Marshal.load(Marshal.dump(CHARACTER_POOLS[active_key]))
+  base_pool = Marshal.load(Marshal.dump(UNIVERSAL_POOL))
 
   if Time.now.month == SPRING_CARNIVAL[:month]
     SPRING_CARNIVAL[:characters].each do |rarity, chars|
@@ -66,6 +62,15 @@ def get_current_banner
   base_pool
 end
 
+# Returns the active banner for a user: custom banner if active, otherwise universal
+def get_user_banner(uid)
+  custom = DB.get_custom_banner(uid)
+  if custom
+    return custom
+  end
+  get_current_banner
+end
+
 def find_character_in_pools(search_name, include_event: false)
   if include_event || Time.now.month == SPRING_CARNIVAL[:month]
     SPRING_CARNIVAL[:characters].each do |rarity, char_list|
@@ -74,11 +79,9 @@ def find_character_in_pools(search_name, include_event: false)
     end
   end
 
-  CHARACTER_POOLS.values.each do |pool|
-    pool[:characters].each do |rarity, char_list|
-      found = char_list.find { |c| c[:name].downcase == search_name.downcase }
-      return { char: found, rarity: rarity.to_s } if found
-    end
+  UNIVERSAL_POOL[:characters].each do |rarity, char_list|
+    found = char_list.find { |c| c[:name].downcase == search_name.downcase }
+    return { char: found, rarity: rarity.to_s } if found
   end
   nil
 end
@@ -90,17 +93,13 @@ def is_event_character?(search_name)
 end
 
 def find_character_banner(search_name)
-  # Check event characters first
   if is_event_character?(search_name)
     return { banner: SPRING_CARNIVAL[:name], event: true }
   end
 
-  # Search regular banners
-  CHARACTER_POOLS.each do |_key, pool|
-    pool[:characters].each do |_rarity, char_list|
-      found = char_list.find { |c| c[:name].downcase == search_name.downcase }
-      return { banner: pool[:name], event: false } if found
-    end
+  UNIVERSAL_POOL[:characters].each do |_rarity, char_list|
+    found = char_list.find { |c| c[:name].downcase == search_name.downcase }
+    return { banner: UNIVERSAL_POOL[:name], event: false } if found
   end
   nil
 end

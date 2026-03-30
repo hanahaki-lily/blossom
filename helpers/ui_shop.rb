@@ -29,9 +29,7 @@ def build_shop_catalog(user_id, page)
   rarities = ['common', 'rare', 'legendary']
   target_rarity = rarities[page - 1]
 
-  chars = []
-  CHARACTER_POOLS.values.each { |pool| chars.concat(pool[:characters][target_rarity.to_sym].map { |c| c[:name] }) }
-  chars = chars.uniq.sort
+  chars = UNIVERSAL_POOL[:characters][target_rarity.to_sym].map { |c| c[:name] }.sort
 
   emoji = case target_rarity
           when 'legendary' then EMOJI_STRINGS['legendary']
@@ -86,13 +84,8 @@ def build_blackmarket_page(user_id)
 end
 
 def build_prisma_shop(user_id)
-  # Gather all unique goddess characters from the pools
-  goddess_chars = []
-  CHARACTER_POOLS.values.each do |pool|
-    next unless pool[:characters][:goddess]
-    pool[:characters][:goddess].each { |c| goddess_chars << c[:name] }
-  end
-  goddess_chars = goddess_chars.uniq.sort
+  # Gather all unique goddess characters from the universal pool
+  goddess_chars = UNIVERSAL_POOL[:characters][:goddess].map { |c| c[:name] }.sort
 
   prisma_bal = DB.get_prisma(user_id)
 
