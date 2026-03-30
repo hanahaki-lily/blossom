@@ -54,6 +54,6 @@ end
 # TRIGGER: Slash Command (/leaderboard)
 # ------------------------------------------
 $bot.application_command(:leaderboard) do |event|
-  event.defer
+  event.defer(ephemeral: false)
   execute_leaderboard(event)
 end
