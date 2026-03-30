@@ -74,4 +74,48 @@ $bot.ready do |event|
     end
   end
 
+  # --- DAILY BIRTHDAY CHECK ---
+  Thread.new do
+    last_checked_date = nil
+    loop do
+      sleep(60)
+      today = Time.now.strftime('%Y-%m-%d')
+      next if today == last_checked_date
+
+      last_checked_date = today
+      begin
+        birthday_uids = DB.get_todays_birthdays
+        birthday_uids.each do |uid|
+          DB.add_coins(uid, BIRTHDAY_REWARD)
+          user = event.bot.user(uid)
+          next unless user
+
+          # Premium DM
+          if is_premium?(event.bot, uid)
+            begin
+              user.pm("## 🎂 HAPPY BIRTHDAY!! #{EMOJI_STRINGS['neonsparkle']}\n\nIt's YOUR day, #{user.name}!! The Neon Arcade is throwing confetti in your honor! " \
+                       "Here's **#{BIRTHDAY_REWARD}** #{EMOJI_STRINGS['s_coin']} as a birthday gift from yours truly~ 🌸\n\n*— Love, Blossom* #{EMOJI_STRINGS['hearts']}")
+            rescue
+              # DMs closed
+            end
+          end
+        end
+      rescue => e
+        puts "[BIRTHDAY ERROR] #{e.message}"
+      end
+    end
+  end
+
+  # --- KO-FI SUBSCRIPTION EXPIRY CHECK ---
+  Thread.new do
+    loop do
+      sleep(3600) # Check once per hour
+      begin
+        DB.expire_lapsed_subs
+      rescue => e
+        puts "[KOFI EXPIRY ERROR] #{e.message}"
+      end
+    end
+  end
+
 end

@@ -24,12 +24,18 @@ $bot.member_join do |event|
       welcome_channel = event.bot.channel(welcome_config[:channel])
       if welcome_channel
         avatar_url = user.avatar_url || ''
-        welcome_text = WELCOME_MESSAGES.sample
+        custom_msg = DB.get_welcome_message(server.id)
+
+        if custom_msg
+          welcome_body = custom_msg.gsub('{user}', user.mention).gsub('{server}', server.name)
+        else
+          welcome_body = "#{user.mention} #{WELCOME_MESSAGES.sample}"
+        end
 
         components = [{ type: 17, accent_color: NEON_COLORS.sample, components: [
           { type: 9, components: [
             { type: 10, content: "## #{EMOJI_STRINGS['neonsparkle']} Welcome to #{server.name}!" },
-            { type: 10, content: "#{user.mention} #{welcome_text}" }
+            { type: 10, content: welcome_body }
           ], accessory: { type: 11, media: { url: avatar_url } } },
           { type: 14, spacing: 1 },
           { type: 10, content: "You're member **##{server.member_count}** — make yourself at home, chat! #{EMOJI_STRINGS['hearts']}" }

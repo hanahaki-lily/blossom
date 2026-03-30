@@ -108,6 +108,40 @@ module DatabaseAdmin
     )
   end
 
+  # --- WELCOME MESSAGE CUSTOMIZATION ---
+  def get_welcome_message(server_id)
+    row = @db.exec_params("SELECT welcome_message FROM server_configs WHERE server_id = $1", [server_id]).first
+    row ? row['welcome_message'] : nil
+  end
+
+  def set_welcome_message(server_id, text)
+    @db.exec_params(
+      "INSERT INTO server_configs (server_id, welcome_message) VALUES ($1, $2) ON CONFLICT (server_id) DO UPDATE SET welcome_message = $2",
+      [server_id, text]
+    )
+  end
+
+  # --- REACTION ROLES ---
+  def add_reaction_role(server_id, message_id, emoji, role_id)
+    @db.exec_params(
+      "INSERT INTO reaction_roles (server_id, message_id, emoji, role_id) VALUES ($1, $2, $3, $4) ON CONFLICT (server_id, message_id, emoji) DO UPDATE SET role_id = $4",
+      [server_id, message_id, emoji, role_id]
+    )
+  end
+
+  def get_reaction_role(server_id, message_id, emoji)
+    row = @db.exec_params("SELECT role_id FROM reaction_roles WHERE server_id = $1 AND message_id = $2 AND emoji = $3", [server_id, message_id, emoji]).first
+    row ? row['role_id'].to_i : nil
+  end
+
+  def get_reaction_roles_for_message(server_id, message_id)
+    @db.exec_params("SELECT emoji, role_id FROM reaction_roles WHERE server_id = $1 AND message_id = $2", [server_id, message_id]).to_a
+  end
+
+  def remove_reaction_role(server_id, message_id, emoji)
+    @db.exec_params("DELETE FROM reaction_roles WHERE server_id = $1 AND message_id = $2 AND emoji = $3", [server_id, message_id, emoji])
+  end
+
   # --- BOMB CONFIGURATION ---
   def save_bomb_config(sid, enabled, channel_id, threshold, count)
     val = enabled ? 1 : 0

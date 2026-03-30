@@ -13,10 +13,11 @@ def execute_balance(event, target_user)
   coins = DB.get_coins(uid)
   prisma = DB.get_prisma(uid)
   rep = DB.get_reputation(uid)
-  
+
   # 2. Check: Determine if the user has active Premium status
   is_sub = is_premium?(event.bot, uid)
-  
+  profile = is_sub ? DB.get_profile(uid) : { 'color' => nil, 'bio' => nil, 'favorites' => [] }
+
   # 3. Data Retrieval: Get the daily streak info from the cooldowns module
   daily_info = DB.get_daily_info(uid)
 
@@ -24,35 +25,32 @@ def execute_balance(event, target_user)
   badges = []
   badges << "#{EMOJI_STRINGS['developer']} **Bot Developer**" if DEV_IDS.include?(uid)
   badges << "#{EMOJI_STRINGS['prisma']} **Premium**" if is_sub
-  
+
   # 5. Header Formatting: Create the top-row badge line if badges exist
   header = badges.empty? ? "" : badges.join(" | ") + "\n\n"
 
-  # 6. Favorite card line (premium feature only)
-  fav_name = is_sub ? DB.get_favorite_card(uid) : nil
-  fav_line = ""
-  if fav_name
-    fav_result = find_character_in_pools(fav_name)
-    if fav_result
-      fav_emoji = case fav_result[:rarity]
-                  when 'goddess'   then EMOJI_STRINGS['goddess']
-                  when 'legendary' then EMOJI_STRINGS['legendary']
-                  when 'rare'      then EMOJI_STRINGS['rare']
-                  else EMOJI_STRINGS['common']
-                  end
-      fav_line = "\n#{EMOJI_STRINGS['hearts']} **Favorite:** #{fav_emoji} #{fav_name}"
-    end
-  end
+  # 6. Bio line (premium only)
+  bio_line = (profile['bio'] && !profile['bio'].empty?) ? "\n*\"#{profile['bio']}\"*\n" : ""
 
-  # 7. UI: Construct the primary Balance Embed
+  # 7. Marriage line
+  marriage = DB.get_marriage(uid)
+  marriage_line = marriage ? "\n#{EMOJI_STRINGS['rainbowheart']} **Married to:** <@#{marriage[:partner]}>" : ""
+
+  # 8. Favorite cards (premium: up to 3)
+  favs = profile['favorites']
+  fav_lines = favs.map { |name| format_fav_line(name) }.compact
+  fav_section = fav_lines.empty? ? "" : "\n#{EMOJI_STRINGS['hearts']} **Favorites:** #{fav_lines.join(' · ')}"
+
+  # 8. UI: Construct the primary Balance Embed
+  accent = profile['color'] ? profile['color'].to_i(16) : 0xFFB6C1
   embed = Discordrb::Webhooks::Embed.new(
     title: "🌸 #{target_user.display_name}'s Balance",
-    description: "#{header}**Coins:** #{coins} #{EMOJI_STRINGS['s_coin']}\n" \
+    description: "#{header}#{bio_line}**Coins:** #{coins} #{EMOJI_STRINGS['s_coin']}\n" \
                  "**Prisma:** #{prisma} #{EMOJI_STRINGS['prisma']}\n" \
                  "**Reputation:** #{rep} #{EMOJI_STRINGS['rainbowheart']}\n" \
-                 "**Daily Streak:** #{daily_info['streak']} Days#{fav_line}\n\n" \
+                 "**Daily Streak:** #{daily_info['streak']} Days#{marriage_line}#{fav_section}\n\n" \
                  "*Use the dropdown below to view your items, VTubers, and Achievements!*#{mom_remark(uid, 'economy')}",
-    color: 0xFFB6C1 # Light Pink (Princess Vibe)
+    color: accent
   )
 
   # 7. Components: Attach the interactive Select Menu for inventory navigation

@@ -22,6 +22,7 @@ def execute_level(event, target_user)
   is_sub = is_premium?(event.bot, uid)
   coins = DB.get_coins(uid)
   rep = DB.get_reputation(uid)
+  profile = is_sub ? DB.get_profile(uid) : { 'color' => nil, 'bio' => nil, 'favorites' => [] }
 
   level = user['level']
   xp = user['xp']
@@ -40,22 +41,13 @@ def execute_level(event, target_user)
 
   avatar_url = target_user.avatar_url || ''
 
-  # Favorite card display (premium feature only)
-  fav_name = is_sub ? DB.get_favorite_card(uid) : nil
-  fav_line = nil
-  if fav_name
-    fav_result = find_character_in_pools(fav_name)
-    if fav_result
-      fav_rarity = fav_result[:rarity]
-      fav_emoji = case fav_rarity
-                  when 'goddess'   then EMOJI_STRINGS['goddess']
-                  when 'legendary' then EMOJI_STRINGS['legendary']
-                  when 'rare'      then EMOJI_STRINGS['rare']
-                  else EMOJI_STRINGS['common']
-                  end
-      fav_line = "#{EMOJI_STRINGS['hearts']} **Favorite** #{fav_emoji} #{fav_name}"
-    end
+  # Favorite cards display (premium: up to 3, free: 1 via old system)
+  favs = profile['favorites']
+  if favs.empty? && is_sub
+    fav_name = DB.get_favorite_card(uid)
+    favs = [fav_name] if fav_name
   end
+  fav_lines = favs.map { |name| format_fav_line(name) }.compact
 
   inner = [
     { type: 9, components: [
@@ -70,15 +62,22 @@ def execute_level(event, target_user)
     { type: 10, content: "**Streak** #{streak} day#{'s' unless streak == 1}" }
   ]
 
-  if fav_line
+  # Marriage display
+  marriage = DB.get_marriage(uid)
+  if marriage
+    inner << { type: 10, content: "#{EMOJI_STRINGS['rainbowheart']} **Married to** <@#{marriage[:partner]}>" }
+  end
+
+  unless fav_lines.empty?
     inner << { type: 14, spacing: 1 }
-    inner << { type: 10, content: fav_line }
+    inner << { type: 10, content: "#{EMOJI_STRINGS['hearts']} **Favorites**\n#{fav_lines.join("\n")}" }
   end
 
   mama_note = mom_remark(uid, 'general')
   inner << { type: 10, content: mama_note } if mama_note
 
-  components = [{ type: 17, accent_color: NEON_COLORS.sample, components: inner }]
+  accent = profile['color'] ? profile['color'].to_i(16) : NEON_COLORS.sample
+  components = [{ type: 17, accent_color: accent, components: inner }]
 
   send_cv2(event, components)
 end

@@ -74,4 +74,38 @@ module DatabaseSocial
       [giver_id, receiver_id, Time.now.utc.iso8601]
     )
   end
+
+  # --- MARRIAGE ---
+  def get_marriage(uid)
+    row = @db.exec_params(
+      "SELECT * FROM marriages WHERE user_a = $1 OR user_b = $1", [uid]
+    ).first
+    return nil unless row
+    partner = row['user_a'].to_i == uid ? row['user_b'].to_i : row['user_a'].to_i
+    { partner: partner, married_at: Time.parse(row['married_at'].to_s) }
+  end
+
+  def create_marriage(uid_a, uid_b)
+    a, b = [uid_a, uid_b].sort
+    @db.exec_params("INSERT INTO marriages (user_a, user_b, married_at) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING", [a, b, Time.now.utc.iso8601])
+  end
+
+  def delete_marriage(uid)
+    @db.exec_params("DELETE FROM marriages WHERE user_a = $1 OR user_b = $1", [uid])
+  end
+
+  # --- BIRTHDAY ---
+  def get_birthday(uid)
+    row = @db.exec_params("SELECT birthday FROM global_users WHERE user_id = $1", [uid]).first
+    row ? row['birthday'] : nil
+  end
+
+  def set_birthday(uid, mmdd)
+    @db.exec_params("INSERT INTO global_users (user_id, birthday) VALUES ($1, $2) ON CONFLICT (user_id) DO UPDATE SET birthday = $2", [uid, mmdd])
+  end
+
+  def get_todays_birthdays
+    today = Time.now.strftime('%m-%d')
+    @db.exec_params("SELECT user_id FROM global_users WHERE birthday = $1", [today]).map { |r| r['user_id'].to_i }
+  end
 end

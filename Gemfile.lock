@@ -3,6 +3,7 @@ GEM
   specs:
     base64 (0.3.0)
     colorize (1.1.0)
+    connection_pool (3.0.2)
     discordrb (3.7.2)
       base64 (~> 0.2)
       discordrb-webhooks (~> 3.7.2)
@@ -25,15 +26,36 @@ GEM
       logger
       mime-types-data (~> 3.2025, >= 3.2025.0507)
     mime-types-data (3.2026.0113)
+    mustermann (3.0.4)
+      ruby2_keywords (~> 0.0.1)
     mutex_m (0.3.0)
     netrc (0.11.0)
     opus-ruby (1.0.1)
       ffi
+    pg (1.6.3-x64-mingw-ucrt)
+    rack (3.2.5)
+    rack-protection (4.2.1)
+      base64 (>= 0.1.0)
+      logger (>= 1.6.0)
+      rack (>= 3.0.0, < 4)
+    rack-session (2.1.1)
+      base64 (>= 0.1.0)
+      rack (>= 3.0.0)
     rest-client (2.1.0)
       http-accept (>= 1.7.0, < 2.0)
       http-cookie (>= 1.0.2, < 2.0)
       mime-types (>= 1.16, < 4.0)
       netrc (~> 0.8)
+    ruby2_keywords (0.0.5)
+    sinatra (4.2.1)
+      logger (>= 1.6.0)
+      mustermann (~> 3.0)
+      rack (>= 3.0.0, < 4)
+      rack-protection (= 4.2.1)
+      rack-session (>= 2.0.0, < 3)
+      tilt (~> 2.0)
+    tilt (2.7.0)
+    webrick (1.9.2)
     websocket (1.2.11)
     websocket-client-simple (0.9.0)
       base64
@@ -46,10 +68,14 @@ PLATFORMS
 
 DEPENDENCIES
   colorize
+  connection_pool
   discordrb
   dotenv
   ffi
   fiddle
+  pg
+  sinatra
+  webrick
 
 BUNDLED WITH
-   4.0.8
+  4.0.8

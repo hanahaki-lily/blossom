@@ -39,6 +39,36 @@ def execute_welcomer(event, action, channel_obj = nil)
       { type: 10, content: "New members will get a welcome message in #{channel_obj.mention}.\nI'll make sure they feel the Neon Arcade energy from the moment they walk in.#{mom_remark(event.user.id, 'admin')}" }
     ]}])
 
+  when 'message'
+    # Premium server feature: custom welcome message text
+    text = channel_obj.is_a?(String) ? channel_obj : nil
+    unless text && !text.empty?
+      return send_cv2(event, [{ type: 17, accent_color: 0xFF0000, components: [
+        { type: 10, content: "## #{EMOJI_STRINGS['confused']} Custom Welcome Message" },
+        { type: 14, spacing: 1 },
+        { type: 10, content: "Write your custom welcome message! Use `{user}` for the member mention and `{server}` for server name.\n\n" \
+                     "**Example:** `#{PREFIX}welcomer message Welcome to {server}, {user}! Have fun!`\n" \
+                     "**Reset:** `#{PREFIX}welcomer message reset`" }
+      ]}])
+    end
+
+    if text.downcase == 'reset'
+      DB.set_welcome_message(event.server.id, nil)
+      return send_cv2(event, [{ type: 17, accent_color: 0x00FF00, components: [
+        { type: 10, content: "## #{EMOJI_STRINGS['checkmark']} Welcome Message Reset" },
+        { type: 14, spacing: 1 },
+        { type: 10, content: "Back to the default Blossom welcome messages! The classics never die." }
+      ]}])
+    end
+
+    DB.set_welcome_message(event.server.id, text)
+    preview = text.gsub('{user}', event.user.mention).gsub('{server}', event.server.name)
+    send_cv2(event, [{ type: 17, accent_color: 0x00FF00, components: [
+      { type: 10, content: "## #{EMOJI_STRINGS['checkmark']} Custom Welcome Set!" },
+      { type: 14, spacing: 1 },
+      { type: 10, content: "**Preview:**\n#{preview}" }
+    ]}])
+
   when 'disable'
     config = DB.get_welcome_config(event.server.id)
     DB.set_welcome_config(event.server.id, config[:channel], false)
@@ -65,12 +95,17 @@ end
 $bot.command(:welcomer, aliases: [:welcome],
   description: 'Enable or disable the server welcome message (Admin Only)',
   category: 'Admin'
-) do |event, action, channel_mention|
-  chan = nil
-  if channel_mention =~ /<#(\d+)>/
-    chan = event.bot.channel($1.to_i, event.server)
+) do |event, action, *args|
+  if action&.downcase == 'message'
+    execute_welcomer(event, action, args.join(' '))
+  else
+    chan = nil
+    channel_mention = args.first
+    if channel_mention =~ /<#(\d+)>/
+      chan = event.bot.channel($1.to_i, event.server)
+    end
+    execute_welcomer(event, action, chan)
   end
-  execute_welcomer(event, action, chan)
   nil
 end
 

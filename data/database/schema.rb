@@ -143,6 +143,30 @@ module DatabaseSchema # <--- Changed from 'class' to 'module'
     begin; @db.exec("ALTER TABLE server_logs ADD COLUMN IF NOT EXISTS log_leaves INTEGER DEFAULT 0"); rescue PG::Error; end
     begin; @db.exec("ALTER TABLE global_users ADD COLUMN IF NOT EXISTS pity_counter INTEGER DEFAULT 0"); rescue PG::Error; end
     begin; @db.exec("ALTER TABLE global_users ADD COLUMN IF NOT EXISTS reputation INTEGER DEFAULT 0"); rescue PG::Error; end
+    begin; @db.exec("ALTER TABLE global_users ADD COLUMN IF NOT EXISTS spin_at TIMESTAMP"); rescue PG::Error; end
+    begin; @db.exec("ALTER TABLE global_users ADD COLUMN IF NOT EXISTS profile_color VARCHAR(7)"); rescue PG::Error; end
+    begin; @db.exec("ALTER TABLE global_users ADD COLUMN IF NOT EXISTS bio VARCHAR(100)"); rescue PG::Error; end
+    begin; @db.exec("ALTER TABLE global_users ADD COLUMN IF NOT EXISTS favorite_card_2 VARCHAR(255)"); rescue PG::Error; end
+    begin; @db.exec("ALTER TABLE global_users ADD COLUMN IF NOT EXISTS favorite_card_3 VARCHAR(255)"); rescue PG::Error; end
+    begin; @db.exec("ALTER TABLE global_users ADD COLUMN IF NOT EXISTS birthday VARCHAR(5)"); rescue PG::Error; end
+    begin; @db.exec("ALTER TABLE server_configs ADD COLUMN IF NOT EXISTS welcome_message TEXT"); rescue PG::Error; end
+
+    @db.exec(<<-SQL)
+      CREATE TABLE IF NOT EXISTS marriages (
+        user_a BIGINT,
+        user_b BIGINT,
+        married_at TIMESTAMP,
+        PRIMARY KEY(user_a, user_b)
+      );
+
+      CREATE TABLE IF NOT EXISTS reaction_roles (
+        server_id BIGINT,
+        message_id BIGINT,
+        emoji VARCHAR(255),
+        role_id BIGINT,
+        PRIMARY KEY(server_id, message_id, emoji)
+      );
+    SQL
 
     @db.exec(<<-SQL)
       CREATE TABLE IF NOT EXISTS rep_cooldowns (
@@ -150,6 +174,21 @@ module DatabaseSchema # <--- Changed from 'class' to 'module'
         receiver_id BIGINT,
         given_at TIMESTAMP,
         PRIMARY KEY(giver_id, receiver_id)
+      );
+
+      CREATE TABLE IF NOT EXISTS kofi_links (
+        user_id BIGINT PRIMARY KEY,
+        kofi_email VARCHAR(255) NOT NULL,
+        linked_at TIMESTAMP DEFAULT NOW()
+      );
+
+      CREATE TABLE IF NOT EXISTS premium_subscriptions (
+        user_id BIGINT PRIMARY KEY,
+        kofi_transaction_id VARCHAR(255),
+        tier VARCHAR(50) DEFAULT 'monthly',
+        started_at TIMESTAMP DEFAULT NOW(),
+        expires_at TIMESTAMP NOT NULL,
+        active INTEGER DEFAULT 1
       );
     SQL
   end # Closes 'def setup_schema'

@@ -59,6 +59,13 @@ def execute_daily(event)
     bonus_text += "\n*(#{EMOJI_STRINGS['prisma']} Subscriber Bonus: +10% Coins & +#{prisma_reward} Prisma!)*"
   end
   
+  # 6b. Logic: Marriage Bonus
+  marriage = DB.get_marriage(uid)
+  if marriage
+    reward += MARRIAGE_DAILY_BONUS
+    bonus_text += "\n*(#{EMOJI_STRINGS['rainbowheart']} Marriage Bonus: +#{MARRIAGE_DAILY_BONUS} coins!)*"
+  end
+
   # 7. Logic: Inventory Boosts (Check for active Neon Sign)
   inv_array = DB.get_inventory(uid)
   inv = inv_array.each_with_object({}) { |item, h| h[item['item_id']] = item['quantity'] }
