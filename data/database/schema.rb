@@ -151,6 +151,12 @@ module DatabaseSchema # <--- Changed from 'class' to 'module'
     begin; @db.exec("ALTER TABLE global_users ADD COLUMN IF NOT EXISTS birthday VARCHAR(5)"); rescue PG::Error; end
     begin; @db.exec("ALTER TABLE server_configs ADD COLUMN IF NOT EXISTS welcome_message TEXT"); rescue PG::Error; end
 
+    # Character name fix: Mirori -> Miori Celesta
+    @db.exec("UPDATE collections SET character_name = 'Miori Celesta' WHERE character_name = 'Mirori Celesta'")
+    @db.exec("UPDATE global_users SET favorite_card = 'Miori Celesta' WHERE favorite_card = 'Mirori Celesta'")
+    @db.exec("UPDATE global_users SET favorite_card_2 = 'Miori Celesta' WHERE favorite_card_2 = 'Mirori Celesta'")
+    @db.exec("UPDATE global_users SET favorite_card_3 = 'Miori Celesta' WHERE favorite_card_3 = 'Mirori Celesta'")
+
     @db.exec(<<-SQL)
       CREATE TABLE IF NOT EXISTS marriages (
         user_a BIGINT,
