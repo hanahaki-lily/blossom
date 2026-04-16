@@ -275,11 +275,7 @@ $bot.button(custom_id: /^ticket_close_\d+/) do |event|
   Thread.new do
     sleep(10)
     begin
-      Discordrb::API.request(
-        :channels_cid, ticket_channel_id, :delete,
-        "#{Discordrb::API.api_base}/channels/#{ticket_channel_id}",
-        nil, Authorization: $bot.token
-      )
+      Discordrb::API::Channel.delete($bot.token, ticket_channel_id)
     rescue => e
       puts "[TICKET DELETE ERROR] #{e.message}"
     end
