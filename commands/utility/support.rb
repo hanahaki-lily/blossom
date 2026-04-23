@@ -15,8 +15,8 @@ def execute_support(event)
         {
           type: 10,
           content: "Something broke? Skill issue... jk, jk. Maybe.\n" \
-                   "Come yell at us in the Tsukiyo Server:\n\n" \
-                   "**https://discord.gg/tsukiyo**#{mom_remark(event.user.id, 'general')}"
+                   "Come yell at us in baonuki's server:\n\n" \
+                   "**https://discord.gg/T9RtZY48S5**#{mom_remark(event.user.id, 'general')}"
         }
       ]
     }
