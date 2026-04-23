@@ -84,6 +84,7 @@ Toggle automatic daily reward claiming. When enabled, Blossom will automatically
 | **Behavior** | Auto-claims daily when cooldown expires |
 | **Notification** | DM with reward summary |
 | **Streak Protection** | Prevents streak loss from forgetting to claim |
+| **Weekly Challenge Tracking** | Auto-claims count toward `daily_claims` weekly challenge progress |
 
 ---
 

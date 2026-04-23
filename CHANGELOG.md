@@ -15,6 +15,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 - Updated Blossom's baonuki card flavor text in gacha/trade/view flows to refer to baonuki as "mom's past life."
 - Added mama-focused Blossom flavor lines for interactions involving `baonuki` (summon, buy, givecard, view, and trades).
 - Added developer command `b!derase` to globally remove `Kyvrixon` and refund 100 Prisma per removed copy.
+- Fixed auto-claim daily so it also increments weekly `daily_claims` challenge progress.
 
 ---
 

@@ -200,6 +200,7 @@ $bot.ready do |event|
           check_achievement(nil, uid, 'streak_69', silent: true)  if new_streak == 69
           check_achievement(nil, uid, 'streak_100', silent: true) if new_streak == 100
           check_achievement(nil, uid, 'streak_365', silent: true) if new_streak == 365
+          track_challenge(uid, 'daily_claims', 1)
 
           # DM the user
           user = event.bot.user(uid)
