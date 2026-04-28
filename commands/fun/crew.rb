@@ -102,17 +102,17 @@ def execute_crew(event, action = nil, *args)
       ]}])
     end
 
-    target = event.message.mentions.first rescue nil
-    target ||= event.bot.user(args[0].to_i) rescue nil if args[0]
-    unless target
+    # Extract ID via Regex
+    target_id = args[0].to_s.scan(/\d{15,21}/).first&.to_i
+    if target_id.nil? || target_id.zero?
       return send_cv2(event, [{ type: 17, accent_color: 0xFF0000, components: [
         { type: 10, content: "## #{EMOJI_STRINGS['confused']} Invite Who?" },
         { type: 14, spacing: 1 },
-        { type: 10, content: "Mention a user to invite: `#{PREFIX}crew invite @user`" }
+        { type: 10, content: "Provide a mention or ID to invite: `#{PREFIX}crew invite <@user or ID>`" }
       ]}])
     end
 
-    if DB.get_user_crew(target.id)
+    if DB.get_user_crew(target_id)
       return send_cv2(event, [{ type: 17, accent_color: 0xFF0000, components: [
         { type: 10, content: "## #{EMOJI_STRINGS['x_']} Already In a Crew" },
         { type: 14, spacing: 1 },
@@ -120,13 +120,13 @@ def execute_crew(event, action = nil, *args)
       ]}])
     end
 
-    invite_key = "#{crew['id']}_#{target.id}"
+    invite_key = "#{crew['id']}_#{target_id}"
     ACTIVE_CREW_INVITES[invite_key] = { crew_id: crew['id'], inviter_id: uid, expires_at: Time.now + 120 }
 
     send_cv2(event, [{ type: 17, accent_color: NEON_COLORS.sample, components: [
       { type: 10, content: "## \u{1F465} Crew Invite" },
       { type: 14, spacing: 1 },
-      { type: 10, content: "#{target.mention}, you've been invited to join **#{crew['name']}** [#{crew['tag']}]!\n\nThis invite expires in **2 minutes**." },
+      { type: 10, content: "<@#{target_id}>, you've been invited to join **#{crew['name']}** [#{crew['tag']}]!\n\nThis invite expires in **2 minutes**." },
       { type: 14, spacing: 1 },
       { type: 1, components: [
         { type: 2, style: 3, label: "Accept", custom_id: "crew_accept_#{invite_key}" },
@@ -169,11 +169,17 @@ def execute_crew(event, action = nil, *args)
       ]}])
     end
 
-    target = event.message.mentions.first rescue nil
-    target ||= event.bot.user(args[0].to_i) rescue nil if args[0]
-    return unless target
+    # Extract ID via Regex
+    target_id = args[0].to_s.scan(/\d{15,21}/).first&.to_i
+    if target_id.nil? || target_id.zero?
+      return send_cv2(event, [{ type: 17, accent_color: 0xFF0000, components: [
+        { type: 10, content: "## #{EMOJI_STRINGS['confused']} Kick Who?" },
+        { type: 14, spacing: 1 },
+        { type: 10, content: "Provide a mention or ID to kick: `#{PREFIX}crew kick <@user or ID>`" }
+      ]}])
+    end
 
-    target_crew = DB.get_user_crew(target.id)
+    target_crew = DB.get_user_crew(target_id)
     unless target_crew && target_crew['id'] == crew['id']
       return send_cv2(event, [{ type: 17, accent_color: 0xFF0000, components: [
         { type: 10, content: "## #{EMOJI_STRINGS['x_']} Not In Your Crew" },
@@ -182,11 +188,11 @@ def execute_crew(event, action = nil, *args)
       ]}])
     end
 
-    DB.remove_crew_member(crew['id'], target.id)
+    DB.remove_crew_member(crew['id'], target_id)
     send_cv2(event, [{ type: 17, accent_color: NEON_COLORS.sample, components: [
       { type: 10, content: "## \u{1F465} Member Kicked" },
       { type: 14, spacing: 1 },
-      { type: 10, content: "#{target.mention} has been removed from **#{crew['name']}**.#{mom_remark(uid, 'admin')}" }
+      { type: 10, content: "<@#{target_id}> has been removed from **#{crew['name']}**.#{mom_remark(uid, 'admin')}" }
     ]}])
 
   when 'promote'
@@ -199,10 +205,17 @@ def execute_crew(event, action = nil, *args)
       ]}])
     end
 
-    target = event.message.mentions.first rescue nil
-    return unless target
+    # Extract ID via Regex
+    target_id = args[0].to_s.scan(/\d{15,21}/).first&.to_i
+    if target_id.nil? || target_id.zero?
+      return send_cv2(event, [{ type: 17, accent_color: 0xFF0000, components: [
+        { type: 10, content: "## #{EMOJI_STRINGS['confused']} Promote Who?" },
+        { type: 14, spacing: 1 },
+        { type: 10, content: "Provide a mention or ID to promote: `#{PREFIX}crew promote <@user or ID>`" }
+      ]}])
+    end
 
-    target_crew = DB.get_user_crew(target.id)
+    target_crew = DB.get_user_crew(target_id)
     unless target_crew && target_crew['id'] == crew['id']
       return send_cv2(event, [{ type: 17, accent_color: 0xFF0000, components: [
         { type: 10, content: "## #{EMOJI_STRINGS['x_']} Not In Your Crew" },
@@ -212,11 +225,11 @@ def execute_crew(event, action = nil, *args)
     end
 
     # Transfer leadership
-    DB.transfer_crew_leader(crew['id'], target.id)
+    DB.transfer_crew_leader(crew['id'], target_id)
     send_cv2(event, [{ type: 17, accent_color: 0x00FF00, components: [
       { type: 10, content: "## \u{1F451} Leadership Transferred" },
       { type: 14, spacing: 1 },
-      { type: 10, content: "#{target.mention} is now the leader of **#{crew['name']}**!" }
+      { type: 10, content: "<@#{target_id}> is now the leader of **#{crew['name']}**!" }
     ]}])
 
   when 'disband'
