@@ -14,11 +14,6 @@ $bot.button(custom_id: /^don_/) do |event|
     next event.respond(content: "#{EMOJI_STRINGS['x_']} Hands off, that's not your gamble.", ephemeral: true)
   end
 
-  # Check they still have the coins at stake
-  if DB.get_coins(owner_uid) < winnings
-    next event.respond(content: "#{EMOJI_STRINGS['nervous']} You don't even have **#{winnings}** #{EMOJI_STRINGS['s_coin']} anymore... can't double what you already spent, chat.", ephemeral: true)
-  end
-
   if rand(2).zero?
     # WIN — double the winnings
     DB.add_coins(owner_uid, winnings)
@@ -32,8 +27,10 @@ $bot.button(custom_id: /^don_/) do |event|
       ]}]
     )
   else
-    # LOSS — lose the winnings
-    DB.add_coins(owner_uid, -winnings)
+    # LOSS — stash at stake deducted atomically
+    unless DB.deduct_coins_if_possible(owner_uid, winnings)
+      next event.respond(content: "#{EMOJI_STRINGS['nervous']} You don't even have **#{winnings}** #{EMOJI_STRINGS['s_coin']} anymore... can't lose what isn't there anymore, chat.", ephemeral: true)
+    end
 
     event.update_message(
       content: '', flags: CV2_FLAG,

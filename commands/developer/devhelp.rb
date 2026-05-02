@@ -17,7 +17,7 @@ def execute_devhelp(event)
     "`#{PREFIX}syncachievements` — Retroactively grant missing achievements",
     "`#{PREFIX}dticketsetup #channel` — Post support ticket panel",
     "`#{PREFIX}dapplysetup #channel` — Post mod application panel",
-    "`#{PREFIX}derase` — Remove Kyvrixon globally and refund Prisma",
+    "`#{PREFIX}derase` — Remove a character globally and refund Prisma",
     "`#{PREFIX}dserver` — DM the developer debug information",
     "`#{PREFIX}devhelp` — This list"
   ].join("\n")

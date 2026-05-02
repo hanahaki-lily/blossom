@@ -11,8 +11,8 @@ def execute_slots(event, amount)
   # 1. Initialization: Get the user's unique ID
   uid = event.user.id
 
-  # 2. Validation: Ensure the bet is valid and the user is "good for it"
-  if amount <= 0 || DB.get_coins(uid) < amount
+  # 2. Atomic bet deduction
+  if amount <= 0 || DB.deduct_coins_if_possible(uid, amount).nil?
     return send_cv2(event, [{
       type: 17, accent_color: 0xFF0000,
       components: [
@@ -23,8 +23,7 @@ def execute_slots(event, amount)
     }])
   end
 
-  # 3. Database & Progression: Deduct the bet and track the spin achievement
-  DB.add_coins(uid, -amount)
+  # 3. Achievements — bet already deducted
   check_achievement(event.channel, uid, 'slots_spin')
   check_achievement(event.channel, uid, 'gamble_10k') if amount >= 10000
 

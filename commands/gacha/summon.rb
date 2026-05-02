@@ -40,8 +40,8 @@ def execute_summon(event)
   shiny_mode = is_sub && DB.get_shiny_mode(uid)
   summon_cost = shiny_mode ? SUMMON_COST * 2 : SUMMON_COST
 
-  # 4. Validation: Economy Check
-  if DB.get_coins(uid) < summon_cost
+  # 4. Pay portal fee — concurrent opens can't race the snapshot query anymore
+  if DB.deduct_coins_if_possible(uid, summon_cost).nil?
     return send_cv2(event, [{ type: 17, accent_color: 0xFF0000, components: [
       { type: 10, content: "## #{EMOJI_STRINGS['info']} Summon" },
       { type: 14, spacing: 1 },
@@ -49,8 +49,6 @@ def execute_summon(event)
     ]}])
   end
 
-  # 5. Transaction: Deduct cost and prepare the banner
-  DB.add_coins(uid, -summon_cost)
   active_banner = get_user_banner(uid)
   used_manipulator = false
   is_event_pull = false

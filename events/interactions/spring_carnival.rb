@@ -59,11 +59,9 @@ $bot.button(custom_id: /^carnival_ringtoss_/) do |event|
   uid = event.user.id
   cost = 100
 
-  if DB.get_coins(uid) < cost
+  if DB.deduct_coins_if_possible(uid, cost).nil?
     next event.update_message(content: "#{EMOJI_STRINGS['coins']} You need **#{cost}** #{EMOJI_STRINGS['s_coin']} to play Ring Toss!", embeds: [], components: carnival_back_view(owner_id))
   end
-
-  DB.add_coins(uid, -cost)
   check_achievement(event.channel, event.user.id, 'carnival_ring')
   embed = Discordrb::Webhooks::Embed.new(color: 0xFF69B4)
   
@@ -98,11 +96,9 @@ $bot.button(custom_id: /^carnival_game2_/) do |event|
   uid = event.user.id
   cost = 150
 
-  if DB.get_coins(uid) < cost
+  if DB.deduct_coins_if_possible(uid, cost).nil?
     next event.update_message(content: "#{EMOJI_STRINGS['coins']} You need **#{cost}** #{EMOJI_STRINGS['s_coin']} to play Balloon Pop!", embeds: [], components: carnival_back_view(owner_id))
   end
-
-  DB.add_coins(uid, -cost)
   check_achievement(event.channel, event.user.id, 'carnival_pop')
   embed = Discordrb::Webhooks::Embed.new(color: 0xFF69B4)
   

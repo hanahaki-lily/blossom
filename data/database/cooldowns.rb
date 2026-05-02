@@ -142,26 +142,46 @@ module DatabaseCooldowns
     }
   end
 
-  # Atomic daily_at/streak update + calendar insert + Prisma (after award_coins).
-  def autoclaim_commit_claim(uid, new_streak, time_obj, claim_date_str, prisma_reward)
+  # Atomically grants daily coins (+EXCLUDED additive upsert), streak/timer shift,
+  # calendar row, optional Prisma subscriber bonus — replaces split award_coins /
+  # update_daily / add_calendar / add_prisma ordering gaps.
+  def commit_daily_claim_atomic(uid, coin_grant, prisma_grant, new_streak, time_obj, claim_date_str)
+    cg = coin_grant.to_i
+    pg = prisma_grant.to_i
+    streak = new_streak.to_i
     time_str = time_obj.iso8601
     date_str = claim_date_str.is_a?(String) ? claim_date_str : claim_date_str.strftime('%Y-%m-%d')
+
+    balance = nil
     @db.transaction do |conn|
-      conn.exec_params(
-        'INSERT INTO global_users (user_id, coins, daily_streak, reminder_sent, daily_at)
-         VALUES ($1, 0, $2, 0, $3)
-         ON CONFLICT (user_id) DO UPDATE
-         SET daily_streak = $2, reminder_sent = 0, daily_at = $3',
-        [uid, new_streak, time_str]
-      )
+      row = conn.exec_params(
+        <<~SQL,
+          INSERT INTO global_users (user_id, coins, daily_streak, reminder_sent, daily_at)
+          VALUES ($1, $2, $3, 0, $4)
+          ON CONFLICT (user_id) DO UPDATE SET
+            coins = global_users.coins + EXCLUDED.coins,
+            daily_streak = EXCLUDED.daily_streak,
+            reminder_sent = 0,
+            daily_at = EXCLUDED.daily_at
+          RETURNING coins
+        SQL
+        [uid, cg, streak, time_str]
+      ).first
+      balance = row['coins'].to_i
+
       conn.exec_params(
         'INSERT INTO daily_calendar (user_id, claim_date) VALUES ($1, $2) ON CONFLICT DO NOTHING',
         [uid, date_str]
       )
-      conn.exec_params(
-        'INSERT INTO user_prisma (user_id, balance) VALUES ($1, $2) ON CONFLICT (user_id) DO UPDATE SET balance = user_prisma.balance + $3',
-        [uid, prisma_reward, prisma_reward]
-      )
+
+      unless pg <= 0
+        conn.exec_params(
+          'INSERT INTO user_prisma (user_id, balance) VALUES ($1, $2) ON CONFLICT (user_id) DO UPDATE SET balance = user_prisma.balance + $3',
+          [uid, pg, pg]
+        )
+      end
     end
+
+    balance
   end
 end

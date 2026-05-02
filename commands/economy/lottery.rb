@@ -13,11 +13,10 @@ def execute_lottery(event, amount)
   amount = amount.to_i
   amount = 1 if amount <= 0
 
-  # 2. Validation: Calculate cost and check user's global balance
+  # 2. Pay + insert lottery rows atomically (see DatabaseAdmin#purchase_lottery_tickets)
   cost = amount * 100
-  balance = DB.get_coins(uid)
-
-  if balance < cost
+  unless DB.purchase_lottery_tickets(uid, amount)
+    balance = DB.get_coins(uid)
     components = [
       {
         type: 17,
@@ -32,17 +31,13 @@ def execute_lottery(event, amount)
     return send_cv2(event, components)
   end
 
-  # 3. Database: Deduct the cost and record the lottery entry
-  DB.add_coins(uid, -cost)
-  DB.enter_lottery(uid, amount)
-  
-  # 4. Achievements
+  # 3. Achievements
   check_achievement(event.channel, uid, 'lottery_enter')
 
-  # 5. Data Retrieval: Fetch fresh stats for the prize pool calculation
+  # 4. Pool stats — includes rows just inserted inside purchase_lottery_tickets
   stats = DB.get_lottery_stats(uid)
   
-  # 5. Calculation: Determine the current prize pool 
+  # 5. Prize pool calculation 
   # (Base 100 coins + 100 coins for every ticket sold globally)
   pool = 100 + (stats[:total_tickets] * 100)
 

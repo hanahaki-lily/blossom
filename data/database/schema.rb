@@ -371,5 +371,13 @@ module DatabaseSchema # <--- Changed from 'class' to 'module'
         asked_at TIMESTAMP NOT NULL DEFAULT NOW()
       );
     SQL
+
+    # Clamp any legacy negative balances, then enforce non-negative coins DB-wide.
+    begin
+      @db.exec('UPDATE global_users SET coins = 0 WHERE coins < 0')
+      @db.exec('ALTER TABLE global_users ADD CONSTRAINT global_users_coins_non_negative CHECK (coins >= 0)')
+    rescue PG::Error
+      # Duplicate constraint name after prior boot, etc.
+    end
   end # Closes 'def setup_schema'
 end # Closes 'module DatabaseSchema'

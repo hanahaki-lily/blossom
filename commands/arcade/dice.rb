@@ -12,19 +12,7 @@ def execute_dice(event, amount, bet)
   uid = event.user.id
   bet = bet.downcase
 
-  # 2. Validation: Check for a valid amount and sufficient funds
-  if amount <= 0 || DB.get_coins(uid) < amount
-    return send_cv2(event, [{
-      type: 17, accent_color: 0xFF0000,
-      components: [
-        { type: 10, content: "## #{EMOJI_STRINGS['x_']} Invalid Bet" },
-        { type: 14, spacing: 1 },
-        { type: 10, content: "You're broke or you typed something unhinged. Check your balance and try again." }
-      ]
-    }])
-  end
-
-  # 3. Validation: Ensure the bet type is recognized
+  # 2. Bet type before wallet
   unless ['high', 'low', '7'].include?(bet)
     return send_cv2(event, [{
       type: 17, accent_color: 0xFF0000,
@@ -36,10 +24,19 @@ def execute_dice(event, amount, bet)
     }])
   end
 
-  # 4. Database: Deduct the initial bet amount
-  DB.add_coins(uid, -amount)
+  # 3. Atomic deduct
+  if amount <= 0 || DB.deduct_coins_if_possible(uid, amount).nil?
+    return send_cv2(event, [{
+      type: 17, accent_color: 0xFF0000,
+      components: [
+        { type: 10, content: "## #{EMOJI_STRINGS['x_']} Invalid Bet" },
+        { type: 14, spacing: 1 },
+        { type: 10, content: "You're broke or you typed something unhinged. Check your balance and try again." }
+      ]
+    }])
+  end
 
-  # 5. Simulation: Roll two 6-sided dice
+  # 4. Roll two 6-sided dice
   die1 = rand(1..6)
   die2 = rand(1..6)
   total = die1 + die2

@@ -67,11 +67,10 @@ $bot.button(custom_id: /^bj_double_/) do |event|
   end
 
   # Double the bet, draw exactly one card, then stand
-  if DB.get_coins(uid) < session[:bet]
+  unless DB.deduct_coins_if_possible(uid, session[:bet])
     next event.respond(content: "#{EMOJI_STRINGS['nervous']} You can't afford to double down anymore!", ephemeral: true)
   end
 
-  DB.add_coins(uid, -session[:bet])
   session[:bet] *= 2
   session[:doubled] = true
   session[:player] << session[:deck].pop

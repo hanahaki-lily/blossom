@@ -63,8 +63,8 @@ Subscribers get the VIP treatment:
 | | |
 |---|---|
 | **Language** | Ruby 3.4 |
-| **Framework** | discordrb |
-| **Database** | SQLite |
+| **Framework** | discordrb 3.7.2 |
+| **Database** | PostgreSQL (via `pg` + `connection_pool`) |
 | **Architecture** | Modular loader system |
 
 ## The Creator

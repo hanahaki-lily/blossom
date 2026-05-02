@@ -97,15 +97,6 @@ def execute_daily(event)
   # Base reward + streak bonus
   reward = DAILY_REWARD + (new_streak * DAILY_STREAK_BONUS)
 
-  # Premium & Prisma rewards
-  if is_sub
-    base_prisma = rand(1..3)
-    streak_multiplier = 1 + (new_streak / 7)
-    prisma_reward = base_prisma * streak_multiplier
-    DB.add_prisma(uid, prisma_reward)
-    bonus_text += "\n*(#{EMOJI_STRINGS['prisma']} Subscriber Bonus: +10% Coins & +#{prisma_reward} Prisma!)*"
-  end
-
   # Marriage bonus
   marriage = DB.get_marriage(uid)
   if marriage
@@ -115,44 +106,65 @@ def execute_daily(event)
 
   # Happy hour indicator
   if happy_hour_active?
-    hh_mult = is_sub ? "3x" : "2x"
+    hh_mult = is_sub ? '3x' : '2x'
     bonus_text += "\n*(#{EMOJI_STRINGS['neonsparkle']} HAPPY HOUR: #{hh_mult} Coin Boost Active!)*"
   end
 
   # Inventory boosts (Neon Sign = x2)
   inv_array = DB.get_inventory(uid)
   inv = inv_array.each_with_object({}) { |item, h| h[item['item_id']] = item['quantity'] }
-  if inv['neon sign'] && inv['neon sign'] > 0
+  if inv['neon sign'] && inv['neon sign'].positive?
     reward *= 2
     bonus_text += "\n*(#{EMOJI_STRINGS['neonsparkle']} Neon Sign Boost: x2 Payout!)*"
   end
 
-  # Grant coins & update DB
-  final_reward = award_coins(event.bot, uid, reward)
-  DB.update_daily_claim(uid, new_streak, now)
-  DB.add_calendar_claim(uid, today)
+  # Subscriber Prisma (rolled here; applied in commit_daily_claim_atomic with coins)
+  prisma_reward = 0
+  if is_sub
+    base_prisma = rand(1..3)
+    streak_multiplier = 1 + (new_streak / 7)
+    prisma_reward = base_prisma * streak_multiplier
+    bonus_text += "\n*(#{EMOJI_STRINGS['prisma']} Subscriber Bonus: +10% Coins & +#{prisma_reward} Prisma!)*"
+  end
+
+  # Final payout math (+ premium/happy-hour/crew); calendar milestones predicted from pre-claim count
+  final_coin_payout = calculate_coin_payout(event.bot, uid, reward)
+
+  prior_claims_this_month = DB.get_monthly_claim_count(uid, today.year, today.month)
+  predict_claim_count = prior_claims_this_month + 1
+
+  milestone_14_pay = 0
+  milestone_28_pay = 0
+  milestone_msg = ""
+  if predict_claim_count == CALENDAR_MILESTONE_14
+    raw_m = is_sub ? CALENDAR_MILESTONE_14_PREMIUM : CALENDAR_MILESTONE_14_REWARD
+    milestone_14_pay = calculate_coin_payout(event.bot, uid, raw_m)
+    milestone_msg += "\n\n\u2B50 **14-Day Milestone!** Bonus: **+#{raw_m}** #{EMOJI_STRINGS['s_coin']}!"
+  end
+  if predict_claim_count == CALENDAR_MILESTONE_28
+    raw_m = is_sub ? CALENDAR_MILESTONE_28_PREMIUM : CALENDAR_MILESTONE_28_REWARD
+    milestone_28_pay = calculate_coin_payout(event.bot, uid, raw_m)
+    milestone_msg += "\n\n\u{1F31F} **28-Day Milestone!** Bonus: **+#{raw_m}** #{EMOJI_STRINGS['s_coin']}!"
+    if is_sub
+      milestone_msg += " *(+#{CALENDAR_MILESTONE_28_PRISMA} #{EMOJI_STRINGS['prisma']}!)*"
+    end
+  end
+
+  prisma_milestone_bonus = predict_claim_count == CALENDAR_MILESTONE_28 && is_sub ? CALENDAR_MILESTONE_28_PRISMA : 0
+  coin_grant_total = final_coin_payout + milestone_14_pay + milestone_28_pay
+  prisma_grant_total = prisma_reward + prisma_milestone_bonus
+
+  DB.commit_daily_claim_atomic(uid, coin_grant_total, prisma_grant_total, new_streak, now, today)
+  grant_crew_xp_for_coin_payout(uid, final_coin_payout)
+  grant_crew_xp_for_coin_payout(uid, milestone_14_pay) if milestone_14_pay.positive?
+  grant_crew_xp_for_coin_payout(uid, milestone_28_pay) if milestone_28_pay.positive?
+
+  final_reward = final_coin_payout
 
   # Calendar data for this month
   claimed_days = DB.get_calendar_claims(uid, today.year, today.month)
   claim_count = claimed_days.size
   calendar_grid = render_calendar(today.year, today.month, claimed_days, today.day)
-
-  # Milestone checks & rewards
-  milestone_msg = ""
-  if claim_count == CALENDAR_MILESTONE_14
-    milestone_bonus = is_sub ? CALENDAR_MILESTONE_14_PREMIUM : CALENDAR_MILESTONE_14_REWARD
-    award_coins(event.bot, uid, milestone_bonus)
-    milestone_msg += "\n\n\u2B50 **14-Day Milestone!** Bonus: **+#{milestone_bonus}** #{EMOJI_STRINGS['s_coin']}!"
-  end
-  if claim_count == CALENDAR_MILESTONE_28
-    milestone_bonus = is_sub ? CALENDAR_MILESTONE_28_PREMIUM : CALENDAR_MILESTONE_28_REWARD
-    award_coins(event.bot, uid, milestone_bonus)
-    milestone_msg += "\n\n\u{1F31F} **28-Day Milestone!** Bonus: **+#{milestone_bonus}** #{EMOJI_STRINGS['s_coin']}!"
-    if is_sub
-      DB.add_prisma(uid, CALENDAR_MILESTONE_28_PRISMA)
-      milestone_msg += " *(+#{CALENDAR_MILESTONE_28_PRISMA} #{EMOJI_STRINGS['prisma']}!)*"
-    end
-  end
 
   # Milestone progress bar
   m14 = [claim_count, CALENDAR_MILESTONE_14].min

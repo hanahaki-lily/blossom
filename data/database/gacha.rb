@@ -4,6 +4,8 @@
 # ==========================================
 
 module DatabaseGacha
+  AscensionCopyError = Class.new(StandardError)
+
   def get_collection(uid)
     rows = @db.exec_params("SELECT character_name, rarity, count, ascended FROM collections WHERE user_id = $1", [uid])
     col = {}
@@ -180,6 +182,97 @@ module DatabaseGacha
 
   def clear_custom_banner(uid)
     @db.exec_params("DELETE FROM custom_banners WHERE user_id = $1", [uid])
+  end
+
+  # --- Atomic shop / ascension (coins + prisma + collection rows together) ---
+  def buy_character_for_coins_atomic(uid, character_name, rarity_str, coin_price)
+    cost = coin_price.to_i
+    return nil if cost <= 0
+
+    amt = 1
+    new_balance = nil
+    rarity_str = rarity_str.to_s
+    begin
+      @db.transaction do |conn|
+        row_out = conn.exec_params(
+          'UPDATE global_users SET coins = coins - $1 WHERE user_id = $2 AND coins >= $1 RETURNING coins',
+          [cost, uid]
+        ).first
+        raise EconomyTransferFailed unless row_out
+
+        new_balance = row_out['coins'].to_i
+
+        conn.exec_params(
+          'INSERT INTO collections (user_id, character_name, rarity, count, ascended) VALUES ($1, $2, $3, $4, 0) ON CONFLICT (user_id, character_name) DO UPDATE SET count = collections.count + $5',
+          [uid, character_name, rarity_str, amt, amt]
+        )
+      end
+    rescue EconomyTransferFailed
+      return nil
+    end
+
+    new_balance
+  end
+
+  def buy_character_for_prisma_atomic(uid, character_name, rarity_str, prisma_price)
+    cost = prisma_price.to_i
+    return nil if cost <= 0
+
+    amt = 1
+    new_prisma = nil
+    rarity_str = rarity_str.to_s
+    begin
+      @db.transaction do |conn|
+        row_out = conn.exec_params(
+          'UPDATE user_prisma SET balance = balance - $1 WHERE user_id = $2 AND balance >= $1 RETURNING balance',
+          [cost, uid]
+        ).first
+        raise EconomyTransferFailed unless row_out
+
+        new_prisma = row_out['balance'].to_i
+
+        conn.exec_params(
+          'INSERT INTO collections (user_id, character_name, rarity, count, ascended) VALUES ($1, $2, $3, $4, 0) ON CONFLICT (user_id, character_name) DO UPDATE SET count = collections.count + $5',
+          [uid, character_name, rarity_str, amt, amt]
+        )
+      end
+    rescue EconomyTransferFailed
+      return nil
+    end
+
+    new_prisma
+  end
+
+  # Ritual coins + consumes 5 copies — both succeed or rollback.
+  # Returns Integer new coin balance on success; :insufficient_coins / :insufficient_copies otherwise.
+  def ascend_character_atomic(uid, canon_name, ascension_coin_cost)
+    cost = ascension_coin_cost.to_i
+    return :insufficient_coins if cost <= 0
+
+    new_bal = nil
+    begin
+      @db.transaction do |conn|
+        row_coin = conn.exec_params(
+          'UPDATE global_users SET coins = coins - $1 WHERE user_id = $2 AND coins >= $1 RETURNING coins',
+          [cost, uid]
+        ).first
+        raise EconomyTransferFailed unless row_coin
+
+        rc = conn.exec_params(
+          'UPDATE collections SET count = count - 5, ascended = ascended + 1 WHERE user_id = $1 AND character_name = $2 AND count >= 5',
+          [uid, canon_name]
+        )
+        raise AscensionCopyError if rc.cmd_tuples.to_i < 1
+
+        new_bal = row_coin['coins'].to_i
+      end
+    rescue EconomyTransferFailed
+      :insufficient_coins
+    rescue AscensionCopyError
+      :insufficient_copies
+    else
+      new_bal
+    end
   end
 
   # Removes a specific character from every user and refunds Prisma per copy removed.

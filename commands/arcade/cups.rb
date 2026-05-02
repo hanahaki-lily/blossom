@@ -11,19 +11,7 @@ def execute_cups(event, amount, guess)
   # 1. Initialization: Get the player's unique ID
   uid = event.user.id
 
-  # 2. Validation: Check for a positive bet and sufficient funds
-  if amount <= 0 || DB.get_coins(uid) < amount
-    return send_cv2(event, [{
-      type: 17, accent_color: 0xFF0000,
-      components: [
-        { type: 10, content: "## #{EMOJI_STRINGS['x_']} Invalid Bet" },
-        { type: 14, spacing: 1 },
-        { type: 10, content: "You're either broke or can't type a number. Either way, skill issue." }
-      ]
-    }])
-  end
-
-  # 3. Validation: Ensure the user picked a valid cup (1, 2, or 3)
+  # 2. Validate cup guess before touching the wallet
   unless [1, 2, 3].include?(guess)
     return send_cv2(event, [{
       type: 17, accent_color: 0xFF0000,
@@ -35,8 +23,20 @@ def execute_cups(event, amount, guess)
     }])
   end
 
-  # 4. Calculation: Deduct the bet and determine the winning cup
-  DB.add_coins(uid, -amount)
+  # 3. Atomic bet — avoids race where two chats both pass a balance snapshot
+  if amount <= 0 || DB.deduct_coins_if_possible(uid, amount).nil?
+    return send_cv2(event, [{
+      type: 17, accent_color: 0xFF0000,
+      components: [
+        { type: 10, content: "## #{EMOJI_STRINGS['x_']} Invalid Bet" },
+        { type: 14, spacing: 1 },
+        { type: 10, content: "You're either broke or can't type a number. Either way, skill issue." }
+      ]
+    }])
+  end
+
+  # 4. Winning cup
+  winning_cup = [1, 2, 3].sample
   winning_cup = [1, 2, 3].sample
   
   # 5. UI Logic: Create the visual "lifted cups" display string

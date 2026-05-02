@@ -24,19 +24,7 @@ def execute_coinflip(event, amount, choice)
     }])
   end
 
-  # 3. Validation: Check the user's balance in the Database
-  if DB.get_coins(uid) < amount
-    return send_cv2(event, [{
-      type: 17, accent_color: 0xFF0000,
-      components: [
-        { type: 10, content: "## #{EMOJI_STRINGS['nervous']} Insufficient Funds" },
-        { type: 14, spacing: 1 },
-        { type: 10, content: "You're broke, chat. You can't afford that.\nYou've got **#{DB.get_coins(uid)}** #{EMOJI_STRINGS['s_coin']}. Work with what you have." }
-      ]
-    }])
-  end
-
-  # 4. Validation: Ensure the choice is valid (Heads or Tails)
+  # 3. Validation: Heads or tails before touching the wallet (slash malformed input)
   unless ['heads', 'tails'].include?(choice)
     return send_cv2(event, [{
       type: 17, accent_color: 0xFF0000,
@@ -48,9 +36,20 @@ def execute_coinflip(event, amount, choice)
     }])
   end
 
-  # 5. Calculation: Determine the result and deduct the initial bet
+  # 4. Atomic deduct — concurrent coinflips cannot double-spend
+  if DB.deduct_coins_if_possible(uid, amount).nil?
+    return send_cv2(event, [{
+      type: 17, accent_color: 0xFF0000,
+      components: [
+        { type: 10, content: "## #{EMOJI_STRINGS['nervous']} Insufficient Funds" },
+        { type: 14, spacing: 1 },
+        { type: 10, content: "You're broke, chat. You can't afford that.\nYou've got **#{DB.get_coins(uid)}** #{EMOJI_STRINGS['s_coin']}. Work with what you have." }
+      ]
+    }])
+  end
+
+  # 5. Calculation & outcome
   result = ['heads', 'tails'].sample
-  DB.add_coins(uid, -amount)
   check_achievement(event.channel, uid, 'gamble_10k') if amount >= 10000
 
   # 6. Result: Handle the Win/Loss scenarios

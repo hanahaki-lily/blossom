@@ -12,8 +12,8 @@ def execute_scratch(event)
   uid = event.user.id
   ticket_price = 500
 
-  # 2. Validation: Check if the user can afford the ticket
-  if DB.get_coins(uid) < ticket_price
+  # 2. Atomic ticket purchase — no stray charges without a scratched row
+  if DB.deduct_coins_if_possible(uid, ticket_price).nil?
     return send_cv2(event, [{
       type: 17, accent_color: 0xFF0000,
       components: [
@@ -24,10 +24,7 @@ def execute_scratch(event)
     }])
   end
 
-  # 3. Database: Deduct the price immediately (No refunds on scratchers!)
-  DB.add_coins(uid, -ticket_price)
-
-  # 4. Calculation: Define the weighted pool and pull 3 random symbols
+  # 4. Symbols: weighted pool and pull 3 symbols
   pool = ['💀', '💀', '💀', '🍒', '🍒', '🍋', '🍋', '💎', '🌟']
   result = [pool.sample, pool.sample, pool.sample]
 

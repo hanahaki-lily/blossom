@@ -298,17 +298,49 @@ module DatabaseAdmin
   end
 
   # --- GLOBAL LOTTERY SYSTEM ---
+  LotteryFundsError = Class.new(StandardError)
+
+  # Uses @db.transaction so BEGIN/COMMIT and all INSERTs run on one pooled
+  # connection. Manual BEGIN/exec/COMMIT on @db.exec swaps connections per call
+  # under the pool and defeats the transaction.
   def enter_lottery(uid, tickets)
-    @db.exec("BEGIN")
-    begin
-      tickets.times do
-        @db.exec_params("INSERT INTO lottery (user_id) VALUES ($1)", [uid])
+    count = tickets.to_i
+    return if count <= 0
+
+    @db.transaction do |conn|
+      count.times do
+        conn.exec_params('INSERT INTO lottery (user_id) VALUES ($1)', [uid])
       end
-      @db.exec("COMMIT")
-    rescue => e
-      @db.exec("ROLLBACK")
-      puts "[DB ERROR] Failed to insert lottery tickets: #{e.message}"
     end
+  rescue PG::Error => e
+    puts "[DB ERROR] Failed to insert lottery tickets: #{e.class}: #{e.message}"
+  end
+
+  # Pay for tickets + insert rows atomically — avoids coins-only deduct without rows.
+  def purchase_lottery_tickets(uid, ticket_count)
+    c = ticket_count.to_i
+    return nil if c <= 0
+
+    cc = c * 100
+    balance = nil
+    @db.transaction do |conn|
+      row = conn.exec_params(
+        'UPDATE global_users SET coins = coins - $1 WHERE user_id = $2 AND coins >= $1 RETURNING coins',
+        [cc, uid]
+      ).first
+      raise LotteryFundsError unless row
+
+      c.times do
+        conn.exec_params('INSERT INTO lottery (user_id) VALUES ($1)', [uid])
+      end
+      balance = row['coins'].to_i
+    end
+    balance
+  rescue LotteryFundsError
+    nil
+  rescue PG::Error => e
+    puts "[DB ERROR] purchase_lottery_tickets: #{e.class}: #{e.message}"
+    nil
   end
 
   def get_lottery_entries
@@ -316,13 +348,18 @@ module DatabaseAdmin
   end
 
   def clear_lottery
-    @db.exec("DELETE FROM lottery")
+    @db.exec('DELETE FROM lottery')
   end
 
   def get_lottery_stats(uid)
-    all_rows = @db.exec("SELECT user_id FROM lottery").to_a
-    user_tickets = all_rows.count { |r| r['user_id'].to_i == uid }
-    { total_tickets: all_rows.size, user_tickets: user_tickets }
+    row = @db.exec_params(
+      'SELECT (SELECT COUNT(*) FROM lottery) AS total_tickets, ' \
+      '(SELECT COUNT(*) FROM lottery WHERE user_id = $1) AS user_tickets',
+      [uid]
+    ).first
+    return { total_tickets: 0, user_tickets: 0 } unless row
+
+    { total_tickets: row['total_tickets'].to_i, user_tickets: row['user_tickets'].to_i }
   end
 
   # --- AUTO-MOD CONFIGURATION ---

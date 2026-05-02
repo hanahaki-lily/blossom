@@ -4,6 +4,8 @@
 # ==========================================
 
 module DatabaseEconomy
+  EconomyTransferFailed = Class.new(StandardError)
+
   # --- COINS ---
   def get_coins(uid)
     row = @db.exec_params("SELECT coins FROM global_users WHERE user_id = $1", [uid]).first
@@ -12,6 +14,82 @@ module DatabaseEconomy
 
   def add_coins(uid, amount)
     @db.exec_params("INSERT INTO global_users (user_id, coins) VALUES ($1, $2) ON CONFLICT (user_id) DO UPDATE SET coins = global_users.coins + $3", [uid, amount, amount])
+  end
+
+  # Atomically subtract coins if balance is sufficient — single UPDATE with
+  # WHERE clause so concurrent spends cannot duplicate or overdraw below zero
+  # (paired with CHECK (coins >= 0) on global_users).
+  # Returns new balance Integer, or nil if amount invalid or insufficient funds / no row.
+  def deduct_coins_if_possible(uid, amount)
+    amt = amount.to_i
+    return nil if amt <= 0
+
+    row = @db.exec_params(
+      'UPDATE global_users SET coins = coins - $1 WHERE user_id = $2 AND coins >= $1 RETURNING coins',
+      [amt, uid]
+    ).first
+    row ? row['coins'].to_i : nil
+  end
+
+  # Single transaction: subtract from sender + credit recipient (race-safe transfer).
+  # Returns {:sender=>balance, :recipient=>balance} or nil if sender lacked funds / invalid amount.
+  def transfer_coins_atomic(from_uid, to_uid, amount)
+    amt = amount.to_i
+    return nil if amt <= 0 || from_uid == to_uid
+
+    sender_new = recv_new = nil
+    begin
+      @db.transaction do |conn|
+        row_out = conn.exec_params(
+          'UPDATE global_users SET coins = coins - $1 WHERE user_id = $2 AND coins >= $1 RETURNING coins',
+          [amt, from_uid]
+        ).first
+        raise EconomyTransferFailed unless row_out
+
+        sender_new = row_out['coins'].to_i
+
+        row_in = conn.exec_params(
+          'INSERT INTO global_users (user_id, coins) VALUES ($1, $2) ON CONFLICT (user_id) DO UPDATE SET coins = global_users.coins + $3 RETURNING coins',
+          [to_uid, amt, amt]
+        ).first
+        recv_new = row_in['coins'].to_i
+      end
+    rescue EconomyTransferFailed
+      return nil
+    end
+
+    { sender: sender_new, recipient: recv_new }
+  end
+
+  # Atomically subtract total_coin_cost + grant inventory qty (black market stacks).
+  # Invalidates inventory cache on success only.
+  def buy_inventory_stack_atomic(uid, item_internal_name, qty, total_coin_cost)
+    cost = total_coin_cost.to_i
+    q = qty.to_i
+    return nil if cost <= 0 || q <= 0
+
+    new_balance = nil
+    begin
+      @db.transaction do |conn|
+        row_out = conn.exec_params(
+          'UPDATE global_users SET coins = coins - $1 WHERE user_id = $2 AND coins >= $1 RETURNING coins',
+          [cost, uid]
+        ).first
+        raise EconomyTransferFailed unless row_out
+
+        new_balance = row_out['coins'].to_i
+
+        conn.exec_params(
+          'INSERT INTO inventory (user_id, item_name, count) VALUES ($1, $2, $3) ON CONFLICT (user_id, item_name) DO UPDATE SET count = inventory.count + $3',
+          [uid, item_internal_name, q]
+        )
+      end
+    rescue EconomyTransferFailed
+      return nil
+    end
+
+    CACHE.invalidate(:inventory, uid)
+    new_balance
   end
 
   def set_coins(uid, amount)

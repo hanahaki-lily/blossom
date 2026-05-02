@@ -45,19 +45,16 @@ def execute_craft(event, recipe_id = nil)
     ]}])
   end
 
-  # Check coins
-  coins = DB.get_coins(uid)
-  if coins < recipe[:cost]
+  # Check coins first — atomic deduct BEFORE removing mats so mats can't vanish alone
+  unless DB.deduct_coins_if_possible(uid, recipe[:cost])
     return send_cv2(event, [{ type: 17, accent_color: 0xFF0000, components: [
       { type: 10, content: "## #{EMOJI_STRINGS['x_']} Not Enough Coins" },
       { type: 14, spacing: 1 },
-      { type: 10, content: "Crafting costs **#{recipe[:cost]}** #{EMOJI_STRINGS['s_coin']}. You have **#{coins}**." }
+      { type: 10, content: "Crafting costs **#{recipe[:cost]}** #{EMOJI_STRINGS['s_coin']}. You have **#{DB.get_coins(uid)}**." }
     ]}])
   end
 
-  # Deduct and craft
   recipe[:materials].each { |mat, amt| DB.remove_material(uid, mat, amt) }
-  DB.add_coins(uid, -recipe[:cost])
 
   # Grant the cosmetic based on type
   case recipe[:type]

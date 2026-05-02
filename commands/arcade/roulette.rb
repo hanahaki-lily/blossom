@@ -12,22 +12,8 @@ def execute_roulette(event, amount, bet)
   uid = event.user.id
   bet = bet.to_s.downcase.strip
 
-  # 2. Validation: Check for valid amount and sufficient funds
-  if amount <= 0 || DB.get_coins(uid) < amount
-    return send_cv2(event, [{
-      type: 17, accent_color: 0xFF0000,
-      components: [
-        { type: 10, content: "## #{EMOJI_STRINGS['x_']} Invalid Bet" },
-        { type: 14, spacing: 1 },
-        { type: 10, content: "You can't afford to sit at this table, bestie. Check your balance." }
-      ]
-    }])
-  end
-
-  # 3. Data Map: Define the standard European Roulette red numbers
+  # 2. Data map + valid bet tokens (slash still sends free-form string)
   red_numbers = [1, 3, 5, 7, 9, 12, 14, 16, 18, 19, 21, 23, 25, 27, 30, 32, 34, 36]
-  
-  # 4. Validation: Create a list of all acceptable bet strings
   valid_bets = ['red', 'black', 'even', 'odd'] + (0..36).map(&:to_s)
 
   unless valid_bets.include?(bet)
@@ -41,10 +27,19 @@ def execute_roulette(event, amount, bet)
     }])
   end
 
-  # 5. Database: Deduct the initial bet amount
-  DB.add_coins(uid, -amount)
+  # 3. Atomic deduct — valid bet shapes already rejected above
+  if amount <= 0 || DB.deduct_coins_if_possible(uid, amount).nil?
+    return send_cv2(event, [{
+      type: 17, accent_color: 0xFF0000,
+      components: [
+        { type: 10, content: "## #{EMOJI_STRINGS['x_']} Invalid Bet" },
+        { type: 14, spacing: 1 },
+        { type: 10, content: "You can't afford to sit at this table, bestie. Check your balance." }
+      ]
+    }])
+  end
 
-  # 6. Simulation: Spin the wheel (0-36)
+  # 4. Spin the wheel (0–36)
   spin = rand(0..36)
   
   # 7. Logic: Determine the color of the landed number

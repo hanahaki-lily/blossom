@@ -33,20 +33,25 @@ def execute_ascend(event, search_name)
     ]}])
   end
 
-  # 4. Validation: Economy Check (Requirement: 5,000 Coins)
+  # 4–5. Atomic: deduct ritual cost + consume 5 copies + increment ascended
   ascension_cost = 5000
-  if DB.get_coins(uid) < ascension_cost
+  ascend_result = DB.ascend_character_atomic(uid, owned_name, ascension_cost)
+  case ascend_result
+  when :insufficient_coins
     return send_cv2(event, [{ type: 17, accent_color: NEON_COLORS.sample, components: [
       { type: 10, content: "## #{EMOJI_STRINGS['nervous']} Broke Alert" },
       { type: 14, spacing: 1 },
       { type: 10, content: "The ascension ritual costs **#{ascension_cost}** coins. You've got **#{DB.get_coins(uid)}**. Go farm, broke boy." }
     ]}])
+  when :insufficient_copies
+    user_chars = DB.get_collection(uid)
+    got = user_chars.dig(owned_name, 'count') || 0
+    return send_cv2(event, [{ type: 17, accent_color: NEON_COLORS.sample, components: [
+      { type: 10, content: "## #{EMOJI_STRINGS['nervous']} Not Enough Copies" },
+      { type: 14, spacing: 1 },
+      { type: 10, content: "You need **5 copies** of #{owned_name} to ascend. You've got **#{got}**. (Something changed between checks — weird flex, but try again.)" }
+    ]}])
   end
-
-  # 5. Database: Deduct the ritual cost and perform the character transformation
-  # Note: DB.ascend_character should handle removing the 5 copies and adding the 1 Shiny version.
-  DB.add_coins(uid, -ascension_cost)
-  DB.ascend_character(uid, owned_name)
 
   # 6. Progression: Check if this triggers the 'ascension' achievement milestone
   check_achievement(event.channel, event.user.id, 'ascension')

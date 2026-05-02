@@ -44,8 +44,9 @@ def execute_givecoins(event, target, amount_str)
     return send_cv2(event, components)
   end
 
-  # 4. Validation: Check if the sender has enough funds in the Database
-  if DB.get_coins(uid) < amount
+  # 4. Atomic transfer — no race window between snapshot and two separate updates
+  sent = DB.transfer_coins_atomic(uid, target.id, amount)
+  unless sent
     components = [
       {
         type: 17,
@@ -59,11 +60,7 @@ def execute_givecoins(event, target, amount_str)
     ]
     return send_cv2(event, components)
   end
-
-  # 5. Transaction: Deduct from sender and add to recipient
-  # Note: Since these are two separate calls, ensure your DB module handles errors gracefully.
-  DB.add_coins(uid, -amount)
-  DB.add_coins(target.id, amount)
+  sender_bal = sent[:sender]
 
   # 6. Achievements
   check_achievement(event.channel, uid, 'first_givecoins')
@@ -91,7 +88,7 @@ def execute_givecoins(event, target, amount_str)
       components: [
         { type: 10, content: "## #{EMOJI_STRINGS['coins']} Coins Transferred!" },
         { type: 14, spacing: 1 },
-        { type: 10, content: "#{event.user.mention} just dropped **#{amount}** #{EMOJI_STRINGS['s_coin']} on #{target.mention}! Big spender energy.\n\nYour balance: **#{DB.get_coins(uid)}** #{EMOJI_STRINGS['s_coin']}#{mom_remark(uid, 'economy')}" }
+        { type: 10, content: "#{event.user.mention} just dropped **#{amount}** #{EMOJI_STRINGS['s_coin']} on #{target.mention}! Big spender energy.\n\nYour balance: **#{sender_bal}** #{EMOJI_STRINGS['s_coin']}#{mom_remark(uid, 'economy')}" }
       ]
     }
   ]

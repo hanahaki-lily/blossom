@@ -65,9 +65,10 @@ def execute_buy(event, search_name, qty_override = nil)
       end
     end
 
-    # B. Funds Check (price * quantity)
+    # B. Atomic purchase (deduct + inventory in one transaction)
     total_price = item_data[:price] * qty
-    if DB.get_coins(uid) < total_price
+    new_bal = DB.buy_inventory_stack_atomic(uid, search_name, qty, total_price)
+    unless new_bal
       return send_cv2(event, [{ type: 17, accent_color: NEON_COLORS.sample, components: [
         { type: 10, content: "## #{EMOJI_STRINGS['nervous']} Broke Alert" },
         { type: 14, spacing: 1 },
@@ -75,11 +76,7 @@ def execute_buy(event, search_name, qty_override = nil)
       ]}])
     end
 
-    # C. Transaction: Deduct coins and add to inventory
-    DB.add_coins(uid, -total_price)
-    DB.add_inventory(uid, search_name, qty)
-
-    # D. Progression: Achievement Milestones
+    # C. Progression: Achievement Milestones
     if item_data[:type] == 'upgrade'
       check_achievement(event.channel, uid, 'buy_upgrade')
     elsif item_data[:type] == 'consumable'
@@ -112,19 +109,16 @@ def execute_buy(event, search_name, qty_override = nil)
   # A. Goddess characters cost Prisma, not coins
   if rarity == 'goddess'
     prisma_price = GODDESS_PRISMA_PRICE
-    prisma_bal = DB.get_prisma(uid)
 
-    if prisma_bal < prisma_price
+    new_prisma_bal = DB.buy_character_for_prisma_atomic(uid, char_data[:name], rarity.to_s, prisma_price)
+    unless new_prisma_bal
       return send_cv2(event, [{ type: 17, accent_color: NEON_COLORS.sample, components: [
         { type: 10, content: "## #{EMOJI_STRINGS['prisma']} Not Enough Prisma" },
         { type: 14, spacing: 1 },
-        { type: 10, content: "**#{char_data[:name]}** is Goddess-tier and costs **#{prisma_price}** Prisma. You've got **#{prisma_bal}**.\n\nThat's pure copium, bestie. Farm more Prisma from premium rewards and events!" }
+        { type: 10, content: "**#{char_data[:name]}** is Goddess-tier and costs **#{prisma_price}** Prisma. You've got **#{DB.get_prisma(uid)}**.\n\nThat's pure copium, bestie. Farm more Prisma from premium rewards and events!" }
       ]}])
     end
-
-    DB.add_prisma(uid, -prisma_price)
     name = char_data[:name]
-    DB.add_character(uid, name, rarity.to_s, 1)
     new_count = DB.get_collection(uid)[name]['count']
     check_achievement(event.channel, uid, 'first_goddess_buy')
 
@@ -137,7 +131,7 @@ def execute_buy(event, search_name, qty_override = nil)
       { type: 14, spacing: 1 },
       { type: 10, content: "#{EMOJI_STRINGS['prisma']} WHALE ALERT!! You bought **#{name}** for **#{prisma_price}** Prisma!\nYou now own **#{new_count}** of them. Absolute baller move.#{blossom_remark}" },
       { type: 14, spacing: 1 },
-      { type: 10, content: "**Prisma Left:** #{DB.get_prisma(uid)} Prisma" }
+      { type: 10, content: "**Prisma Left:** #{new_prisma_bal} Prisma" }
     ]}])
   end
 
@@ -150,8 +144,9 @@ def execute_buy(event, search_name, qty_override = nil)
     ]}])
   end
 
-  # C. Funds Check
-  if DB.get_coins(uid) < price
+  # C. Atomic coin purchase (+ card row)
+  new_coin_bal = DB.buy_character_for_coins_atomic(uid, char_data[:name], rarity.to_s, price)
+  unless new_coin_bal
     return send_cv2(event, [{ type: 17, accent_color: NEON_COLORS.sample, components: [
       { type: 10, content: "## #{EMOJI_STRINGS['nervous']} Broke Alert" },
       { type: 14, spacing: 1 },
@@ -159,10 +154,7 @@ def execute_buy(event, search_name, qty_override = nil)
     ]}])
   end
 
-  # D. Transaction & UI Response
-  DB.add_coins(uid, -price)
   name = char_data[:name]
-  DB.add_character(uid, name, rarity.to_s, 1)
   new_count = DB.get_collection(uid)[name]['count']
 
   emoji = { 'goddess' => EMOJI_STRINGS['goddess'], 'legendary' => EMOJI_STRINGS['legendary'], 'rare' => EMOJI_STRINGS['rare'] }.fetch(rarity, EMOJI_STRINGS['common'])
@@ -176,7 +168,7 @@ def execute_buy(event, search_name, qty_override = nil)
     { type: 14, spacing: 1 },
     { type: 10, content: "#{emoji} You bought **#{name}** straight up for **#{price}** coins. No RNG needed.\nYou now own **#{new_count}** of them.#{buy_remark}" },
     { type: 14, spacing: 1 },
-    { type: 10, content: "**Wallet Damage:** #{DB.get_coins(uid)} coins left#{mom_remark(uid, 'gacha')}" }
+    { type: 10, content: "**Wallet Damage:** #{new_coin_bal} coins left#{mom_remark(uid, 'gacha')}" }
   ]}])
 end
 

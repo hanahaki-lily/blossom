@@ -7,6 +7,19 @@
 # In-memory active blackjack sessions: { "bj_<uid>" => { deck:, player:, dealer:, bet:, doubled: } }
 ACTIVE_BLACKJACK = {}
 
+BJ_UID_GUARD = Mutex.new
+BJ_UID_MUTEXES = {}
+
+def blackjack_uid_mutex(uid)
+  BJ_UID_GUARD.synchronize do
+    BJ_UID_MUTEXES[uid] ||= Mutex.new
+  end
+end
+
+def blackjack_with_uid_lock(uid)
+  blackjack_uid_mutex(uid).synchronize { yield }
+end
+
 # Card values for blackjack
 BJ_SUITS = ['♠️', '♥️', '♦️', '♣️'].freeze
 BJ_RANKS = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'].freeze
@@ -56,7 +69,6 @@ end
 def execute_blackjack(event, amount)
   uid = event.user.id
 
-  # Validation
   if amount <= 0
     return send_cv2(event, [{ type: 17, accent_color: 0xFF0000, components: [
       { type: 10, content: "## #{EMOJI_STRINGS['x_']} Invalid Bet" },
@@ -65,42 +77,39 @@ def execute_blackjack(event, amount)
     ]}])
   end
 
-  if DB.get_coins(uid) < amount
-    return send_cv2(event, [{ type: 17, accent_color: 0xFF0000, components: [
-      { type: 10, content: "## #{EMOJI_STRINGS['nervous']} Insufficient Funds" },
-      { type: 14, spacing: 1 },
-      { type: 10, content: "You can't afford a seat at this table, bestie. You've got **#{DB.get_coins(uid)}** #{EMOJI_STRINGS['s_coin']}." }
-    ]}])
-  end
-
-  if ACTIVE_BLACKJACK["bj_#{uid}"]
+  blackjack_with_uid_lock(uid) do
     return send_cv2(event, [{ type: 17, accent_color: 0xFF0000, components: [
       { type: 10, content: "## #{EMOJI_STRINGS['x_']} Already Playing" },
       { type: 14, spacing: 1 },
       { type: 10, content: "You already have a hand open, chat. Finish that one first!" }
-    ]}])
+    ]}]) if ACTIVE_BLACKJACK["bj_#{uid}"]
+
+    if DB.deduct_coins_if_possible(uid, amount).nil?
+      return send_cv2(event, [{ type: 17, accent_color: 0xFF0000, components: [
+        { type: 10, content: "## #{EMOJI_STRINGS['nervous']} Insufficient Funds" },
+        { type: 14, spacing: 1 },
+        { type: 10, content: "You can't afford a seat at this table, bestie. You've got **#{DB.get_coins(uid)}** #{EMOJI_STRINGS['s_coin']}." }
+      ]}])
+    end
+
+    check_achievement(event.channel, uid, 'gamble_10k') if amount >= 10000
+
+    deck = bj_new_deck
+    player = [deck.pop, deck.pop]
+    dealer = [deck.pop, deck.pop]
+
+    session = { deck: deck, player: player, dealer: dealer, bet: amount, doubled: false }
+    ACTIVE_BLACKJACK["bj_#{uid}"] = session
+
+    player_total = bj_hand_total(player)
+
+    if player_total == 21
+      return bj_resolve(event, uid, session, :blackjack)
+    end
+
+    can_double = DB.get_coins(uid) >= amount
+    bj_send_table(event, uid, session, can_double: can_double)
   end
-
-  # Deduct bet and deal
-  DB.add_coins(uid, -amount)
-  check_achievement(event.channel, uid, 'gamble_10k') if amount >= 10000
-  deck = bj_new_deck
-  player = [deck.pop, deck.pop]
-  dealer = [deck.pop, deck.pop]
-
-  session = { deck: deck, player: player, dealer: dealer, bet: amount, doubled: false }
-  ACTIVE_BLACKJACK["bj_#{uid}"] = session
-
-  player_total = bj_hand_total(player)
-
-  # Natural blackjack check (21 on deal)
-  if player_total == 21
-    return bj_resolve(event, uid, session, :blackjack)
-  end
-
-  # Show the table with hit/stand/double buttons
-  can_double = DB.get_coins(uid) >= amount
-  bj_send_table(event, uid, session, can_double: can_double)
 end
 
 def bj_send_table(event, uid, session, can_double: false)

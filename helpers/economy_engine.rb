@@ -39,31 +39,43 @@ def happy_hour_active?
   $happy_hour && Time.now < $happy_hour[:ends_at]
 end
 
-def award_coins(bot, user_id, amount)
-  final_amount = amount
+# Same payout math as `award_coins` / daily claims — Premium + happy-hour + crew
+# multipliers applied to raw `amount`, no DB writes. Used before atomic commits.
+def calculate_coin_payout(bot, user_id, raw_amount)
+  final_amount = raw_amount.to_f
 
   if happy_hour_active?
-    # Happy hour: 2x free, 3x premium (replaces normal premium bonus)
     multiplier = is_premium?(bot, user_id) ? 3 : HAPPY_HOUR_MULTIPLIER
-    final_amount = (amount * multiplier).round
+    final_amount = (raw_amount.to_f * multiplier).round.to_f
   elsif is_premium?(bot, user_id)
-    final_amount = (amount * 1.10).round
+    final_amount = (raw_amount.to_f * 1.10).round.to_f
+  else
+    final_amount = raw_amount.to_f.round.to_f
   end
 
-  # Crew bonus: +5% for crew members
-  begin
-    crew = DB.get_user_crew(user_id)
-    if crew
-      final_amount = (final_amount * (1 + CREW_COIN_BONUS)).round
-      crew_xp_gain = [final_amount / 50, 1].max
-      award_crew_xp(crew['id'], crew_xp_gain)
-    end
-  rescue => e
-    puts "[CREW BONUS ERROR] #{e.message}"
-  end
+  crew = DB.get_user_crew(user_id)
+  final_amount = (final_amount * (1 + CREW_COIN_BONUS)).round.to_f if crew
 
-  DB.add_coins(user_id, final_amount)
-  final_amount
+  final_amount.to_i
+end
+
+# Awards crew XP derived from coins actually credited (matches legacy tier math).
+def grant_crew_xp_for_coin_payout(user_id, coin_payout)
+  crew = DB.get_user_crew(user_id)
+  return unless crew
+
+  crew_xp_gain = [coin_payout / 50, 1].max
+  award_crew_xp(crew['id'], crew_xp_gain)
+rescue => e
+  puts "[CREW BONUS ERROR] #{e.message}"
+end
+
+def award_coins(bot, user_id, amount)
+  payout = calculate_coin_payout(bot, user_id, amount)
+  grant_crew_xp_for_coin_payout(user_id, payout)
+
+  DB.add_coins(user_id, payout)
+  payout
 end
 
 # Award XP to a crew and handle level-up

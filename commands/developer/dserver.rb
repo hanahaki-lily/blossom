@@ -58,7 +58,7 @@ def execute_dserver(event)
   send_cv2(event, [{ type: 17, accent_color: NEON_COLORS.sample, components: [
     { type: 10, content: "## #{EMOJI_STRINGS['checkmark']} Server List Sent" },
     { type: 14, spacing: 1 },
-    { type: 10, content: "Slid **#{total}** server name#{total == 1 ? '' : 's'} into your DMs across **#{chunks.size}** message#{chunks.size == 1 ? '' : 's'}, mom. Check your inbox." }
+    { type: 10, content: "Slid debug info into your DMs across **#{chunks.size}** message#{chunks.size == 1 ? '' : 's'}, mom. Check your inbox." }
   ]}])
 end
 
