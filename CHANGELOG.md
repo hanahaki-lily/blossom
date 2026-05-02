@@ -9,10 +9,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 ## [Unreleased]
 
 ### Fixed
+
 - **Monthly daily-calendar milestone payouts are atomic.** 14-/28‑claim milestone coin bonuses (premium happy-hour/stacked payouts via `calculate_coin_payout`) and the 28‑day Prisma drop for subscribers are folded into the same `commit_daily_claim_atomic` transaction as the base daily grant for both `b!daily` and premium auto-claim, instead of a second `award_coins` / `add_prisma` pass that could fail or race after the main claim was already written.
 - **Fewer economy half-states across daily, transfers, shop, and ascension.** Interactive `daily`, premium auto-claim, `givecoins` peer transfers, `/buy` (black-market stacks, Goddess Prisma pulls, coin character purchases), and `/ascend` now persist related coin/prisma/inventory/collection updates in coordinated transactions (or paired helpers) instead of separate `add_coins` / `add_prisma` / row writes that could leave inconsistent balances if the process crashed mid-flight or two actions raced.
 - **"Unknown Member" log spam silenced.** discordrb's API layer logs Discord error responses via `Discordrb::LOGGER.error(e.full_message)` *before* raising the exception, so callers like `is_premium?` (which already `rescue` the resulting `UnknownMember`) couldn't suppress the noise — every stale-member fetch across 1000+ users / 13+ servers still printed `[ERROR : et-NN @ ...] Unknown Member` to stdout. New helper `helpers/log_filter.rb` monkey-patches `Discordrb::Logger#error` to drop log lines matching any pattern in `SUPPRESSED_LOG_PATTERNS` (currently just `'Unknown Member'`); the underlying exception still raises and is still caught by existing rescues. Add more substrings/regexes to that list if other low-signal Discord errors start spamming the console.
-- **`b!setxp` no longer silently reverts.** The passive chat-XP handler used to fire on the command message itself, race the admin write, and overwrite it with `old_xp + chat_gain`. Command messages (anything starting with `PREFIX`) are now skipped by the leveling event entirely.
+- `**b!setxp` no longer silently reverts.** The passive chat-XP handler used to fire on the command message itself, race the admin write, and overwrite it with `old_xp + chat_gain`. Command messages (anything starting with `PREFIX`) are now skipped by the leveling event entirely.
 - **Trivia buttons no longer report "expired" on every click — for real this time, structurally.** The previous fix migrated session state from an in-memory hash to a `trivia_sessions` table, but click resolution still depended on that DB row being present and visible. Any race, transaction-visibility hiccup, missing migration, or stale code path would make `DB.get_trivia_session` return `nil` and the user would see "expired" the instant they clicked. The handler is now **DB-independent for the answer decision**: every piece of state needed to resolve a click — the user id, this option's label, the correct label, the reward, and the asked-at epoch — is baked into the button `custom_id` itself (format `tv2_<uid>_<label>_<correct>_<reward>_<epoch>`). The DB row is consulted purely to decorate the result message with the full correct-answer text; if it's missing, the message degrades gracefully to `(answer hidden)` instead of falsely claiming the trivia expired. The only remaining trigger for an "expired" message is the asked-epoch in the custom_id actually being older than `TRIVIA_TIME_LIMIT` seconds.
 - **Trivia DB layer hardened against silent failures and timezone weirdness.** `get_trivia_session` reads `asked_at` as an epoch (`EXTRACT(EPOCH FROM asked_at)::bigint`) and rebuilds it with `Time.at`, eliminating any naive-timestamp / local-vs-UTC drift. All trivia DB methods explicitly cast `uid.to_i`, log exceptions with `[TRIVIA DB ERROR]` instead of swallowing them, and `save_trivia_session` returns true/false so callers can verify the row landed. (Diagnostic per-call logs that were added during the previous round of debugging have been removed now that the click handler no longer depends on the DB for correctness.)
 - **Blacklisted users can no longer bypass the block via slash commands or button clicks.** discordrb's `ignore_user` only filters message events; slash commands, buttons, selects, and modals slipped past it. A new interaction guard checks the bot's ignore set and short-circuits with an ephemeral notice in Blossom's voice.
@@ -25,6 +26,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 - **Economy-facing coin deductions are concurrency-safe.** New `DatabaseEconomy#deduct_coins_if_possible`; boot migration clamps stray negative balances then adds `global_users_coins_non_negative` CHECK. Arcade (`coinflip`, `cups`, `dice`, `roulette`, `scratch`, `slots`), blackjack (per-user Mutex + atomic deduct on start/double-down), carnival ring toss/balloon pop, Double-or-Nothing loss stash, crafting (deduct coins before removing materials), `/summon` pull cost, and `/lottery` ticket purchase (`purchase_lottery_tickets` — deduction + INSERTs in one transaction) use the new path instead of SELECT-then-UPDATE gaps.
 
 ### Added
+
 - New DB module `DatabaseTrivia` with `get_trivia_session`, `save_trivia_session`, `mark_trivia_answered`, and `clear_trivia_session`.
 - New `trivia_sessions` table (one row per user, upserted on each new question).
 - New `helpers/blacklist_guard.rb` that monkey-patches `ApplicationCommandEventHandler#call` and `ComponentEventHandler#call` to enforce the blacklist on all interaction types.
@@ -33,6 +35,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 - New developer command `b!dserver` (prefix-only, no slash variant by design) that DMs the invoking developer an alphabetically sorted, numbered list of every server Blossom is currently connected to. Output is chunked across multiple DMs to respect Discord's 2000-char limit; in-channel reply confirms the total count and number of DM chunks sent. The command is listed in `b!devhelp`.
 
 ### Changed
+
 - `.ruby-version` bumped to **3.4.9** (Ruby 3.4 patch). README tech table updated: **PostgreSQL** (`pg` + `connection_pool`) and **discordrb 3.7.2** (replacing stale SQLite / generic discordrb rows).
 - Giveaway scheduler sleeps until the next scheduled end time (with a short cap so newly posted giveaways are picked up) instead of polling Postgres every 10 seconds.
 - Premium auto-claim batches per-user daily context into one query and runs daily/calendar/Prisma writes in a single transaction.
@@ -50,6 +53,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 ## [v1.3.0] - 2026-04-15
 
 ### Summary
+
 Major integration update: Wires together six previously scaffolded systems — crews, friendships, crafting, weekly challenges, daily tips, and Blossom dialogue. All systems now actively track progress, award bonuses, and interconnect with the economy engine. Massively expands Blossom's personality with new dialogue categories and more varied responses.
 
 ---
@@ -57,12 +61,14 @@ Major integration update: Wires together six previously scaffolded systems — c
 ### Added
 
 #### Crew System — Fully Wired
+
 - Crew coin bonus (+5%) now **actually applied** in `award_coins()` for all earning commands
 - Crew XP earned passively when members earn coins (1 XP per 50 coins)
 - Crew level-up logic: crews level up when XP reaches `level × 1,000`
 - Crew bonus stacks with Premium (+10%) and Happy Hour multipliers
 
 #### Friendship/Affinity System — Fully Wired
+
 - Affinity now awarded automatically from all social interactions:
   - Collab: +5, Trade: +3, Gift Coins: +5, Gift Card: +5
   - Hug: +1, Slap: +1, Pat: +1
@@ -70,6 +76,7 @@ Major integration update: Wires together six previously scaffolded systems — c
 - New dialogue helpers: `friendship_milestone_remark()`, `crew_remark()`, `craft_remark()`
 
 #### Weekly Challenge Tracking — Fully Wired
+
 - Challenge progress now tracked from **all** matching commands:
   - `arcade_wins` — all arcade games (coinflip, slots, roulette, dice, etc.)
   - `cards_pulled` — summon command
@@ -82,6 +89,7 @@ Major integration update: Wires together six previously scaffolded systems — c
   - Previously working: `daily_claims`, `trivia_correct`, `boss_attacks`, `cards_salvaged`
 
 #### Ticket & Application System — New Developer Commands
+
 - `b!dticketsetup #channel` — Posts a support ticket panel with select menu (5 categories: General, Bug, Account, Feedback, Other)
 - `b!dapplysetup #channel` — Posts a mod application panel with select menu (Twitch Mod, Discord Mod)
 - When a user selects a category, a private channel is created in the designated ticket category
@@ -96,10 +104,12 @@ Major integration update: Wires together six previously scaffolded systems — c
 - New constants: `TICKET_CATEGORY_ID`, `TICKET_SERVER_ID`, `TICKET_STAFF_ROLE`, `ACTIVE_TICKETS`
 
 #### Daily Tips Expansion
+
 - Pool expanded from 53 to 80+ tips covering new systems
 - New tip categories: Crews & Social, Crafting, Weekly Challenges, Boss Battles, Advanced Strategies
 
 #### Blossom Dialogue Expansion
+
 - **Time remarks:** Added 8 AM-noon, lunchtime, evening, and more late-night variants (now covers all hours)
 - **Streak remarks:** Every tier now has 3 variants (randomized), added 200-364 day tier
 - **Losing remarks:** Every tier now has 3 variants (randomized)
@@ -115,17 +125,21 @@ Major integration update: Wires together six previously scaffolded systems — c
 ### Changed
 
 #### Economy Engine (`helpers/economy_engine.rb`)
+
 - `award_coins()` now checks for crew membership and applies CREW_COIN_BONUS (+5%)
 - `award_coins()` now awards crew XP when a crew member earns coins
 - New helper: `award_crew_xp()` — Handles XP addition and level-up threshold checking
 
 #### Arcade Engine (`helpers/arcade_engine.rb`)
+
 - `track_arcade()` now calls `track_challenge(uid, 'arcade_wins', 1)` on wins
 
 #### Core Utils (`helpers/core_utils.rb`)
+
 - `interaction_embed()` now awards friendship affinity and tracks `social_sent` challenges
 
 #### Commands Modified (challenge/affinity hooks added)
+
 - `commands/economy/work.rb` — tracks `coins_earned`
 - `commands/economy/stream.rb` — tracks `coins_earned`
 - `commands/economy/post.rb` — tracks `coins_earned`
@@ -137,6 +151,7 @@ Major integration update: Wires together six previously scaffolded systems — c
 - `commands/fun/pat.rb` — tracks `social_sent` (Blossom case)
 
 #### Interaction Handlers Modified
+
 - `events/interactions/trade_buttons.rb` — tracks `trades_completed` + awards affinity
 - `events/interactions/collab_accept.rb` — tracks `collab_completed` + `coins_earned` + awards affinity
 
@@ -145,6 +160,7 @@ Major integration update: Wires together six previously scaffolded systems — c
 ## [v1.2.0] - 2026-04-08
 
 ### Summary
+
 Massive feature drop: VTuber trivia, hourly heist events, monthly boss battles, auto-moderation, and holiday event backend. Adds 7 new user commands, 3 new admin commands, 4 new DB tables, 2 new background loops, and a generalized seasonal event system.
 
 ---
@@ -152,6 +168,7 @@ Massive feature drop: VTuber trivia, hourly heist events, monthly boss battles, 
 ### Added
 
 #### VTuber Trivia (`/trivia`) — New Arcade Command
+
 - Multiple-choice trivia with 4 answer buttons (A/B/C/D) and 15-second timer
 - 5 auto-generated question types from character pool data:
   - Rarity tier identification ("What rarity is X?")
@@ -169,6 +186,7 @@ Massive feature drop: VTuber trivia, hourly heist events, monthly boss battles, 
 - New interaction handler: `events/interactions/trivia_answer.rb`
 
 #### Hourly Heist Events (`/heist`) — New Admin + Passive System
+
 - Admin command: `b!heist setup #channel` / `b!heist disable` to designate a heist channel per server
 - Background loop spawns vault robbery opportunities every hour (offset 30 min from lottery)
 - 5-minute join window with "Join the Heist!" button
@@ -185,6 +203,7 @@ Massive feature drop: VTuber trivia, hourly heist events, monthly boss battles, 
 - New background thread in `events/passive/background_loops.rb`
 
 #### Monthly Boss Battles (`/boss`, `/bosssetup`) — New Arcade + Admin Commands
+
 - Global HP boss auto-spawns each calendar month (100,000 HP)
 - `b!boss` — View current boss with visual HP bar and Attack button
 - Attack once per hour: 50-200 damage (100-400 for Premium — double damage)
@@ -198,6 +217,7 @@ Massive feature drop: VTuber trivia, hourly heist events, monthly boss battles, 
 - New interaction handler: `events/interactions/boss_attack.rb`
 
 #### Auto-Mod Lite (`/automod`) — New Admin Command + Passive Handler
+
 - **Word filter:** Configurable banned words list, auto-deletes matching messages
   - `b!automod words add <word>` / `b!automod words remove <word>`
   - `b!automod words list` — Sends list via DM for privacy (never posted in channel)
@@ -216,6 +236,7 @@ Massive feature drop: VTuber trivia, hourly heist events, monthly boss battles, 
 - New passive handler: `events/passive/automod_handler.rb`
 
 #### Holiday Event Backend — Generalized Seasonal System
+
 - Refactored `data/events.rb` from single-event config to master registry pattern
 - `SEASONAL_EVENTS` hash maps months to event configs for quick lookup
 - Three new skeleton events prepared (character pools empty, pending art):
@@ -233,10 +254,12 @@ Massive feature drop: VTuber trivia, hourly heist events, monthly boss battles, 
 ### Changed
 
 #### New Command Categories
+
 - Added `trivia`, `boss` to Arcade category (now 12 commands)
 - Added `heist`, `automod`, `bosssetup` to Admin category (now 12 commands)
 
 #### Database Schema
+
 - New tables: `automod_config`, `automod_words`, `boss_battles`, `boss_participants`
 - New `server_configs` columns: `heist_channel BIGINT`, `boss_channel BIGINT`
 - 15 new DB methods in `data/database/admin.rb`:
@@ -245,15 +268,18 @@ Massive feature drop: VTuber trivia, hourly heist events, monthly boss battles, 
   - Boss: `get_current_boss`, `create_boss`, `boss_attack`, `boss_defeat`, `get_boss_participants`, `get_boss_participant`, `get_boss_channel`, `set_boss_channel`
 
 #### Global State
+
 - New tracking hashes: `ACTIVE_TRIVIA` (per-user trivia sessions), `ACTIVE_HEISTS` (per-server heist events)
-- New economy constants: `TRIVIA_*`, `HEIST_*`, `BOSS_*`, `SPAM_*` (16 new constants)
+- New economy constants: `TRIVIA_`*, `HEIST_*`, `BOSS_*`, `SPAM_*` (16 new constants)
 - New boss name pool: `BOSS_NAMES` (12 entries)
 
 #### Background Loops
+
 - Added hourly heist spawner thread (offset from lottery by 30 min)
 - Heist execution runs in spawned sub-threads after 5-min join window
 
 #### Entry Point
+
 - `main.rb` now loads `data/trivia.rb` after character pools for question generation
 
 ---
@@ -261,6 +287,7 @@ Massive feature drop: VTuber trivia, hourly heist events, monthly boss battles, 
 ## [v1.1.0] - 2026-04-08
 
 ### Summary
+
 Major economy overhaul: daily login calendar with visual grid and milestone bonuses, passive income investments for premium users, random coin happy hours, auto-claim daily, and remindme opened to all users. Adds 4 new economy commands, 2 new DB tables, 2 new background loops, and modifies the core `award_coins()` function.
 
 ---
@@ -268,6 +295,7 @@ Major economy overhaul: daily login calendar with visual grid and milestone bonu
 ### Added
 
 #### Daily Login Calendar — `/daily` Rewrite
+
 - Completely replaced the basic daily command with a visual monthly calendar grid
 - Calendar rendered in a code block showing the full month:
   - `██` = Claimed day
@@ -286,6 +314,7 @@ Major economy overhaul: daily login calendar with visual grid and milestone bonu
 - New economy constants: `CALENDAR_MILESTONE_14/28`, reward amounts for free and premium
 
 #### Passive Income System (Premium) — `/invest`, `/portfolio`, `/withdraw`
+
 - `/invest <amount>` — Lock coins into a compounding interest portfolio
 - `/portfolio` — View investment with visual progress bar (`█` filled / `░` empty)
 - `/withdraw` — Cash out principal plus all earned profit at any time
@@ -301,6 +330,7 @@ Major economy overhaul: daily login calendar with visual grid and milestone bonu
 - New command file: `commands/economy/invest.rb`
 
 #### Happy Hour — Random Coin Multiplier Events
+
 - 10% chance each hour to trigger a 30-minute happy hour
 - During happy hour: all `award_coins()` calls apply multiplier
   - Free users: 2x coins
@@ -312,6 +342,7 @@ Major economy overhaul: daily login calendar with visual grid and milestone bonu
 - New constants: `HAPPY_HOUR_CHANCE`, `HAPPY_HOUR_DURATION`, `HAPPY_HOUR_MULTIPLIER`
 
 #### Auto-Claim Daily (Premium) — `/autoclaim`
+
 - Toggle automatic daily reward claiming for premium subscribers
 - Background loop checks every 2 minutes for eligible users
 - Full reward calculation: streak, base + bonus, marriage, Neon Sign, premium 10%, happy hour
@@ -328,6 +359,7 @@ Major economy overhaul: daily login calendar with visual grid and milestone bonu
 ### Changed
 
 #### RemindMe — No Longer Premium Only
+
 - `/remindme` is now available to all users, not just Premium subscribers
 - Removed premium gate check from the command (was lines 16-22)
 - Removed premium status verification from the background reminder loop
@@ -335,6 +367,7 @@ Major economy overhaul: daily login calendar with visual grid and milestone bonu
 - Premium users now have the superior `/autoclaim` feature as their exclusive daily helper
 
 #### Economy Engine (`helpers/economy_engine.rb`)
+
 - `award_coins()` now checks for active happy hours before applying multiplier:
   - Happy hour active + premium → 3x
   - Happy hour active + free → 2x
@@ -344,9 +377,11 @@ Major economy overhaul: daily login calendar with visual grid and milestone bonu
 - New `calculate_investment_value()` helper for compound interest calculations
 
 #### Command Categories
+
 - Added `invest`, `portfolio`, `withdraw`, `autoclaim` to Economy category (now 17 commands)
 
 #### Database Schema
+
 - New tables: `daily_calendar`, `investments`
 - New column: `global_users.autoclaim_daily`
 
@@ -355,6 +390,7 @@ Major economy overhaul: daily login calendar with visual grid and milestone bonu
 ## [v1.0.0] - 2026-04-08
 
 ### Summary
+
 Initial documented release of Blossom Bot — a full-featured Discord bot built with Ruby (discordrb) for content creator communities. Includes economy, gacha collection, arcade games, social interactions, leveling, moderation, server administration, and premium subscriber features.
 
 ---
@@ -362,6 +398,7 @@ Initial documented release of Blossom Bot — a full-featured Discord bot built 
 ### Added
 
 #### Core Systems
+
 - Dual command invocation: prefix (`b!`) and Discord slash commands (`/`) for all commands
 - CV2 (Components v2) rendering system for modern Discord UI with styled containers
 - V1 component system (discordrb Views) for interactive buttons, select menus, and pagination
@@ -373,6 +410,7 @@ Initial documented release of Blossom Bot — a full-featured Discord bot built 
 - Hourly lottery system with global prize pool
 
 #### Economy Commands (13)
+
 - `/daily` — Daily coin claim with streak bonuses (350 base + 30 per streak day)
 - `/work` — Earn 35-75 coins (10 min cooldown)
 - `/stream` — Go live on a random game for 75-150 coins (30 min cooldown)
@@ -388,6 +426,7 @@ Initial documented release of Blossom Bot — a full-featured Discord bot built 
 - `/event` — Seasonal event hub access
 
 #### Gacha & Collection Commands (12)
+
 - `/summon` — Gacha pull system with rarity tiers (150 coins, 10 min cooldown)
 - `/shop` — Interactive shop browser for characters and items
 - `/buy` — Direct purchase of characters and Black Market items
@@ -402,6 +441,7 @@ Initial documented release of Blossom Bot — a full-featured Discord bot built 
 - `/custombanner` — Create custom 1-hour summon banner for 20 Prisma (Premium)
 
 #### Gacha Mechanics
+
 - Four rarity tiers: Common, Rare, Legendary, Goddess
 - Pity system: Guaranteed Legendary/Goddess after 30 non-Rare+ pulls (Premium)
 - Shiny Ascended variants: 1% base chance, 2% with Shiny Hunting Mode
@@ -410,6 +450,7 @@ Initial documented release of Blossom Bot — a full-featured Discord bot built 
 - Auto-sell for commons owned 5+ times during summon
 
 #### Arcade Commands (10)
+
 - `/coinflip` — 50/50 coin flip (2x payout)
 - `/slots` — 3-reel slot machine (5x jackpot, 2x partial match)
 - `/blackjack` — Full blackjack with Hit/Stand/Double Down (2.5x on natural 21)
@@ -422,6 +463,7 @@ Initial documented release of Blossom Bot — a full-featured Discord bot built 
 - `/fish` — Fishing minigame with 13 base catches and 3 Premium catches (5 min cooldown)
 
 #### Fun & Social Commands (12)
+
 - `/hug` — Send hugs with random GIFs and stat tracking
 - `/slap` — Send slaps with random GIFs and stat tracking
 - `/pat` — Send head pats with random GIFs and stat tracking
@@ -437,12 +479,14 @@ Initial documented release of Blossom Bot — a full-featured Discord bot built 
 - `/kettle` — Inside-joke command
 
 #### Moderation Commands (4)
+
 - `/kick` — Kick members with DM notification and mod logging
 - `/ban` — Ban by mention or user ID with DM notification and mod logging
 - `/timeout` — Timed communication restriction with duration parsing (m/h/d)
 - `/purge` — Bulk message deletion (1-100 messages)
 
 #### Server Administration Commands (8)
+
 - `/logsetup` — Set mod log destination channel
 - `/logtoggle` — Toggle log categories (deletes, edits, mod, dms, joins, leaves)
 - `/levelup` — Configure level-up notification channel or toggle on/off
@@ -454,12 +498,14 @@ Initial documented release of Blossom Bot — a full-featured Discord bot built 
 - `/reactionrole` — Create and manage reaction role panels (prefix only)
 
 #### Voice Commands (4)
+
 - `/join` — Connect Blossom to voice channel
 - `/leave` — Disconnect from voice channel
 - `/play` — Play MP3 from music library
 - `/stop` — Stop audio playback
 
 #### Utility Commands (8)
+
 - `/ping` — Latency check
 - `/help` — Command navigation hub with category browsing
 - `/about` — Bot info and developer credits
@@ -470,6 +516,7 @@ Initial documented release of Blossom Bot — a full-featured Discord bot built 
 - `/profile` — Premium profile customization (color, bio, favorites, pet, title, theme, badge)
 
 #### Developer Commands (9)
+
 - `dcoin` — Adjust user coin balance
 - `dpremium` / `givepremium` / `removepremium` — Manage Premium status
 - `blacklist` — Block users from using the bot
@@ -481,6 +528,7 @@ Initial documented release of Blossom Bot — a full-featured Discord bot built 
 - `devhelp` — Developer command reference
 
 #### Items & Black Market
+
 - **Tech Upgrades (permanent, one-time purchase):**
   - Headset (500 coins) — +25% post payouts
   - RGB Keyboard (2,000 coins) — +25% work payouts
@@ -493,6 +541,7 @@ Initial documented release of Blossom Bot — a full-featured Discord bot built 
   - RNG Manipulator (5,000 coins) — Guarantee Rare+ on next summon
 
 #### Achievement System (100+ achievements across 14 categories)
+
 - **Economy & Streaks:** 7, 30, 69, 100, 365-day streak milestones
 - **Wealth Milestones:** 0, 10K, 100K, 1M, 10M coin thresholds
 - **First Activities:** First stream, collab, work, post, gift
@@ -511,6 +560,7 @@ Initial documented release of Blossom Bot — a full-featured Discord bot built 
 - **Event:** Carnival ring toss, balloon pop, snack, character, ticket milestones
 
 #### Premium Perks
+
 - 50% cooldown reduction on work, stream, post, and fish
 - +10% coin bonus on all earning commands
 - Prisma currency earned from daily claims (1-3, scales with streak)
@@ -528,6 +578,7 @@ Initial documented release of Blossom Bot — a full-featured Discord bot built 
 - Up to 3 favorite card slots on profile
 
 #### Seasonal Events
+
 - **Spring Carnival (April):**
   - Event currency: Carnival Tickets
   - Exclusive characters: Rainbow Sparkles, Toma (Rare), EmieVT, Necronival, Umaru Polka (Legendary)
@@ -535,6 +586,7 @@ Initial documented release of Blossom Bot — a full-featured Discord bot built 
   - Dedicated carnival achievements (ring toss, balloon pop, snack, character, ticket milestones)
 
 #### Passive Systems & Events
+
 - XP gain on messages (5 XP per message, 10-second cooldown)
 - Passive coin gain on messages (5 coins per message)
 - Bomb drop events (random after 100-300 messages in configured channels)
@@ -547,6 +599,7 @@ Initial documented release of Blossom Bot — a full-featured Discord bot built 
 - Button-based member verification
 
 #### Bot Identity
+
 - Blossom persona: Sarcastic, high-energy streamer and Neon Arcade manager
 - Custom response flavor text via `mom_remark()` Easter eggs
 - Special interactions when targeting Blossom (hug, slap, pat)
@@ -554,6 +607,7 @@ Initial documented release of Blossom Bot — a full-featured Discord bot built 
 - 38 custom Discord emojis (animated and static)
 
 #### Documentation
+
 - `COMMANDS.md` — Complete user-facing command reference
 - `CLAUDE.md` — Developer context and codebase documentation
 - `CHANGELOG.md` — This file
