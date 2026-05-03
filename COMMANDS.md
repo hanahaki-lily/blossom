@@ -861,6 +861,8 @@ View server and global rankings for coins, Prisma, or levels.
 
 Use the dropdown menu to switch between leaderboard categories. Server-only command.
 
+**Global Communities:** Your current server’s name is shown in **bold** only when it appears in the list; other server names are plain text so Discord’s markdown renders correctly.
+
 ---
 
 ### `/serverinfo`
