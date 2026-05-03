@@ -34,21 +34,21 @@ def execute_challenges(event)
 
     all_complete = false unless done
 
-    status = done ? "\u2705" : "\u{1F7E1}"
     bar_pct = [current.to_f / target, 1.0].min
     filled = (bar_pct * 10).round
     bar = "\u2588" * filled + "\u2591" * (10 - filled)
+    done_note = done ? " *(Complete)*" : ''
 
-    "#{status} **#{c['desc']}**\n`[#{bar}]` #{current}/#{target} \u2014 Reward: **#{c['reward']}** #{EMOJI_STRINGS['s_coin']}"
+    "**#{c['desc']}**#{done_note}\n`[#{bar}]` #{current}/#{target} \u2014 Reward: **#{c['reward']}** #{EMOJI_STRINGS['s_coin']}"
   }.join("\n\n")
 
   # Bonus section
   bonus_text = if all_complete && !claimed
-    "\n\n\u{1F381} **ALL COMPLETE!** Claim your bonus below!"
+    "\n\n**ALL COMPLETE!** Claim your bonus below!"
   elsif all_complete && claimed
-    "\n\n\u2705 **Bonus claimed!** See you next week."
+    "\n\n**Bonus claimed!** See you next week."
   else
-    "\n\n\u{1F381} Complete all #{visible_count} for a bonus: **#{CHALLENGE_COMPLETE_BONUS_COINS}** #{EMOJI_STRINGS['s_coin']} + **#{CHALLENGE_COMPLETE_BONUS_PRISMA}** #{EMOJI_STRINGS['prisma']}"
+    "\n\nComplete all #{visible_count} for a bonus: **#{CHALLENGE_COMPLETE_BONUS_COINS}** #{EMOJI_STRINGS['s_coin']} + **#{CHALLENGE_COMPLETE_BONUS_PRISMA}** #{EMOJI_STRINGS['prisma']}"
   end
 
   # Premium upsell if they're missing the 4th challenge
@@ -62,7 +62,7 @@ def execute_challenges(event)
   week_text = "**Week:** #{week_start.strftime('%b %d')} \u2014 #{week_end.strftime('%b %d')}"
 
   components_inner = [
-    { type: 10, content: "## \u{1F3AF} Weekly Challenges" },
+    { type: 10, content: "## Weekly Challenges" },
     { type: 14, spacing: 1 },
     { type: 10, content: "#{week_text}\n\n#{challenge_lines}#{bonus_text}#{premium_note}#{mom_remark(uid, 'general')}" }
   ]
@@ -71,7 +71,7 @@ def execute_challenges(event)
   if all_complete && !claimed
     components_inner << { type: 14, spacing: 1 }
     components_inner << { type: 1, components: [
-      { type: 2, style: 3, label: "\u{1F381} Claim Bonus!", custom_id: "challenge_claim_#{uid}" }
+      { type: 2, style: 3, label: "Claim Bonus!", custom_id: "challenge_claim_#{uid}" }
     ]}
   end
 
@@ -125,9 +125,9 @@ $bot.button(custom_id: /^challenge_claim_\d+$/) do |event|
   grand_total = total_reward + CHALLENGE_COMPLETE_BONUS_COINS
 
   update_cv2(event, [{ type: 17, accent_color: 0x00FF00, components: [
-    { type: 10, content: "## \u{1F389} Weekly Challenges Complete!" },
+    { type: 10, content: "## Weekly Challenges Complete!" },
     { type: 14, spacing: 1 },
-    { type: 10, content: "**Challenge Rewards:** #{total_reward} #{EMOJI_STRINGS['s_coin']}\n**Completion Bonus:** #{CHALLENGE_COMPLETE_BONUS_COINS} #{EMOJI_STRINGS['s_coin']} + #{CHALLENGE_COMPLETE_BONUS_PRISMA} #{EMOJI_STRINGS['prisma']}\n\n**Total:** #{grand_total} #{EMOJI_STRINGS['s_coin']} + #{CHALLENGE_COMPLETE_BONUS_PRISMA} #{EMOJI_STRINGS['prisma']}\n\nSee you next week, chat! \u{1F338}" }
+    { type: 10, content: "**Challenge Rewards:** #{total_reward} #{EMOJI_STRINGS['s_coin']}\n**Completion Bonus:** #{CHALLENGE_COMPLETE_BONUS_COINS} #{EMOJI_STRINGS['s_coin']} + #{CHALLENGE_COMPLETE_BONUS_PRISMA} #{EMOJI_STRINGS['prisma']}\n\n**Total:** #{grand_total} #{EMOJI_STRINGS['s_coin']} + #{CHALLENGE_COMPLETE_BONUS_PRISMA} #{EMOJI_STRINGS['prisma']}\n\nSee you next week, chat!" }
   ]}])
 end
 

@@ -861,7 +861,7 @@ View server and global rankings for coins, Prisma, or levels.
 
 Use the dropdown menu to switch between leaderboard categories. Server-only command.
 
-**Global Communities:** Your current server’s name is shown in **bold** only when it appears in the list; other server names are plain text so Discord’s markdown renders correctly.
+**Global Communities:** Your current server’s name is shown in **bold** only when it appears in the list; other server names are plain text so Discord’s markdown renders correctly. The board title has no globe emoji; only 1st–3rd place rows include trophy/medal emojis beside the rank.
 
 ---
 
@@ -1385,6 +1385,8 @@ View and claim your weekly challenge progress.
 | **Aliases** | `weekly`, `challenge` |
 | **Reset** | Every Monday |
 | **Challenges** | 3 per week (4 for Premium) |
+
+**Display:** The challenge panel uses text and block progress bars; custom emojis appear only for coin and Prisma rewards (no other icons in the main weekly message).
 
 **Challenge Types:** Daily claims, arcade wins, cards pulled, coins earned, coins given, trivia correct answers, boss attacks, trades completed, social interactions sent, cards salvaged, cards gifted, collabs completed.
 

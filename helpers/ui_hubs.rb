@@ -197,7 +197,7 @@ def leaderboard_select_menu(user_id, current_page)
     v.row do |r|
       r.select_menu(custom_id: "lb_menu_#{user_id}", placeholder: "Who's on top? Pick a board...", max_values: 1) do |s|
         s.option(label: 'Server Members (XP)', value: 'server_users', emoji: '👥', description: 'The grinders of this server', default: current_page == 'server_users')
-        s.option(label: 'Global Communities', value: 'global_servers', emoji: '🌍', description: 'Most active arcades worldwide', default: current_page == 'global_servers')
+        s.option(label: 'Global Communities', value: 'global_servers', description: 'Most active arcades worldwide', default: current_page == 'global_servers')
         s.option(label: 'Global Richest (Coins)', value: 'global_coins', emoji: '💰', description: 'The whales. Respect.', default: current_page == 'global_coins')
       end
     end
@@ -235,8 +235,8 @@ def generate_leaderboard_page(bot, server, action)
     end
 
   when 'global_servers'
-    embed.title = "🌍 Global Arcade Rankings"
-    top_servers = DB.get_global_server_leaderboard(10) 
+    embed.title = "Global Arcade Rankings"
+    top_servers = DB.get_global_server_leaderboard(10)
 
     if top_servers.empty?
       embed.description = "*No servers on the board yet. First come, first flex.*"
@@ -247,10 +247,11 @@ def generate_leaderboard_page(bot, server, action)
         name = row['server_name'] || "Unknown Arcade"
 
         sid = row['server_id'].to_i
-        medal = ["🏆", "🥈", "🥉"][index] || "🏅"
+        medal = ["🏆", "🥈", "🥉"][index]
+        medal_prefix = medal ? "#{medal} " : ""
         name_part = (server.id == sid) ? "**#{name}**" : name
 
-        "**#{index + 1}.** #{medal} #{name_part} — Level **#{row['level']}** *(#{row['xp']} XP)*"
+        "**#{index + 1}.** #{medal_prefix}#{name_part} — Level **#{row['level']}** *(#{row['xp']} XP)*"
       end.join("\n\n")
       embed.description = desc
     end
