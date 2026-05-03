@@ -43,6 +43,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 
 ### Added
 
+- **`b!say #channel <text>`** (Administrator or Developer ID): posts an embed whose body is the message into another channel **in the same server**; prefix-only, 4096-char cap. **`b!drules #channel`** (Developer ID): posts Blossom's default server-rules embed (incl. staff ping etiquette).
+
 - **Premium expansion pack:** `/vipcrate` (monthly coins + Prisma), `/eventvip` (daily event currency during seasonal months), **Subscriber Streak Guard** (weekly streak save when `/autoclaim` is on), **weekly summon stipend** (3× −40 coins) + automatic **+5 pity** once per ISO week, **×1.12** carnival ticket wins for subscribers, **+8%** crew XP from coin→crew conversion for Premium, **+12** server **community XP** on Premium boss hits, **favorite slots 4–5** with **`/collection` showcase** row, **`profile epithet`** / **`profile tagline`**, **monthly rotating pet** (half off Prisma for subs), DB table **`premium_extras`**, and related columns on **`global_users`**.
 
 - **Neon Arcade hub account-age gate:** On the home guild (**`1499998845873033316`**), **`member_join`** kicks non-bot members whose Discord account is younger than **14 days** (`events/passive/member_logging.rb`). Documented under **`/verifysetup`** in **`COMMANDS.md`**.

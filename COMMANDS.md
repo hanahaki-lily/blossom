@@ -1058,6 +1058,20 @@ Bulk-delete messages from the current channel.
 
 Server setup and configuration commands. Require Administrator permission or Developer status.
 
+### `b!say`
+Post a **plain embed** (your text becomes the embed **description**) to another channel in the **same server**. Prefix-only; no slash variant.
+
+| Detail | Value |
+|--------|-------|
+| **Permission** | Administrator (or Developer ID) |
+| **Usage** | `b!say #channel <message...>` |
+| **Limits** | Message body max **4096** characters (Discord embed description cap). |
+| **Bot needs** | **Send Messages** and **Embed Links** in the target channel. |
+
+Embed footer credits the staff member who ran the command.
+
+---
+
 ### `/logsetup`
 Set the destination channel for server activity and moderation logs.
 
@@ -1402,6 +1416,15 @@ Customize your profile card with colors, bio, favorites, and cosmetics. **Premiu
 You must own the character to set it as a favorite. Re-equipping the same cosmetic does not cost additional Prisma.
 
 ---
+
+### `b!drules`
+Developer-only: posts Blossom's **default server rules** embed (respect, spam/media, hate/edge, NSFW, sensitive topics & venting, trigger jokes, self-promo, moderation disputes in public, minors & selfies/VC cam, English-only, **no pinging staff** for routine issues) into the given channel. Prefix-only.
+
+| Detail | Value |
+|--------|-------|
+| **Permission** | Developer ID only |
+| **Usage** | `b!drules #channel` |
+| **Scope** | Channel must be in the **current server**. Run from a server channel (not DMs). |
 
 ### `b!derase`
 Developer-only emergency command that removes `Kyvrixon` from all user collections and refunds Prisma.
