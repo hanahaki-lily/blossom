@@ -45,7 +45,7 @@ def execute_global_sync(event)
                    "`#{bar}` **100%**\n\n" \
                    "#{EMOJI_STRINGS['crown']} **#{users_affected}** users received missing achievements.\n" \
                    "#{EMOJI_STRINGS['neonsparkle']} **#{total_unlocked}** total achievements retroactively unlocked!\n\n" \
-                   "*(All coin rewards have been deposited automatically!)*#{mom_remark(event.user.id, 'dev')}"
+                   "*(All coin rewards have been deposited automatically!)*#{family_remark(event.user.id, 'dev')}"
           color = 0x00FF00
         else
           status = "## ⏳ Syncing Achievements...\n\n" \

@@ -17,7 +17,7 @@ def execute_commleveltoggle(event)
   send_cv2(event, [{ type: 17, accent_color: NEON_COLORS.sample, components: [
     { type: 10, content: "## :globe_with_meridians: Community Level-Ups" },
     { type: 14, spacing: 1 },
-    { type: 10, content: "Community level-up announcements are now #{status}.\n\n*#{enabled ? "Time to hype up the server every time chat levels up together. LET'S GO." : "Silent mode activated. The server will level up in peace... boring, but okay."}*#{mom_remark(event.user.id, 'mod')}" }
+    { type: 10, content: "Community level-up announcements are now #{status}.\n\n*#{enabled ? "Time to hype up the server every time chat levels up together. LET'S GO." : "Silent mode activated. The server will level up in peace... boring, but okay."}*#{family_remark(event.user.id, 'mod')}" }
   ]}])
 end
 

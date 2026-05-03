@@ -82,7 +82,7 @@ def execute_balance(event, target_user)
                  "**Prisma:** #{prisma} #{EMOJI_STRINGS['prisma']}\n" \
                  "**Reputation:** #{rep} #{EMOJI_STRINGS['rainbowheart']}\n" \
                  "**Daily Streak:** #{daily_info['streak']} Days#{marriage_line}#{fav_section}#{pet_line}\n\n" \
-                 "*Use the dropdown below to view your items, VTubers, and Achievements!*#{mom_remark(uid, 'economy')}",
+                 "*Use the dropdown below to view your items, VTubers, and Achievements!*#{family_remark(uid, 'economy')}",
     color: accent
   )
 

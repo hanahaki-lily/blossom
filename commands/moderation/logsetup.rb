@@ -31,7 +31,7 @@ def execute_logsetup(event, channel)
   send_cv2(event, [{ type: 17, accent_color: 0x00FF00, components: [
     { type: 10, content: "## #{EMOJI_STRINGS['checkmark']} Logging Configured" },
     { type: 14, spacing: 1 },
-    { type: 10, content: "Logs are locked in to #{channel.mention}. I see EVERYTHING now.\nUse `#{PREFIX}logtoggle` to pick what I'm watching — deletes, edits, mod actions, joins, leaves, the works.#{mom_remark(event.user.id, 'mod')}" }
+    { type: 10, content: "Logs are locked in to #{channel.mention}. I see EVERYTHING now.\nUse `#{PREFIX}logtoggle` to pick what I'm watching — deletes, edits, mod actions, joins, leaves, the works.#{family_remark(event.user.id, 'mod')}" }
   ]}])
 end
 

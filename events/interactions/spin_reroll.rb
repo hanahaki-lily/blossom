@@ -27,7 +27,7 @@ $bot.button(custom_id: /^spin_reroll_/) do |event|
     { type: 14, spacing: 1 },
     { type: 10, content: wheel_display },
     { type: 14, spacing: 1 },
-    { type: 10, content: "🔄 *Premium reroll used!*\n#{result_text}\nBalance: **#{DB.get_coins(uid)}** #{EMOJI_STRINGS['s_coin']}#{mom_remark(uid, 'arcade')}" }
+    { type: 10, content: "🔄 *Premium reroll used!*\n#{result_text}\nBalance: **#{DB.get_coins(uid)}** #{EMOJI_STRINGS['s_coin']}#{family_remark(uid, 'arcade')}" }
   ]
 
   event.update_message(

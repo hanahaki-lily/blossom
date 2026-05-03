@@ -86,7 +86,7 @@ def execute_roulette(event, amount, bet)
     inner = [
       { type: 10, content: "## 🎰 Roulette Spin" },
       { type: 14, spacing: 1 },
-      { type: 10, content: "I spin the wheel... it lands on **#{color_emoji} #{spin}**!\n\nYou called **#{bet}** and it ACTUALLY hit. Pog. **#{payout_result[:winnings]}** #{EMOJI_STRINGS['s_coin']} yours.#{extras[:text]}\nNew Balance: **#{DB.get_coins(uid)}** #{EMOJI_STRINGS['s_coin']}#{mom_remark(uid, 'arcade')}" }
+      { type: 10, content: "I spin the wheel... it lands on **#{color_emoji} #{spin}**!\n\nYou called **#{bet}** and it ACTUALLY hit. Pog. **#{payout_result[:winnings]}** #{EMOJI_STRINGS['s_coin']} yours.#{extras[:text]}\nNew Balance: **#{DB.get_coins(uid)}** #{EMOJI_STRINGS['s_coin']}#{family_remark(uid, 'arcade')}" }
     ]
     inner << extras[:button] if extras[:button]
     send_cv2(event, [{ type: 17, accent_color: 0x00FF00, components: inner }])
@@ -98,7 +98,7 @@ def execute_roulette(event, amount, bet)
       components: [
         { type: 10, content: "## 🎰 Roulette Spin" },
         { type: 14, spacing: 1 },
-        { type: 10, content: "I spin the wheel... it lands on **#{color_emoji} #{spin}**.\n\nYou bet **#{bet}**. Not even close. **#{amount}** #{EMOJI_STRINGS['s_coin']} evaporated.\nNew Balance: **#{DB.get_coins(uid)}** #{EMOJI_STRINGS['s_coin']}#{mom_remark(uid, 'arcade')}" }
+        { type: 10, content: "I spin the wheel... it lands on **#{color_emoji} #{spin}**.\n\nYou bet **#{bet}**. Not even close. **#{amount}** #{EMOJI_STRINGS['s_coin']} evaporated.\nNew Balance: **#{DB.get_coins(uid)}** #{EMOJI_STRINGS['s_coin']}#{family_remark(uid, 'arcade')}" }
       ]
     }])
   end

@@ -40,7 +40,7 @@ def execute_giftlog(event, page = 1)
     { type: 14, spacing: 1 },
     { type: 10, content: "→ = sent · ← = received\n\n#{lines.join("\n")}" },
     { type: 14, spacing: 1 },
-    { type: 10, content: "Page **#{page}** / **#{[data[:pages], 1].max}** · #{data[:total]} total gifts#{mom_remark(uid, 'gacha')}" }
+    { type: 10, content: "Page **#{page}** / **#{[data[:pages], 1].max}** · #{data[:total]} total gifts#{family_remark(uid, 'gacha')}" }
   ]}]
   send_cv2(event, components)
 end

@@ -50,7 +50,7 @@ def execute_collab(event)
   embed = Discordrb::Webhooks::Embed.new(
     title: "#{EMOJI_STRINGS['stream']} Collab Request!",
     description: "#{event.user.mention} wants a collab partner! Any takers?\n\n" \
-                 "Smash that button before it expires **#{discord_timestamp}**!#{mom_remark(uid, 'economy')}",
+                 "Smash that button before it expires **#{discord_timestamp}**!#{family_remark(uid, 'economy')}",
     color: NEON_COLORS.sample
   )
 

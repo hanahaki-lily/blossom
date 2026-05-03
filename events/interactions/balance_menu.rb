@@ -60,7 +60,7 @@ $bot.select_menu(custom_id: /^bal_menu_/) do |event|
     end
 
     new_embed.title = "🌸 #{username}'s Balance"
-    new_embed.description = "#{header}**Coins:** #{coins} #{EMOJI_STRINGS['s_coin']}\n**Prisma:** #{prisma} #{EMOJI_STRINGS['prisma']}\n**Daily Streak:** #{daily_info['streak']} Days#{fav_line}\n\n*Use the dropdown below to view your items and VTubers!*#{mom_remark(uid, 'economy')}"
+    new_embed.description = "#{header}**Coins:** #{coins} #{EMOJI_STRINGS['s_coin']}\n**Prisma:** #{prisma} #{EMOJI_STRINGS['prisma']}\n**Daily Streak:** #{daily_info['streak']} Days#{fav_line}\n\n*Use the dropdown below to view your items and VTubers!*#{family_remark(uid, 'economy')}"
 
   when 'inv'
     inv = DB.get_inventory(uid)

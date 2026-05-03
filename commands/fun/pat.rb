@@ -41,7 +41,7 @@ def execute_pat(event, target)
       { type: 10, content: "#{event.user.mention} is giving me head pats?? I— okay fine, that's actually really nice. Don't tell anyone I liked it.\n\n*Blossom leans into the pats and purrs... wait no, she doesn't purr. She's not a cat. ...Maybe a little.*" },
       { type: 14, spacing: 1 },
       { type: 10, content: "**#{event.user.name}'s Pats:** Sent: **#{actor_stats['sent']}** | Received: **#{actor_stats['received']}**" },
-      { type: 10, content: "**Blossom's Pats:** Sent: **#{bot_stats['sent']}** | Received: **#{bot_stats['received']}**#{mom_remark(event.user.id, 'social')}" },
+      { type: 10, content: "**Blossom's Pats:** Sent: **#{bot_stats['sent']}** | Received: **#{bot_stats['received']}**#{family_remark(event.user.id, 'social')}" },
       { type: 14, spacing: 1 },
       { type: 12, items: [{ media: { url: PAT_GIFS.sample } }] }
     ]}])

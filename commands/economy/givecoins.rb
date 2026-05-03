@@ -88,7 +88,7 @@ def execute_givecoins(event, target, amount_str)
       components: [
         { type: 10, content: "## #{EMOJI_STRINGS['coins']} Coins Transferred!" },
         { type: 14, spacing: 1 },
-        { type: 10, content: "#{event.user.mention} just dropped **#{amount}** #{EMOJI_STRINGS['s_coin']} on #{target.mention}! Big spender energy.\n\nYour balance: **#{sender_bal}** #{EMOJI_STRINGS['s_coin']}#{mom_remark(uid, 'economy')}" }
+        { type: 10, content: "#{event.user.mention} just dropped **#{amount}** #{EMOJI_STRINGS['s_coin']} on #{target.mention}! Big spender energy.\n\nYour balance: **#{sender_bal}** #{EMOJI_STRINGS['s_coin']}#{family_remark(uid, 'economy')}" }
       ]
     }
   ]

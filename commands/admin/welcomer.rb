@@ -36,7 +36,7 @@ def execute_welcomer(event, action, channel_obj = nil)
     send_cv2(event, [{ type: 17, accent_color: 0x00FF00, components: [
       { type: 10, content: "## #{EMOJI_STRINGS['checkmark']} Welcomer Enabled!" },
       { type: 14, spacing: 1 },
-      { type: 10, content: "New members will get a welcome message in #{channel_obj.mention}.\nI'll make sure they feel the Neon Arcade energy from the moment they walk in.#{mom_remark(event.user.id, 'admin')}" }
+      { type: 10, content: "New members will get a welcome message in #{channel_obj.mention}.\nI'll make sure they feel the Neon Arcade energy from the moment they walk in.#{family_remark(event.user.id, 'admin')}" }
     ]}])
 
   when 'message'
@@ -75,7 +75,7 @@ def execute_welcomer(event, action, channel_obj = nil)
     send_cv2(event, [{ type: 17, accent_color: NEON_COLORS.sample, components: [
       { type: 10, content: "## #{EMOJI_STRINGS['mute']} Welcomer Disabled" },
       { type: 14, spacing: 1 },
-      { type: 10, content: "Welcome messages are OFF. New members will enter in silence. Kinda ominous if you ask me.#{mom_remark(event.user.id, 'admin')}" }
+      { type: 10, content: "Welcome messages are OFF. New members will enter in silence. Kinda ominous if you ask me.#{family_remark(event.user.id, 'admin')}" }
     ]}])
 
   else

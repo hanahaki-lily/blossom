@@ -35,7 +35,7 @@ def execute_crew(event, action = nil, *args)
     send_cv2(event, [{ type: 17, accent_color: NEON_COLORS.sample, components: [
       { type: 10, content: "## \u{1F465} #{crew['name']} [#{crew['tag']}]" },
       { type: 14, spacing: 1 },
-      { type: 10, content: "**Level:** #{crew['crew_level']} | **XP:** #{crew['crew_xp']} | **Members:** #{members.size}/#{CREW_MAX_MEMBERS}\n**Perk:** +#{(CREW_COIN_BONUS * 100).to_i}% coins for all members\n\n#{member_list}#{mom_remark(uid, 'general')}" }
+      { type: 10, content: "**Level:** #{crew['crew_level']} | **XP:** #{crew['crew_xp']} | **Members:** #{members.size}/#{CREW_MAX_MEMBERS}\n**Perk:** +#{(CREW_COIN_BONUS * 100).to_i}% coins for all members\n\n#{member_list}#{family_remark(uid, 'general')}" }
     ]}])
 
   when 'create'
@@ -73,7 +73,7 @@ def execute_crew(event, action = nil, *args)
       send_cv2(event, [{ type: 17, accent_color: 0x00FF00, components: [
         { type: 10, content: "## \u{1F389} Crew Created!" },
         { type: 14, spacing: 1 },
-        { type: 10, content: "**#{name}** [#{tag.upcase}] is now live!\n\nYou're the leader. Invite members with `#{PREFIX}crew invite @user`.\nAll members get a **+#{(CREW_COIN_BONUS * 100).to_i}% coin bonus** on earnings!#{mom_remark(uid, 'general')}" }
+        { type: 10, content: "**#{name}** [#{tag.upcase}] is now live!\n\nYou're the leader. Invite members with `#{PREFIX}crew invite @user`.\nAll members get a **+#{(CREW_COIN_BONUS * 100).to_i}% coin bonus** on earnings!#{family_remark(uid, 'general')}" }
       ]}])
     rescue PG::UniqueViolation
       DB.add_coins(uid, CREW_CREATE_COST) # Refund
@@ -156,7 +156,7 @@ def execute_crew(event, action = nil, *args)
     send_cv2(event, [{ type: 17, accent_color: NEON_COLORS.sample, components: [
       { type: 10, content: "## \u{1F465} Left Crew" },
       { type: 14, spacing: 1 },
-      { type: 10, content: "You left **#{crew['name']}**. Solo player vibes.#{mom_remark(uid, 'general')}" }
+      { type: 10, content: "You left **#{crew['name']}**. Solo player vibes.#{family_remark(uid, 'general')}" }
     ]}])
 
   when 'kick'
@@ -192,7 +192,7 @@ def execute_crew(event, action = nil, *args)
     send_cv2(event, [{ type: 17, accent_color: NEON_COLORS.sample, components: [
       { type: 10, content: "## \u{1F465} Member Kicked" },
       { type: 14, spacing: 1 },
-      { type: 10, content: "<@#{target_id}> has been removed from **#{crew['name']}**.#{mom_remark(uid, 'admin')}" }
+      { type: 10, content: "<@#{target_id}> has been removed from **#{crew['name']}**.#{family_remark(uid, 'admin')}" }
     ]}])
 
   when 'promote'
@@ -246,7 +246,7 @@ def execute_crew(event, action = nil, *args)
     send_cv2(event, [{ type: 17, accent_color: 0xFF0000, components: [
       { type: 10, content: "## \u{1F465} Crew Disbanded" },
       { type: 14, spacing: 1 },
-      { type: 10, content: "**#{crew['name']}** has been disbanded. Everyone's a free agent now.#{mom_remark(uid, 'general')}" }
+      { type: 10, content: "**#{crew['name']}** has been disbanded. Everyone's a free agent now.#{family_remark(uid, 'general')}" }
     ]}])
 
   when 'leaderboard', 'lb'

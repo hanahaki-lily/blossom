@@ -57,7 +57,7 @@ def execute_drules(event, channel_raw)
     return send_cv2(event, [{ type: 17, accent_color: 0xFF0000, components: [
       { type: 10, content: "## #{EMOJI_STRINGS['x_']} Server Only" },
       { type: 14, spacing: 1 },
-      { type: 10, content: "Run `#{PREFIX}drules` **from a server channel** so I know where home is.\n\n#{DRULES_USAGE}#{mom_remark(event.user.id, 'dev')}" }
+      { type: 10, content: "Run `#{PREFIX}drules` **from a server channel** so I know where home is.\n\n#{DRULES_USAGE}#{family_remark(event.user.id, 'dev')}" }
     ]}])
   end
 
@@ -66,7 +66,7 @@ def execute_drules(event, channel_raw)
     return send_cv2(event, [{ type: 17, accent_color: 0xFFA500, components: [
       { type: 10, content: "## #{EMOJI_STRINGS['confused']} Which Channel?" },
       { type: 14, spacing: 1 },
-      { type: 10, content: "#{DRULES_USAGE}#{mom_remark(event.user.id, 'dev')}" }
+      { type: 10, content: "#{DRULES_USAGE}#{family_remark(event.user.id, 'dev')}" }
     ]}])
   end
 
@@ -75,7 +75,7 @@ def execute_drules(event, channel_raw)
     return send_cv2(event, [{ type: 17, accent_color: 0xFF0000, components: [
       { type: 10, content: "## #{EMOJI_STRINGS['confused']} Bad Channel" },
       { type: 14, spacing: 1 },
-      { type: 10, content: "Need a channel **in this server** that I can see.\n\n#{DRULES_USAGE}#{mom_remark(event.user.id, 'dev')}" }
+      { type: 10, content: "Need a channel **in this server** that I can see.\n\n#{DRULES_USAGE}#{family_remark(event.user.id, 'dev')}" }
     ]}])
   end
 
@@ -91,14 +91,14 @@ def execute_drules(event, channel_raw)
     return send_cv2(event, [{ type: 17, accent_color: 0xFF0000, components: [
       { type: 10, content: "## #{EMOJI_STRINGS['error']} Send Failed" },
       { type: 14, spacing: 1 },
-      { type: 10, content: "Couldn't post \u2014 check **Send Messages** / **Embed Links** in #{target.mention}.\n`#{e.class}: #{e.message}`#{mom_remark(event.user.id, 'dev')}" }
+      { type: 10, content: "Couldn't post \u2014 check **Send Messages** / **Embed Links** in #{target.mention}.\n`#{e.class}: #{e.message}`#{family_remark(event.user.id, 'dev')}" }
     ]}])
   end
 
   send_cv2(event, [{ type: 17, accent_color: 0x00FF00, components: [
     { type: 10, content: "## #{EMOJI_STRINGS['checkmark']} Rules Deployed" },
     { type: 14, spacing: 1 },
-    { type: 10, content: "Full rules embed is up in #{target.mention}. Try not to make me write a sequel called *\u201CRule 12: Seriously?\u201D*#{mom_remark(event.user.id, 'dev')}" }
+    { type: 10, content: "Full rules embed is up in #{target.mention}. Try not to make me write a sequel called *\u201CRule 12: Seriously?\u201D*#{family_remark(event.user.id, 'dev')}" }
   ]}])
 end
 

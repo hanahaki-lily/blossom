@@ -167,7 +167,7 @@ def execute_view(event, search_name)
   end
 
   # 9. Mom remark
-  mama_note = mom_remark(uid, 'gacha')
+  mama_note = family_remark(uid, 'gacha')
   inner << { type: 10, content: mama_note } if mama_note
 
   # 10. Messaging: Send the finalized spotlight

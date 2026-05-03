@@ -79,7 +79,7 @@ def execute_stream(event)
       components: [
         { type: 10, content: "## #{EMOJI_STRINGS['stream']} Stream Ended" },
         { type: 14, spacing: 1 },
-        { type: 10, content: "Chat went crazy watching you play **#{game}**! You banked **#{final_reward}** #{EMOJI_STRINGS['s_coin']}!#{bonus_text}\nBalance: **#{DB.get_coins(uid)}** #{EMOJI_STRINGS['s_coin']}.#{mom_remark(uid, 'economy')}" }
+        { type: 10, content: "Chat went crazy watching you play **#{game}**! You banked **#{final_reward}** #{EMOJI_STRINGS['s_coin']}!#{bonus_text}\nBalance: **#{DB.get_coins(uid)}** #{EMOJI_STRINGS['s_coin']}.#{family_remark(uid, 'economy')}" }
       ]
     }
   ]

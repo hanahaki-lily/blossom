@@ -98,7 +98,7 @@ $bot.button(custom_id: /^trade_\d+_\d+_(accept|decline)$/) do |event|
 
   success_embed = Discordrb::Webhooks::Embed.new(
     title: "#{EMOJI_STRINGS['surprise']} Trade Complete!",
-    description: "Not bad, chat. Not bad at all.\n\n<@#{uid_a}> snagged **#{char_b}**.\n<@#{uid_b}> snagged **#{char_a}**.#{envvy_comment}#{mom_remark(uid_a, 'gacha')}#{mom_remark(uid_b, 'gacha')}",
+    description: "Not bad, chat. Not bad at all.\n\n<@#{uid_a}> snagged **#{char_b}**.\n<@#{uid_b}> snagged **#{char_a}**.#{envvy_comment}#{family_remark(uid_a, 'gacha')}#{family_remark(uid_b, 'gacha')}",
     color: 0x00FF00
   )
   

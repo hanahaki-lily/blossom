@@ -193,7 +193,7 @@ def execute_daily(event)
       { type: 10, content: calendar_grid },
       { type: 10, content: "#{milestone_progress}#{milestone_msg}" },
       { type: 14, spacing: 1 },
-      { type: 10, content: "Balance: **#{DB.get_coins(uid)}** #{EMOJI_STRINGS['s_coin']}.#{mom_remark(uid, 'economy')}" }
+      { type: 10, content: "Balance: **#{DB.get_coins(uid)}** #{EMOJI_STRINGS['s_coin']}.#{family_remark(uid, 'economy')}" }
     ]
   }]
   send_cv2(event, components)

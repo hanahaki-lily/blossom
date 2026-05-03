@@ -71,7 +71,7 @@ def help_cv2_components(bot, user_id, category, page = 1)
       { type: 10, content: remark }
     ]
 
-    mama_note = mom_remark(user_id, 'general')
+    mama_note = family_remark(user_id, 'general')
     inner << { type: 10, content: mama_note } if mama_note
 
     [
@@ -105,7 +105,7 @@ def help_cv2_components(bot, user_id, category, page = 1)
       { type: 10, content: remark }
     ]
 
-    mama_note = mom_remark(user_id, 'general')
+    mama_note = family_remark(user_id, 'general')
     inner << { type: 10, content: mama_note } if mama_note
 
     result = [{ type: 17, accent_color: NEON_COLORS.sample, components: inner }]
@@ -133,7 +133,7 @@ def generate_category_embed(bot, user_obj, category)
                         "**Prefix:** `#{PREFIX}`\n" \
                         "*Everything works as Slash (`/`) or Prefix — I'm versatile like that.* \n\n" \
                         "Pick a category from the dropdown, or use `#{PREFIX}help <category>` to jump straight there.\n\n" \
-                        "#{remark}#{mom_remark(user_obj.id, 'general')}"
+                        "#{remark}#{family_remark(user_obj.id, 'general')}"
   else
     embed.title = "🌸 Help Category: #{category}"
     embed.description = "**Prefix:** `#{PREFIX}` | **Slash:** `/`\n\n"
@@ -150,7 +150,7 @@ def generate_category_embed(bot, user_obj, category)
     end
     embed.description += "\n\n#{remark}"
   end
-  embed.description += mom_remark(user_obj.id, 'general').to_s
+  embed.description += family_remark(user_obj.id, 'general').to_s
   embed
 end
 

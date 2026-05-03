@@ -21,7 +21,7 @@ def execute_tipsetup(event, channel_id = nil)
       return send_cv2(event, [{ type: 17, accent_color: NEON_COLORS.sample, components: [
         { type: 10, content: "## \u{1F4A1} Daily Tips Disabled" },
         { type: 14, spacing: 1 },
-        { type: 10, content: "Daily tips turned off. Use `#{PREFIX}tipsetup #channel` to re-enable.#{mom_remark(event.user.id, 'admin')}" }
+        { type: 10, content: "Daily tips turned off. Use `#{PREFIX}tipsetup #channel` to re-enable.#{family_remark(event.user.id, 'admin')}" }
       ]}])
     end
     return send_cv2(event, [{ type: 17, accent_color: 0xFF0000, components: [
@@ -35,7 +35,7 @@ def execute_tipsetup(event, channel_id = nil)
   send_cv2(event, [{ type: 17, accent_color: 0x00FF00, components: [
     { type: 10, content: "## \u{1F4A1} Daily Tips Enabled!" },
     { type: 14, spacing: 1 },
-    { type: 10, content: "I'll post a daily tip or fun fact in <##{channel_id}> every day. You're welcome.#{mom_remark(event.user.id, 'admin')}" }
+    { type: 10, content: "I'll post a daily tip or fun fact in <##{channel_id}> every day. You're welcome.#{family_remark(event.user.id, 'admin')}" }
   ]}])
 end
 

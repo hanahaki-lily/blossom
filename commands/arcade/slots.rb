@@ -43,7 +43,7 @@ def execute_slots(event, amount)
     inner = [
       { type: 10, content: "## 🎰 Neon Slots" },
       { type: 14, spacing: 1 },
-      { type: 10, content: "[ #{spin.join(' | ')} ]\n\nNO WAY. **JACKPOT!!** #{EMOJI_STRINGS['neonsparkle']}\nYou just pulled **#{payout_result[:winnings]}** #{EMOJI_STRINGS['s_coin']}!! ACTUALLY POG!!#{extras[:text]}\nNew Balance: **#{DB.get_coins(uid)}** #{EMOJI_STRINGS['s_coin']}#{mom_remark(uid, 'arcade')}" }
+      { type: 10, content: "[ #{spin.join(' | ')} ]\n\nNO WAY. **JACKPOT!!** #{EMOJI_STRINGS['neonsparkle']}\nYou just pulled **#{payout_result[:winnings]}** #{EMOJI_STRINGS['s_coin']}!! ACTUALLY POG!!#{extras[:text]}\nNew Balance: **#{DB.get_coins(uid)}** #{EMOJI_STRINGS['s_coin']}#{family_remark(uid, 'arcade')}" }
     ]
     inner << extras[:button] if extras[:button]
     send_cv2(event, [{ type: 17, accent_color: 0x00FF00, components: inner }])
@@ -58,7 +58,7 @@ def execute_slots(event, amount)
     inner = [
       { type: 10, content: "## 🎰 Neon Slots" },
       { type: 14, spacing: 1 },
-      { type: 10, content: "[ #{spin.join(' | ')} ]\n\nTwo outta three, not bad chat~ You grabbed **#{payout_result[:winnings]}** #{EMOJI_STRINGS['s_coin']}.#{extras[:text]}\nNew Balance: **#{DB.get_coins(uid)}** #{EMOJI_STRINGS['s_coin']}#{mom_remark(uid, 'arcade')}" }
+      { type: 10, content: "[ #{spin.join(' | ')} ]\n\nTwo outta three, not bad chat~ You grabbed **#{payout_result[:winnings]}** #{EMOJI_STRINGS['s_coin']}.#{extras[:text]}\nNew Balance: **#{DB.get_coins(uid)}** #{EMOJI_STRINGS['s_coin']}#{family_remark(uid, 'arcade')}" }
     ]
     inner << extras[:button] if extras[:button]
     send_cv2(event, [{ type: 17, accent_color: 0x00FF00, components: inner }])
@@ -71,7 +71,7 @@ def execute_slots(event, amount)
       components: [
         { type: 10, content: "## 🎰 Neon Slots" },
         { type: 14, spacing: 1 },
-        { type: 10, content: "[ #{spin.join(' | ')} ]\n\nLOL nothing. Skill issue, better luck next spin I guess~ 😩\nNew Balance: **#{DB.get_coins(uid)}** #{EMOJI_STRINGS['s_coin']}#{mom_remark(uid, 'arcade')}" }
+        { type: 10, content: "[ #{spin.join(' | ')} ]\n\nLOL nothing. Skill issue, better luck next spin I guess~ 😩\nNew Balance: **#{DB.get_coins(uid)}** #{EMOJI_STRINGS['s_coin']}#{family_remark(uid, 'arcade')}" }
       ]
     }])
   end

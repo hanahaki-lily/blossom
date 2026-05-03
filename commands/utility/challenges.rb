@@ -64,7 +64,7 @@ def execute_challenges(event)
   components_inner = [
     { type: 10, content: "## Weekly Challenges" },
     { type: 14, spacing: 1 },
-    { type: 10, content: "#{week_text}\n\n#{challenge_lines}#{bonus_text}#{premium_note}#{mom_remark(uid, 'general')}" }
+    { type: 10, content: "#{week_text}\n\n#{challenge_lines}#{bonus_text}#{premium_note}#{family_remark(uid, 'general')}" }
   ]
 
   # Add claim button if all complete and not yet claimed

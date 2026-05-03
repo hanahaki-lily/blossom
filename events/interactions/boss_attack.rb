@@ -66,7 +66,7 @@ $bot.button(custom_id: /^boss_attack_\d+_\d+$/) do |event|
     update_cv2(event, [{ type: 17, accent_color: 0x00FF00, components: [
       { type: 10, content: "## \u{1F480} #{boss['boss_name']} DEFEATED!" },
       { type: 14, spacing: 1 },
-      { type: 10, content: "You dealt the **FINAL BLOW** \u2014 **#{damage}** damage! \u{1F525}\n\nThe **#{boss['boss_name']}** has been destroyed!\n\n**#{all_participants.size}** fighters each earned **#{BOSS_DEFEAT_PRISMA}** #{EMOJI_STRINGS['prisma']}!\n\nA new boss will appear next month.#{mom_remark(uid, 'arcade')}" }
+      { type: 10, content: "You dealt the **FINAL BLOW** \u2014 **#{damage}** damage! \u{1F525}\n\nThe **#{boss['boss_name']}** has been destroyed!\n\n**#{all_participants.size}** fighters each earned **#{BOSS_DEFEAT_PRISMA}** #{EMOJI_STRINGS['prisma']}!\n\nA new boss will appear next month.#{family_remark(uid, 'arcade')}" }
     ]}])
 
     # Announce in boss channel (all servers that have one set)
@@ -99,7 +99,7 @@ $bot.button(custom_id: /^boss_attack_\d+_\d+$/) do |event|
       components: [
         { type: 10, content: "## \u{1F5E1}\u{FE0F} Attack! \u2014 #{damage} damage!" },
         { type: 14, spacing: 1 },
-        { type: 10, content: "You struck the **#{boss['boss_name']}** for **#{damage}** damage!#{is_sub ? " *(Premium power! +#{BOSS_ATTACK_COMMUNITY_XP} community XP for this server.)*" : ""}\n\n#{bar}\n**HP:** #{new_hp.to_s.gsub(/(\d)(?=(\d{3})+(?!\d))/, '\\1,')} / #{boss['max_hp'].to_s.gsub(/(\d)(?=(\d{3})+(?!\d))/, '\\1,')} (#{hp_pct}%)\n\n**Your Total Damage:** #{total_dmg}\n**Next Attack:** #{format_time_delta(BOSS_ATTACK_COOLDOWN)}#{mom_remark(uid, 'arcade')}" }
+        { type: 10, content: "You struck the **#{boss['boss_name']}** for **#{damage}** damage!#{is_sub ? " *(Premium power! +#{BOSS_ATTACK_COMMUNITY_XP} community XP for this server.)*" : ""}\n\n#{bar}\n**HP:** #{new_hp.to_s.gsub(/(\d)(?=(\d{3})+(?!\d))/, '\\1,')} / #{boss['max_hp'].to_s.gsub(/(\d)(?=(\d{3})+(?!\d))/, '\\1,')} (#{hp_pct}%)\n\n**Your Total Damage:** #{total_dmg}\n**Next Attack:** #{format_time_delta(BOSS_ATTACK_COOLDOWN)}#{family_remark(uid, 'arcade')}" }
       ]
     }])
   end

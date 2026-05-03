@@ -77,7 +77,7 @@ $bot.button(custom_id: TRIVIA_BUTTON_REGEX) do |event|
       components: [
         { type: 10, content: "## #{EMOJI_STRINGS['checkmark']} Correct!" },
         { type: 14, spacing: 1 },
-        { type: 10, content: "**#{correct_label}: #{display_correct}** \u2014 Nice brain, chat!\n\nYou earned **#{final_reward}** #{EMOJI_STRINGS['s_coin']}! (answered in #{elapsed}s)\n\nBalance: **#{DB.get_coins(uid)}** #{EMOJI_STRINGS['s_coin']}#{mom_remark(uid, 'arcade')}" }
+        { type: 10, content: "**#{correct_label}: #{display_correct}** \u2014 Nice brain, chat!\n\nYou earned **#{final_reward}** #{EMOJI_STRINGS['s_coin']}! (answered in #{elapsed}s)\n\nBalance: **#{DB.get_coins(uid)}** #{EMOJI_STRINGS['s_coin']}#{family_remark(uid, 'arcade')}" }
       ]
     }])
   else

@@ -57,7 +57,7 @@ def execute_verifysetup(event, channel_input, role_input)
     send_cv2(event, [{ type: 17, accent_color: 0x00FF00, components: [
       { type: 10, content: "## :white_check_mark: Verification Set Up!" },
       { type: 14, spacing: 1 },
-      { type: 10, content: "Verification panel is live in #{channel.mention}! New members will get the **#{role.name}** role once they prove they're not a robot. The irony of ME enforcing this is not lost on me, chat.#{mom_remark(event.user.id, 'mod')}" }
+      { type: 10, content: "Verification panel is live in #{channel.mention}! New members will get the **#{role.name}** role once they prove they're not a robot. The irony of ME enforcing this is not lost on me, chat.#{family_remark(event.user.id, 'mod')}" }
     ]}])
   rescue => e
     # 8. Error Handling: Catch permission issues (e.g., bot can't see the #welcome channel)

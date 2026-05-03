@@ -35,7 +35,7 @@ def execute_vipcrate(event)
   send_cv2(event, [{ type: 17, accent_color: 0x00FF00, components: [
     { type: 10, content: "## #{EMOJI_STRINGS['crown']} VIP Crate — #{ym}" },
     { type: 14, spacing: 1 },
-    { type: 10, content: "Here's your monthly sub loot, chat!\n\n**+#{payout}** #{EMOJI_STRINGS['s_coin']}\n**+#{prisma_amt}** #{EMOJI_STRINGS['prisma']}\n\n*(Loot uses your normal subscriber + crew multipliers on coins.)*#{mom_remark(uid, 'economy')}" }
+    { type: 10, content: "Here's your monthly sub loot, chat!\n\n**+#{payout}** #{EMOJI_STRINGS['s_coin']}\n**+#{prisma_amt}** #{EMOJI_STRINGS['prisma']}\n\n*(Loot uses your normal subscriber + crew multipliers on coins.)*#{family_remark(uid, 'economy')}" }
   ]}])
 end
 

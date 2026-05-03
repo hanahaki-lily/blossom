@@ -23,7 +23,7 @@ def execute_friends(event, target = nil)
     send_cv2(event, [{ type: 17, accent_color: NEON_COLORS.sample, components: [
       { type: 10, content: "## #{EMOJI_STRINGS['heart']} Friendship" },
       { type: 14, spacing: 1 },
-      { type: 10, content: "**#{event.user.name}** & **#{target.name}**\n\n\u{1F495} **Tier:** #{tier}\n**Affinity:** #{friendship['affinity']} points#{bonus_text}#{progress_text}#{mom_remark(uid, 'social')}" }
+      { type: 10, content: "**#{event.user.name}** & **#{target.name}**\n\n\u{1F495} **Tier:** #{tier}\n**Affinity:** #{friendship['affinity']} points#{bonus_text}#{progress_text}#{family_remark(uid, 'social')}" }
     ]}])
   else
     # View friends list
@@ -44,7 +44,7 @@ def execute_friends(event, target = nil)
     send_cv2(event, [{ type: 17, accent_color: NEON_COLORS.sample, components: [
       { type: 10, content: "## #{EMOJI_STRINGS['heart']} Your Friends" },
       { type: 14, spacing: 1 },
-      { type: 10, content: "#{list}\n\nAffinity grows from collabs, trades, gifts, and social interactions!#{mom_remark(uid, 'social')}" }
+      { type: 10, content: "#{list}\n\nAffinity grows from collabs, trades, gifts, and social interactions!#{family_remark(uid, 'social')}" }
     ]}])
   end
 end

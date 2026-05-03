@@ -22,7 +22,7 @@ def execute_autosell(event)
   components = [{ type: 17, accent_color: new_state ? 0x00FF00 : 0xFF0000, components: [
     { type: 10, content: "## ♻️ Auto-Sell: #{status}" },
     { type: 14, spacing: 1 },
-    { type: 10, content: "#{desc}#{mom_remark(uid, 'gacha')}" }
+    { type: 10, content: "#{desc}#{family_remark(uid, 'gacha')}" }
   ]}]
   send_cv2(event, components)
 end

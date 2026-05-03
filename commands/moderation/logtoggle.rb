@@ -52,7 +52,7 @@ def execute_logtoggle(event, type)
   send_cv2(event, [{ type: 17, accent_color: NEON_COLORS.sample, components: [
     { type: 10, content: "## #{EMOJI_STRINGS['info']} Logging Updated" },
     { type: 14, spacing: 1 },
-    { type: 10, content: "**#{type.capitalize}** logging is now #{status}.\n\n*#{flavor}*#{mom_remark(event.user.id, 'mod')}" }
+    { type: 10, content: "**#{type.capitalize}** logging is now #{status}.\n\n*#{flavor}*#{family_remark(event.user.id, 'mod')}" }
   ]}])
 end
 

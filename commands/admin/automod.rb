@@ -23,7 +23,7 @@ def execute_automod(event, action = nil, *args)
     return send_cv2(event, [{ type: 17, accent_color: NEON_COLORS.sample, components: [
       { type: 10, content: "## \u{1F6E1}\u{FE0F} Auto-Mod Settings" },
       { type: 14, spacing: 1 },
-      { type: 10, content: "**Link Filter:** #{config['link_filter'] ? "\u2705 ON" : "\u274C OFF"}\n**Spam Filter:** #{config['spam_filter'] ? "\u2705 ON" : "\u274C OFF"}\n**Banned Words:** #{word_count} word#{word_count == 1 ? '' : 's'} banned\n\n**Commands:**\n`#{PREFIX}automod links` \u2014 Toggle link filter\n`#{PREFIX}automod spam` \u2014 Toggle spam filter\n`#{PREFIX}automod words add <word>` \u2014 Add banned word\n`#{PREFIX}automod words remove <word>` \u2014 Remove banned word\n`#{PREFIX}automod words list` \u2014 View banned words (DM only)#{mom_remark(event.user.id, 'admin')}" }
+      { type: 10, content: "**Link Filter:** #{config['link_filter'] ? "\u2705 ON" : "\u274C OFF"}\n**Spam Filter:** #{config['spam_filter'] ? "\u2705 ON" : "\u274C OFF"}\n**Banned Words:** #{word_count} word#{word_count == 1 ? '' : 's'} banned\n\n**Commands:**\n`#{PREFIX}automod links` \u2014 Toggle link filter\n`#{PREFIX}automod spam` \u2014 Toggle spam filter\n`#{PREFIX}automod words add <word>` \u2014 Add banned word\n`#{PREFIX}automod words remove <word>` \u2014 Remove banned word\n`#{PREFIX}automod words list` \u2014 View banned words (DM only)#{family_remark(event.user.id, 'admin')}" }
     ]}])
   end
 
@@ -34,7 +34,7 @@ def execute_automod(event, action = nil, *args)
     send_cv2(event, [{ type: 17, accent_color: new_state ? 0x00FF00 : 0xFF0000, components: [
       { type: 10, content: "## \u{1F6E1}\u{FE0F} Link Filter" },
       { type: 14, spacing: 1 },
-      { type: 10, content: "Link filter is now #{status}.\n#{new_state ? "Messages containing links from non-admins will be deleted." : "Links are allowed again."}#{mom_remark(event.user.id, 'admin')}" }
+      { type: 10, content: "Link filter is now #{status}.\n#{new_state ? "Messages containing links from non-admins will be deleted." : "Links are allowed again."}#{family_remark(event.user.id, 'admin')}" }
     ]}])
 
   when 'spam'
@@ -43,7 +43,7 @@ def execute_automod(event, action = nil, *args)
     send_cv2(event, [{ type: 17, accent_color: new_state ? 0x00FF00 : 0xFF0000, components: [
       { type: 10, content: "## \u{1F6E1}\u{FE0F} Spam Filter" },
       { type: 14, spacing: 1 },
-      { type: 10, content: "Spam filter is now #{status}.\n#{new_state ? "Users sending #{SPAM_MESSAGE_LIMIT}+ messages in #{SPAM_TIME_WINDOW}s will be timed out for #{SPAM_MUTE_DURATION}s." : "Spam detection is off."}#{mom_remark(event.user.id, 'admin')}" }
+      { type: 10, content: "Spam filter is now #{status}.\n#{new_state ? "Users sending #{SPAM_MESSAGE_LIMIT}+ messages in #{SPAM_TIME_WINDOW}s will be timed out for #{SPAM_MUTE_DURATION}s." : "Spam detection is off."}#{family_remark(event.user.id, 'admin')}" }
     ]}])
 
   when 'words'
@@ -64,7 +64,7 @@ def execute_automod(event, action = nil, *args)
       send_cv2(event, [{ type: 17, accent_color: 0x00FF00, components: [
         { type: 10, content: "## \u{1F6E1}\u{FE0F} Word Added" },
         { type: 14, spacing: 1 },
-        { type: 10, content: "Added `#{word.downcase}` to the banned words list. Messages containing this word will be deleted.#{mom_remark(event.user.id, 'admin')}" }
+        { type: 10, content: "Added `#{word.downcase}` to the banned words list. Messages containing this word will be deleted.#{family_remark(event.user.id, 'admin')}" }
       ]}])
 
     when 'remove'
@@ -80,7 +80,7 @@ def execute_automod(event, action = nil, *args)
       send_cv2(event, [{ type: 17, accent_color: NEON_COLORS.sample, components: [
         { type: 10, content: "## \u{1F6E1}\u{FE0F} Word Removed" },
         { type: 14, spacing: 1 },
-        { type: 10, content: "Removed `#{word.downcase}` from the banned words list.#{mom_remark(event.user.id, 'admin')}" }
+        { type: 10, content: "Removed `#{word.downcase}` from the banned words list.#{family_remark(event.user.id, 'admin')}" }
       ]}])
 
     when 'list'
@@ -91,7 +91,7 @@ def execute_automod(event, action = nil, *args)
         send_cv2(event, [{ type: 17, accent_color: NEON_COLORS.sample, components: [
           { type: 10, content: "## \u{1F6E1}\u{FE0F} Banned Words" },
           { type: 14, spacing: 1 },
-          { type: 10, content: "Sent the banned words list to your DMs! Check your inbox.#{mom_remark(event.user.id, 'admin')}" }
+          { type: 10, content: "Sent the banned words list to your DMs! Check your inbox.#{family_remark(event.user.id, 'admin')}" }
         ]}])
       rescue
         send_cv2(event, [{ type: 17, accent_color: 0xFF0000, components: [

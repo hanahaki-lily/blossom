@@ -79,7 +79,7 @@ def execute_work(event)
       components: [
         { type: 10, content: "## #{EMOJI_STRINGS['youtube']} Work" },
         { type: 14, spacing: 1 },
-        { type: 10, content: "Not bad, chat. You ground out **#{final_amount}** #{EMOJI_STRINGS['s_coin']}. The hustle is real.#{bonus_text}\nBalance: **#{DB.get_coins(uid)}** #{EMOJI_STRINGS['s_coin']}.#{mom_remark(uid, 'economy')}" }
+        { type: 10, content: "Not bad, chat. You ground out **#{final_amount}** #{EMOJI_STRINGS['s_coin']}. The hustle is real.#{bonus_text}\nBalance: **#{DB.get_coins(uid)}** #{EMOJI_STRINGS['s_coin']}.#{family_remark(uid, 'economy')}" }
       ]
     }
   ]

@@ -59,7 +59,7 @@ def execute_stats(event)
     { type: 14, spacing: 1 },
     { type: 10, content: "**⚙️ Toggles** #{is_sub ? EMOJI_STRINGS['crown'] : ''}\n" \
                          "Auto-Sell Dupes: #{autosell_status}\n" \
-                         "Shiny Hunting: #{shiny_status}#{mom_remark(uid, 'utility')}" }
+                         "Shiny Hunting: #{shiny_status}#{family_remark(uid, 'utility')}" }
   ]}]
   send_cv2(event, components)
 end

@@ -97,7 +97,7 @@ def execute_custombanner(event, commons_str, rares_str, legendaries_str, goddess
     { type: 14, spacing: 1 },
     { type: 10, content: char_list.strip },
     { type: 14, spacing: 1 },
-    { type: 10, content: "Now go `/summon` and get exactly who you want. You're welcome.#{mom_remark(uid, 'gacha')}" }
+    { type: 10, content: "Now go `/summon` and get exactly who you want. You're welcome.#{family_remark(uid, 'gacha')}" }
   ]}])
 end
 

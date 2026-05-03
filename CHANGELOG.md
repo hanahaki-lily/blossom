@@ -38,6 +38,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 
 ### Changed
 
+- **Family flavor text:** **`mom_remark`** still fires **only** for **`DEV_ID`** (primary creator). Command responses now use **`family_remark`**, which adds **Uncle Z / Zin** lines (`DEV_IDS[1]`) and **Berry** (`BERRY_MOM_ID`, other mom) while keeping mama as #1 in Blossom’s bit. **`DEV_IDS`** now includes Z’s snowflake as second dev.
+
 - **Slash command sync:** `components/slash_registry.rb` lists every slash schema in one place; the block is **`=begin` / `=end`** by default so Blossom does **not** re-register with Discord on every boot (handlers still work). Remove the comment wrapper when you need a one-time sync. Duplicate **`/leaderboard`** and **`/vote`** registration remains removed from **`events/passive/ready.rb`**.
 - **`/support` / `b!support`:** Invite updated to **https://discord.gg/cZ8zAT42u4** (Sakura Shrine).
 

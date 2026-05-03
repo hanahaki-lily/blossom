@@ -28,7 +28,7 @@ def execute_devhelp(event)
   send_cv2(event, [{ type: 17, accent_color: NEON_COLORS.sample, components: [
     { type: 10, content: "## #{EMOJI_STRINGS['developer']} Developer Commands" },
     { type: 14, spacing: 1 },
-    { type: 10, content: "#{cmd_list}#{mom_remark(event.user.id, 'dev')}" }
+    { type: 10, content: "#{cmd_list}#{family_remark(event.user.id, 'dev')}" }
   ]}])
 end
 

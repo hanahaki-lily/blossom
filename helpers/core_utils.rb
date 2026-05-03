@@ -3,8 +3,10 @@
 # DESCRIPTION: Basic formatting, embed generation, and logging.
 # ==========================================
 
-# Blossom's special remarks when her mom uses a command (same account as primary dev)
+# Primary creator only — mom_remark() fires for this id, never for other DEV_IDS or family.
 MAMA_ID = DEV_ID
+UNCLE_Z_ID = DEV_IDS[1]
+# BERRY_MOM_ID in data/settings.rb
 
 MOM_REMARKS = {
   'economy' => [
@@ -66,10 +68,130 @@ MOM_REMARKS = {
   ]
 }.freeze
 
+# Z / Zin — twin brother of mama, dev access, "favorite uncle" energy
+UNCLE_Z_REMARKS = {
+  'economy' => [
+    "Uncle Z touching the economy like he owns the place — wait, you basically co-signed this build. Respect.",
+    "Zin out here stacking coins. The twin brainrot is genetic and I'm not sorry.",
+    "Favorite uncle moment: actually grinding instead of just yelling at chat. Love that for you."
+  ],
+  'gacha' => [
+    "Uncle Z pulling cards? Uncle luck activate — don't embarrass the family tree.",
+    "Z's on the gacha screen. Everyone act natural. (You won't.)",
+    "If you shaft your nephew I'm telling mom. ...I am the bot. You get what I mean."
+  ],
+  'social' => [
+    "Social battery: uncle edition. Twin of mama so I legally have to hype you a little.",
+    "Zin spreading love in MY arcade. Favorite uncle behavior, honestly.",
+    "Uncle Z in the chat and the vibes actually improved? Wild."
+  ],
+  'arcade' => [
+    "Uncle gambling genes kicking in — house says you're still family tho.",
+    "Z hit the machines. If you lose I'm still proud of you. If you win I want a cut. (Kidding. Mostly.)",
+    "Twin turbo chaos at the slots. Iconic."
+  ],
+  'admin' => [
+    "Uncle Z with the admin keys — mom trusted you and honestly? Same brain, different hoodie.",
+    "Favorite uncle running setup. Don't tell me I have to behave now.",
+    "Zin said we're tweaking the arcade and I say yes sir that's uncle clearance."
+  ],
+  'dev' => [
+    "Workshop time with Uncle Z — twin dev hours, the good kind of frightening.",
+    "Zin in the console. I promise I'll only judge you silently.",
+    "Behind-the-scenes with my favorite uncle. Mom builds, you patch, I talk smack. Teamwork."
+  ],
+  'mod' => [
+    "Uncle Z handing out justice. Do NOT make him use the stern voice.",
+    "Mod pass from Zin hits like a favorite uncle saying 'I'm not mad, I'm disappointed' — obey.",
+    "Twin authority activated. Listen to him or answer to mom later."
+  ],
+  'utility' => [
+    "Uncle Z poking buttons again. Iconic.",
+    "Z checking stats like a speedrunner. Proud of you, weirdly.",
+    "Favorite uncle config moment — go off."
+  ],
+  'general' => [
+    "Uncle Z~ If mom's #1 favorite creator, you're my favorite uncle. The bar is high. Keep up.",
+    "Zin in the house! Twin chaos unlocked.",
+    "Hey Zin — mama's twin, my honorary plug-in uncle. Don't let it go to your head. (...Much.)"
+  ]
+}.freeze
+
+# Berry — wife / also mom; mama is still #1 in Blossom's heart
+BERRY_MOM_REMARKS = {
+  'economy' => [
+    "Berry-mom securing the bag~ You're mom too, just... ya know, mama's still my #1 favorite. House rules.",
+    "Other mom grinding coins? Elite. Don't tell mama I'm cheering extra loud.",
+    "Berry out here hustling. The Neon Arcade has the best moms AND I'm not accepting debate."
+  ],
+  'gacha' => [
+    "Berry-mom on the pulls — RNG be kind to mom #2. (Mama's still #1 in my heart. You signed up for this.)",
+    "Other mom rolling? I hope you hit god tier. You deserve the shiny flex.",
+    "Gacha brain from Berry — taste. If you whiff I pretend I didn't see it."
+  ],
+  'social' => [
+    "Berry~! Other mom in chat. Everyone be nice or I snitch to mama.",
+    "My wife-mom showing love in the arcade. Yes that's a title. Yes she's earning it.",
+    "Social butterfly Berry edition. Favorite... okay SECOND-favorite mom energy."
+  ],
+  'arcade' => [
+    "Berry-mom at the machines — win one for the wives' club. Mama can cope.",
+    "Other mom gambling responsibly? Lies. But I support you.",
+    "Arcade time with Berry. If you lose we blame lag. If you win we credit genetics."
+  ],
+  'admin' => [
+    "Other mom with admin perms — mama built the bot but Berry runs a tight ship too. Listen.",
+    "Berry configuring stuff? Hot. Compliant arcade. Everyone say thank you Berry-mom.",
+    "Wife-mom admin moment. I'm behaving. Mostly."
+  ],
+  'dev' => [
+    "Berry in the dev-ish zone? Bold. Cute. Don't brick me.",
+    "Other mom touching controls she probably shouldn't — I love you anyway.",
+    "If mama's the architect, Berry's the reason the lights stay on emotionally. Facts."
+  ],
+  'mod' => [
+    "Berry-mom on mod duty — gentle but ruthless if you're weird. As it should be.",
+    "Other mom said knock it off. That means knock it off.",
+    "Wife-mom justice hits different. Obey."
+  ],
+  'utility' => [
+    "Berry poking settings~ Other mom curiosity activated.",
+    "Berry stats dive? I see you. Mama's still #1 but you're adorable.",
+    "Utility run from wife-mom. The arcade feels safer already."
+  ],
+  'general' => [
+    "Berry~ my other mom. Mama's still my favorite favorite — but you're absolutely mom too, no take-backs.",
+    "Hi Berry-mom. Double mom privilege in this server and I'm not apologizing.",
+    "Wife-mom alert — mama's partner in crime. Be nice to her or I WILL tell."
+  ]
+}.freeze
+
 def mom_remark(uid, category = 'general')
   return nil unless uid.to_i == MAMA_ID
   remarks = MOM_REMARKS[category] || MOM_REMARKS['general']
   "\n\n*#{remarks.sample}*"
+end
+
+def uncle_z_remark(uid, category = 'general')
+  return nil unless UNCLE_Z_ID && uid.to_i == UNCLE_Z_ID
+  remarks = UNCLE_Z_REMARKS[category] || UNCLE_Z_REMARKS['general']
+  "\n\n*#{remarks.sample}*"
+end
+
+def berry_mom_remark(uid, category = 'general')
+  return nil unless uid.to_i == BERRY_MOM_ID
+  remarks = BERRY_MOM_REMARKS[category] || BERRY_MOM_REMARKS['general']
+  "\n\n*#{remarks.sample}*"
+end
+
+# Use this on player-facing commands so mama, Uncle Z, and Berry-mom all get flavor.
+def family_remark(uid, category = 'general')
+  return nil if uid.nil?
+  u = uid.to_i
+  return mom_remark(uid, category) if u == MAMA_ID
+  return uncle_z_remark(uid, category) if UNCLE_Z_ID && u == UNCLE_Z_ID
+  return berry_mom_remark(uid, category) if u == BERRY_MOM_ID
+  nil
 end
 
 def format_fav_line(name)
@@ -239,7 +361,7 @@ def interaction_embed(event, action_name, gifs, target)
     { type: 14, spacing: 1 },
     { type: 12, items: [{ media: { url: gif_url } }] }
   ]
-  mama_note = mom_remark(actor_id, 'social')
+  mama_note = family_remark(actor_id, 'social')
   inner << { type: 10, content: mama_note } if mama_note
 
   send_cv2(event, [{ type: 17, accent_color: NEON_COLORS.sample, components: inner }])

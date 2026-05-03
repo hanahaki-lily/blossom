@@ -132,7 +132,7 @@ def bj_resolve_button(event, uid, session, outcome)
     inner = [
       { type: 10, content: "## 🃏 Blackjack — **YOU WIN!**" },
       { type: 14, spacing: 1 },
-      { type: 10, content: "#{table_display}#{doubled_note}\n\nGG, you beat the dealer! **#{payout_result[:winnings]}** #{EMOJI_STRINGS['s_coin']} yours.#{extras[:text]}\nNew Balance: **#{DB.get_coins(uid)}** #{EMOJI_STRINGS['s_coin']}#{mom_remark(uid, 'arcade')}" }
+      { type: 10, content: "#{table_display}#{doubled_note}\n\nGG, you beat the dealer! **#{payout_result[:winnings]}** #{EMOJI_STRINGS['s_coin']} yours.#{extras[:text]}\nNew Balance: **#{DB.get_coins(uid)}** #{EMOJI_STRINGS['s_coin']}#{family_remark(uid, 'arcade')}" }
     ]
     inner << extras[:button] if extras[:button]
     event.update_message(content: '', flags: CV2_FLAG, components: [{ type: 17, accent_color: 0x00FF00, components: inner }])
@@ -155,7 +155,7 @@ def bj_resolve_button(event, uid, session, outcome)
       components: [{ type: 17, accent_color: 0xFF0000, components: [
         { type: 10, content: "## 🃏 Blackjack — **BUST!**" },
         { type: 14, spacing: 1 },
-        { type: 10, content: "#{table_display}#{doubled_note}\n\nOver 21, LMAOOO. **#{bet}** #{EMOJI_STRINGS['s_coin']} gone. Greedy much?\nNew Balance: **#{DB.get_coins(uid)}** #{EMOJI_STRINGS['s_coin']}#{mom_remark(uid, 'arcade')}" }
+        { type: 10, content: "#{table_display}#{doubled_note}\n\nOver 21, LMAOOO. **#{bet}** #{EMOJI_STRINGS['s_coin']} gone. Greedy much?\nNew Balance: **#{DB.get_coins(uid)}** #{EMOJI_STRINGS['s_coin']}#{family_remark(uid, 'arcade')}" }
       ]}]
     )
 
@@ -166,7 +166,7 @@ def bj_resolve_button(event, uid, session, outcome)
       components: [{ type: 17, accent_color: 0xFF0000, components: [
         { type: 10, content: "## 🃏 Blackjack — **YOU LOSE**" },
         { type: 14, spacing: 1 },
-        { type: 10, content: "#{table_display}#{doubled_note}\n\nDealer wins~ **#{bet}** #{EMOJI_STRINGS['s_coin']} is mine now. Better luck next time, chat.\nNew Balance: **#{DB.get_coins(uid)}** #{EMOJI_STRINGS['s_coin']}#{mom_remark(uid, 'arcade')}" }
+        { type: 10, content: "#{table_display}#{doubled_note}\n\nDealer wins~ **#{bet}** #{EMOJI_STRINGS['s_coin']} is mine now. Better luck next time, chat.\nNew Balance: **#{DB.get_coins(uid)}** #{EMOJI_STRINGS['s_coin']}#{family_remark(uid, 'arcade')}" }
       ]}]
     )
   end

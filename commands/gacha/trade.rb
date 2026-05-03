@@ -77,7 +77,7 @@ def execute_trade(event, target_user, offer_str, request_str)
                "Accept or dodge? Clock's ticking — expires <t:#{expire_time.to_i}:R>."
   trade_desc += "\n\n*Excuse me?? Someone's putting ME on the trading block?? I am NOT a bargaining chip, chat. ...But like, make sure I go to someone cool at least.*" if my_char_real == 'Blossom' || their_char_real == 'Blossom'
 
-  trade_desc += mom_remark(uid_a, 'gacha').to_s
+  trade_desc += family_remark(uid_a, 'gacha').to_s
 
   embed = Discordrb::Webhooks::Embed.new(
     title: '🤝 Trade Offer!',

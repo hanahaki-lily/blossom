@@ -21,7 +21,7 @@ def execute_craft(event, recipe_id = nil)
     return send_cv2(event, [{ type: 17, accent_color: NEON_COLORS.sample, components: [
       { type: 10, content: "## \u{2699}\u{FE0F} Crafting Workshop" },
       { type: 14, spacing: 1 },
-      { type: 10, content: "**Your Materials:**\n\u{2699}\u{FE0F} Scrap: **#{scrap}** | \u{1F48E} Essence: **#{essence}**\n\n**Recipes:**\n#{recipe_list}\n\nUse `#{PREFIX}craft <name>` to craft an item.\nUse `#{PREFIX}salvage <amount> [rarity]` to break down cards.#{mom_remark(uid, 'general')}" }
+      { type: 10, content: "**Your Materials:**\n\u{2699}\u{FE0F} Scrap: **#{scrap}** | \u{1F48E} Essence: **#{essence}**\n\n**Recipes:**\n#{recipe_list}\n\nUse `#{PREFIX}craft <name>` to craft an item.\nUse `#{PREFIX}salvage <amount> [rarity]` to break down cards.#{family_remark(uid, 'general')}" }
     ]}])
   end
 
@@ -72,7 +72,7 @@ def execute_craft(event, recipe_id = nil)
   send_cv2(event, [{ type: 17, accent_color: 0x00FF00, components: [
     { type: 10, content: "## \u{2699}\u{FE0F} Crafted: #{recipe[:name]}!" },
     { type: 14, spacing: 1 },
-    { type: 10, content: "Successfully crafted **#{recipe[:name]}**!\n\n*#{recipe[:desc]}*\n\nIt's been equipped automatically. Use `/profile` to manage your cosmetics.#{mom_remark(uid, 'general')}" }
+    { type: 10, content: "Successfully crafted **#{recipe[:name]}**!\n\n*#{recipe[:desc]}*\n\nIt's been equipped automatically. Use `/profile` to manage your cosmetics.#{family_remark(uid, 'general')}" }
   ]}])
 end
 
@@ -136,7 +136,7 @@ def execute_salvage(event, amount_str = nil, rarity_filter = nil)
   send_cv2(event, [{ type: 17, accent_color: 0x00FF00, components: [
     { type: 10, content: "## \u{2699}\u{FE0F} Salvaged #{total_salvaged} #{rarity_filter.capitalize} Cards" },
     { type: 14, spacing: 1 },
-    { type: 10, content: "**Materials gained:** #{gained_text}\n\nUse `#{PREFIX}craft` to see what you can build!#{mom_remark(uid, 'general')}" }
+    { type: 10, content: "**Materials gained:** #{gained_text}\n\nUse `#{PREFIX}craft` to see what you can build!#{family_remark(uid, 'general')}" }
   ]}])
 end
 

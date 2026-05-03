@@ -80,7 +80,7 @@ def execute_post(event)
       components: [
         { type: 10, content: "## #{EMOJI_STRINGS['twitter']} New Post Uploaded!" },
         { type: 14, spacing: 1 },
-        { type: 10, content: "Your **#{platform}** post went kinda viral, nice flex. You earned **#{final_reward}** #{EMOJI_STRINGS['s_coin']}!#{bonus_text}\nBalance: **#{DB.get_coins(uid)}** #{EMOJI_STRINGS['s_coin']}.#{mom_remark(uid, 'economy')}" }
+        { type: 10, content: "Your **#{platform}** post went kinda viral, nice flex. You earned **#{final_reward}** #{EMOJI_STRINGS['s_coin']}!#{bonus_text}\nBalance: **#{DB.get_coins(uid)}** #{EMOJI_STRINGS['s_coin']}.#{family_remark(uid, 'economy')}" }
       ]
     }
   ]

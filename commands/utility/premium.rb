@@ -18,9 +18,9 @@ def execute_premium(event)
   body = "**Neon Arcade VIP — cheat sheet**\n#{lines.join("\n")}"
 
   footer = if url.empty?
-             "\n\n*No Ko-fi URL on this host (`KOFI_PAGE_URL`). Still flexing the perks tho.*#{mom_remark(uid, 'general')}"
+             "\n\n*No Ko-fi URL on this host (`KOFI_PAGE_URL`). Still flexing the perks tho.*#{family_remark(uid, 'general')}"
            else
-             "\n\n_Subscribe via Ko-fi, link Discord (Ko‑fi Discord rewards → same subscriber role Blossom checks), perks flip on._#{mom_remark(uid, 'general')}"
+             "\n\n_Subscribe via Ko-fi, link Discord (Ko‑fi Discord rewards → same subscriber role Blossom checks), perks flip on._#{family_remark(uid, 'general')}"
            end
 
   send_cv2(event, [{ type: 17, accent_color: NEON_COLORS.sample, components: [

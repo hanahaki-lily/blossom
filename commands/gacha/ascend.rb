@@ -60,7 +60,7 @@ def execute_ascend(event, search_name)
   send_cv2(event, [{ type: 17, accent_color: 0xFFD700, components: [
     { type: 10, content: "## #{EMOJI_STRINGS['neonsparkle']} ASCENSION COMPLETE #{EMOJI_STRINGS['neonsparkle']}" },
     { type: 14, spacing: 1 },
-    { type: 10, content: "You dropped **#{ascension_cost}** coins and sacrificed 5 copies of **#{owned_name}** to the Neon Arcade gods.\n\nThey've been reborn as a **Shiny Ascended** character. POG. Check your `/collection`!#{mom_remark(event.user.id, 'gacha')}" }
+    { type: 10, content: "You dropped **#{ascension_cost}** coins and sacrificed 5 copies of **#{owned_name}** to the Neon Arcade gods.\n\nThey've been reborn as a **Shiny Ascended** character. POG. Check your `/collection`!#{family_remark(event.user.id, 'gacha')}" }
   ]}])
 end
 

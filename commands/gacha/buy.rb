@@ -88,7 +88,7 @@ def execute_buy(event, search_name, qty_override = nil)
     return send_cv2(event, [{ type: 17, accent_color: NEON_COLORS.sample, components: [
       { type: 10, content: "## 🛒 Sold!" },
       { type: 14, spacing: 1 },
-      { type: 10, content: "Cha-ching! You copped #{qty_text}**#{item_data[:name]}** for **#{total_price}** coins.\nStashed in your inventory. They'll kick in automatically when you need 'em.#{mom_remark(uid, 'economy')}" }
+      { type: 10, content: "Cha-ching! You copped #{qty_text}**#{item_data[:name]}** for **#{total_price}** coins.\nStashed in your inventory. They'll kick in automatically when you need 'em.#{family_remark(uid, 'economy')}" }
     ]}])
   end
 
@@ -168,7 +168,7 @@ def execute_buy(event, search_name, qty_override = nil)
     { type: 14, spacing: 1 },
     { type: 10, content: "#{emoji} You bought **#{name}** straight up for **#{price}** coins. No RNG needed.\nYou now own **#{new_count}** of them.#{buy_remark}" },
     { type: 14, spacing: 1 },
-    { type: 10, content: "**Wallet Damage:** #{new_coin_bal} coins left#{mom_remark(uid, 'gacha')}" }
+    { type: 10, content: "**Wallet Damage:** #{new_coin_bal} coins left#{family_remark(uid, 'gacha')}" }
   ]}])
 end
 

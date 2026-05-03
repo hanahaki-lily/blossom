@@ -45,7 +45,7 @@ def execute_say(event, channel_raw, text)
     return send_cv2(event, [{ type: 17, accent_color: 0xFF0000, components: [
       { type: 10, content: "## #{EMOJI_STRINGS['x_']} Wrong Lobby" },
       { type: 14, spacing: 1 },
-      { type: 10, content: "Run this from a **server** channel — I need to know which arcade we're posting to.#{mom_remark(event.user.id, 'admin')}" }
+      { type: 10, content: "Run this from a **server** channel — I need to know which arcade we're posting to.#{family_remark(event.user.id, 'admin')}" }
     ]}])
   end
 
@@ -53,7 +53,7 @@ def execute_say(event, channel_raw, text)
     return send_cv2(event, [{ type: 17, accent_color: 0xFF0000, components: [
       { type: 10, content: "## #{EMOJI_STRINGS['x_']} Permission Denied" },
       { type: 14, spacing: 1 },
-      { type: 10, content: "Administrator only. I'm not your personal broadcast system unless you're actually running the show.#{mom_remark(event.user.id, 'admin')}" }
+      { type: 10, content: "Administrator only. I'm not your personal broadcast system unless you're actually running the show.#{family_remark(event.user.id, 'admin')}" }
     ]}])
   end
 
@@ -62,7 +62,7 @@ def execute_say(event, channel_raw, text)
     return send_cv2(event, [{ type: 17, accent_color: 0xFFA500, components: [
       { type: 10, content: "## #{EMOJI_STRINGS['confused']} Need a Channel" },
       { type: 14, spacing: 1 },
-      { type: 10, content: "Drop a **#channel** mention (or channel ID), then your message.\n\n#{SAY_USAGE}#{mom_remark(event.user.id, 'admin')}" }
+      { type: 10, content: "Drop a **#channel** mention (or channel ID), then your message.\n\n#{SAY_USAGE}#{family_remark(event.user.id, 'admin')}" }
     ]}])
   end
 
@@ -71,7 +71,7 @@ def execute_say(event, channel_raw, text)
     return send_cv2(event, [{ type: 17, accent_color: 0xFFA500, components: [
       { type: 10, content: "## #{EMOJI_STRINGS['confused']} Say Something" },
       { type: 14, spacing: 1 },
-      { type: 10, content: "Embed's gotta have text, genius.\n\n#{SAY_USAGE}#{mom_remark(event.user.id, 'admin')}" }
+      { type: 10, content: "Embed's gotta have text, genius.\n\n#{SAY_USAGE}#{family_remark(event.user.id, 'admin')}" }
     ]}])
   end
 
@@ -79,7 +79,7 @@ def execute_say(event, channel_raw, text)
     return send_cv2(event, [{ type: 17, accent_color: 0xFF0000, components: [
       { type: 10, content: "## #{EMOJI_STRINGS['x_']} Too Long" },
       { type: 14, spacing: 1 },
-      { type: 10, content: "Discord caps embed descriptions at **4096** characters. Trim it or split into two posts.#{mom_remark(event.user.id, 'admin')}" }
+      { type: 10, content: "Discord caps embed descriptions at **4096** characters. Trim it or split into two posts.#{family_remark(event.user.id, 'admin')}" }
     ]}])
   end
 
@@ -88,7 +88,7 @@ def execute_say(event, channel_raw, text)
     return send_cv2(event, [{ type: 17, accent_color: 0xFF0000, components: [
       { type: 10, content: "## #{EMOJI_STRINGS['confused']} Channel Not Found" },
       { type: 14, spacing: 1 },
-      { type: 10, content: "That channel isn't in **this** server or I can't see it. Double-check the mention.#{mom_remark(event.user.id, 'admin')}" }
+      { type: 10, content: "That channel isn't in **this** server or I can't see it. Double-check the mention.#{family_remark(event.user.id, 'admin')}" }
     ]}])
   end
 
@@ -107,14 +107,14 @@ def execute_say(event, channel_raw, text)
     return send_cv2(event, [{ type: 17, accent_color: 0xFF0000, components: [
       { type: 10, content: "## #{EMOJI_STRINGS['error']} Couldn't Send" },
       { type: 14, spacing: 1 },
-      { type: 10, content: "Discord blocked me — probably missing **Send Messages** or **Embed Links** in #{target.mention}.\n`#{e.class}: #{e.message}`#{mom_remark(event.user.id, 'admin')}" }
+      { type: 10, content: "Discord blocked me — probably missing **Send Messages** or **Embed Links** in #{target.mention}.\n`#{e.class}: #{e.message}`#{family_remark(event.user.id, 'admin')}" }
     ]}])
   end
 
   send_cv2(event, [{ type: 17, accent_color: 0x00FF00, components: [
     { type: 10, content: "## #{EMOJI_STRINGS['checkmark']} Delivered" },
     { type: 14, spacing: 1 },
-    { type: 10, content: "Embed's live in #{target.mention}. Don't make me regret giving you the PA mic.#{mom_remark(event.user.id, 'admin')}" }
+    { type: 10, content: "Embed's live in #{target.mention}. Don't make me regret giving you the PA mic.#{family_remark(event.user.id, 'admin')}" }
   ]}])
 end
 

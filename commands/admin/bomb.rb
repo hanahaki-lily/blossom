@@ -60,7 +60,7 @@ def execute_bomb_admin(event, action, channel_id = nil)
     send_cv2(event, [{ type: 17, accent_color: 0x00FF00, components: [
       { type: 10, content: "## #{EMOJI_STRINGS['bomb']} Bomb Drops Enabled!" },
       { type: 14, spacing: 1 },
-      { type: 10, content: "Bombs are now live in <##{channel_id}>! Chat at your own risk~#{mom_remark(event.user.id, 'admin')}" }
+      { type: 10, content: "Bombs are now live in <##{channel_id}>! Chat at your own risk~#{family_remark(event.user.id, 'admin')}" }
     ]}])
 
   when 'disable', 'off'
@@ -72,7 +72,7 @@ def execute_bomb_admin(event, action, channel_id = nil)
     send_cv2(event, [{ type: 17, accent_color: NEON_COLORS.sample, components: [
       { type: 10, content: "## #{EMOJI_STRINGS['bomb']} Bomb Drops Disabled" },
       { type: 14, spacing: 1 },
-      { type: 10, content: "Bomb drops disabled. The arcade is safe... for now.#{mom_remark(event.user.id, 'admin')}" }
+      { type: 10, content: "Bomb drops disabled. The arcade is safe... for now.#{family_remark(event.user.id, 'admin')}" }
     ]}])
 
   else

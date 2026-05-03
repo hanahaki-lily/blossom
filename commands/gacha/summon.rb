@@ -208,7 +208,7 @@ def execute_summon(event)
     { type: 14, spacing: 1 },
     { type: 10, content: desc },
     { type: 14, spacing: 1 },
-    { type: 10, content: "**Wallet Damage** (-#{summon_cost} #{EMOJI_STRINGS['s_coin']}#{shiny_mode ? ' Shiny Mode' : ''}#{summon_discount_applied ? ' · Stipend' : ''})\n#{DB.get_coins(uid)} #{EMOJI_STRINGS['s_coin']}#{is_sub ? "\n**Pity:** #{DB.get_pity(uid)}/#{PITY_THRESHOLD} · **Stipend pulls left:** #{DB.premium_summon_discount_remaining(uid)}" : ''}#{mom_remark(uid, 'gacha')}" },
+    { type: 10, content: "**Wallet Damage** (-#{summon_cost} #{EMOJI_STRINGS['s_coin']}#{shiny_mode ? ' Shiny Mode' : ''}#{summon_discount_applied ? ' · Stipend' : ''})\n#{DB.get_coins(uid)} #{EMOJI_STRINGS['s_coin']}#{is_sub ? "\n**Pity:** #{DB.get_pity(uid)}/#{PITY_THRESHOLD} · **Stipend pulls left:** #{DB.premium_summon_discount_remaining(uid)}" : ''}#{family_remark(uid, 'gacha')}" },
     { type: 14, spacing: 1 },
     { type: 12, items: [{ media: { url: gif_url } }] }
   ]}])

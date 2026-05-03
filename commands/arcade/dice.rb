@@ -60,7 +60,7 @@ def execute_dice(event, amount, bet)
     inner = [
       { type: 10, content: "## 🎲 High Roller Dice" },
       { type: 14, spacing: 1 },
-      { type: 10, content: "The dice roll... **#{die1}** and **#{die2}**! (Total: **#{total}**)\n\nOkay not bad, chat. You called **#{bet}** and walked away with **#{payout_result[:winnings]}** #{EMOJI_STRINGS['s_coin']}.#{extras[:text]}\nNew Balance: **#{DB.get_coins(uid)}** #{EMOJI_STRINGS['s_coin']}#{mom_remark(uid, 'arcade')}" }
+      { type: 10, content: "The dice roll... **#{die1}** and **#{die2}**! (Total: **#{total}**)\n\nOkay not bad, chat. You called **#{bet}** and walked away with **#{payout_result[:winnings]}** #{EMOJI_STRINGS['s_coin']}.#{extras[:text]}\nNew Balance: **#{DB.get_coins(uid)}** #{EMOJI_STRINGS['s_coin']}#{family_remark(uid, 'arcade')}" }
     ]
     inner << extras[:button] if extras[:button]
     send_cv2(event, [{ type: 17, accent_color: 0x00FF00, components: inner }])
@@ -72,7 +72,7 @@ def execute_dice(event, amount, bet)
       components: [
         { type: 10, content: "## 🎲 High Roller Dice" },
         { type: 14, spacing: 1 },
-        { type: 10, content: "The dice roll... **#{die1}** and **#{die2}**! (Total: **#{total}**)\n\nYou bet **#{bet}** and ate it HARD. **#{amount}** #{EMOJI_STRINGS['s_coin']} gone. Tragic.\nNew Balance: **#{DB.get_coins(uid)}** #{EMOJI_STRINGS['s_coin']}#{mom_remark(uid, 'arcade')}" }
+        { type: 10, content: "The dice roll... **#{die1}** and **#{die2}**! (Total: **#{total}**)\n\nYou bet **#{bet}** and ate it HARD. **#{amount}** #{EMOJI_STRINGS['s_coin']} gone. Tragic.\nNew Balance: **#{DB.get_coins(uid)}** #{EMOJI_STRINGS['s_coin']}#{family_remark(uid, 'arcade')}" }
       ]
     }])
   end

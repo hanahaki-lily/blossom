@@ -152,7 +152,7 @@ def bj_resolve(event, uid, session, outcome)
     inner = [
       { type: 10, content: "## 🃏 Blackjack — **BLACKJACK!**" },
       { type: 14, spacing: 1 },
-      { type: 10, content: "#{table_display}\n\n**NATURAL 21!!** #{EMOJI_STRINGS['neonsparkle']} Okay you're actually cracked. **#{payout_result[:winnings]}** #{EMOJI_STRINGS['s_coin']} at 3:2 payout!#{extras[:text]}\nNew Balance: **#{DB.get_coins(uid)}** #{EMOJI_STRINGS['s_coin']}#{mom_remark(uid, 'arcade')}" }
+      { type: 10, content: "#{table_display}\n\n**NATURAL 21!!** #{EMOJI_STRINGS['neonsparkle']} Okay you're actually cracked. **#{payout_result[:winnings]}** #{EMOJI_STRINGS['s_coin']} at 3:2 payout!#{extras[:text]}\nNew Balance: **#{DB.get_coins(uid)}** #{EMOJI_STRINGS['s_coin']}#{family_remark(uid, 'arcade')}" }
     ]
     inner << extras[:button] if extras[:button]
     send_cv2(event, [{ type: 17, accent_color: 0xFFD700, components: inner }])
@@ -166,7 +166,7 @@ def bj_resolve(event, uid, session, outcome)
     inner = [
       { type: 10, content: "## 🃏 Blackjack — **YOU WIN!**" },
       { type: 14, spacing: 1 },
-      { type: 10, content: "#{table_display}\n\nGG, you beat the dealer! **#{payout_result[:winnings]}** #{EMOJI_STRINGS['s_coin']} yours.#{extras[:text]}\nNew Balance: **#{DB.get_coins(uid)}** #{EMOJI_STRINGS['s_coin']}#{mom_remark(uid, 'arcade')}" }
+      { type: 10, content: "#{table_display}\n\nGG, you beat the dealer! **#{payout_result[:winnings]}** #{EMOJI_STRINGS['s_coin']} yours.#{extras[:text]}\nNew Balance: **#{DB.get_coins(uid)}** #{EMOJI_STRINGS['s_coin']}#{family_remark(uid, 'arcade')}" }
     ]
     inner << extras[:button] if extras[:button]
     send_cv2(event, [{ type: 17, accent_color: 0x00FF00, components: inner }])
@@ -185,7 +185,7 @@ def bj_resolve(event, uid, session, outcome)
     send_cv2(event, [{ type: 17, accent_color: 0xFF0000, components: [
       { type: 10, content: "## 🃏 Blackjack — **BUST!**" },
       { type: 14, spacing: 1 },
-      { type: 10, content: "#{table_display}\n\nYou went over 21, LMAOOO. **#{bet}** #{EMOJI_STRINGS['s_coin']} gone. Greedy much?\nNew Balance: **#{DB.get_coins(uid)}** #{EMOJI_STRINGS['s_coin']}#{mom_remark(uid, 'arcade')}" }
+      { type: 10, content: "#{table_display}\n\nYou went over 21, LMAOOO. **#{bet}** #{EMOJI_STRINGS['s_coin']} gone. Greedy much?\nNew Balance: **#{DB.get_coins(uid)}** #{EMOJI_STRINGS['s_coin']}#{family_remark(uid, 'arcade')}" }
     ]}])
 
   when :lose
@@ -193,7 +193,7 @@ def bj_resolve(event, uid, session, outcome)
     send_cv2(event, [{ type: 17, accent_color: 0xFF0000, components: [
       { type: 10, content: "## 🃏 Blackjack — **YOU LOSE**" },
       { type: 14, spacing: 1 },
-      { type: 10, content: "#{table_display}\n\nDealer wins. Get rekt, chat. **#{bet}** #{EMOJI_STRINGS['s_coin']} is mine now~\nNew Balance: **#{DB.get_coins(uid)}** #{EMOJI_STRINGS['s_coin']}#{mom_remark(uid, 'arcade')}" }
+      { type: 10, content: "#{table_display}\n\nDealer wins. Get rekt, chat. **#{bet}** #{EMOJI_STRINGS['s_coin']} is mine now~\nNew Balance: **#{DB.get_coins(uid)}** #{EMOJI_STRINGS['s_coin']}#{family_remark(uid, 'arcade')}" }
     ]}])
   end
 end

@@ -56,7 +56,7 @@ def execute_invest(event, amount_str)
   components = [{ type: 17, accent_color: 0x00FF00, components: [
     { type: 10, content: "## #{EMOJI_STRINGS['rich']} Investment Created!" },
     { type: 14, spacing: 1 },
-    { type: 10, content: "Invested **#{amount}** #{EMOJI_STRINGS['s_coin']} into the Neon Arcade portfolio!\n\n**Rate:** 0.5% per hour (compounding)\n**Max Return:** 2x your investment (#{amount * 2} #{EMOJI_STRINGS['s_coin']})\n\nUse `#{PREFIX}portfolio` to check your gains or `#{PREFIX}withdraw` to cash out anytime.\n\nRemaining Balance: **#{DB.get_coins(uid)}** #{EMOJI_STRINGS['s_coin']}.#{mom_remark(uid, 'economy')}" }
+    { type: 10, content: "Invested **#{amount}** #{EMOJI_STRINGS['s_coin']} into the Neon Arcade portfolio!\n\n**Rate:** 0.5% per hour (compounding)\n**Max Return:** 2x your investment (#{amount * 2} #{EMOJI_STRINGS['s_coin']})\n\nUse `#{PREFIX}portfolio` to check your gains or `#{PREFIX}withdraw` to cash out anytime.\n\nRemaining Balance: **#{DB.get_coins(uid)}** #{EMOJI_STRINGS['s_coin']}.#{family_remark(uid, 'economy')}" }
   ]}]
   send_cv2(event, components)
 end
@@ -98,7 +98,7 @@ def execute_portfolio(event)
   components = [{ type: 17, accent_color: 0x00BFFF, components: [
     { type: 10, content: "## #{EMOJI_STRINGS['rich']} Investment Portfolio" },
     { type: 14, spacing: 1 },
-    { type: 10, content: "**Principal:** #{investment['principal']} #{EMOJI_STRINGS['s_coin']}\n**Profit:** +#{value[:profit]} #{EMOJI_STRINGS['s_coin']}\n**Current Value:** #{value[:total]} #{EMOJI_STRINGS['s_coin']} / #{max_total} #{EMOJI_STRINGS['s_coin']}\n**Time Invested:** #{format_time_delta(value[:hours] * 3600)}\n\n`[#{bar}]` #{progress_pct}%#{capped_msg}#{mom_remark(uid, 'economy')}" }
+    { type: 10, content: "**Principal:** #{investment['principal']} #{EMOJI_STRINGS['s_coin']}\n**Profit:** +#{value[:profit]} #{EMOJI_STRINGS['s_coin']}\n**Current Value:** #{value[:total]} #{EMOJI_STRINGS['s_coin']} / #{max_total} #{EMOJI_STRINGS['s_coin']}\n**Time Invested:** #{format_time_delta(value[:hours] * 3600)}\n\n`[#{bar}]` #{progress_pct}%#{capped_msg}#{family_remark(uid, 'economy')}" }
   ]}]
   send_cv2(event, components)
 end
@@ -134,7 +134,7 @@ def execute_withdraw(event)
   components = [{ type: 17, accent_color: 0x00FF00, components: [
     { type: 10, content: "## #{EMOJI_STRINGS['coins']} Investment Withdrawn!" },
     { type: 14, spacing: 1 },
-    { type: 10, content: "Cashed out your investment!\n\n**Principal:** #{value[:principal]} #{EMOJI_STRINGS['s_coin']}\n**Profit Earned:** +#{value[:profit]} #{EMOJI_STRINGS['s_coin']}\n**Total Withdrawn:** #{value[:total]} #{EMOJI_STRINGS['s_coin']}\n**Time Invested:** #{format_time_delta(value[:hours] * 3600)}\n\nNew Balance: **#{DB.get_coins(uid)}** #{EMOJI_STRINGS['s_coin']}.#{mom_remark(uid, 'economy')}" }
+    { type: 10, content: "Cashed out your investment!\n\n**Principal:** #{value[:principal]} #{EMOJI_STRINGS['s_coin']}\n**Profit Earned:** +#{value[:profit]} #{EMOJI_STRINGS['s_coin']}\n**Total Withdrawn:** #{value[:total]} #{EMOJI_STRINGS['s_coin']}\n**Time Invested:** #{format_time_delta(value[:hours] * 3600)}\n\nNew Balance: **#{DB.get_coins(uid)}** #{EMOJI_STRINGS['s_coin']}.#{family_remark(uid, 'economy')}" }
   ]}]
   send_cv2(event, components)
 end

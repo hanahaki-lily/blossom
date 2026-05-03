@@ -22,13 +22,13 @@ def execute_autoclaim(event)
     components = [{ type: 17, accent_color: 0x00FF00, components: [
       { type: 10, content: "## #{EMOJI_STRINGS['checkmark']} Auto-Claim Daily" },
       { type: 14, spacing: 1 },
-      { type: 10, content: "Auto-claim is **ON**! I'll automatically collect your daily reward whenever it's ready. No more broken streaks — I gotchu.\n\nYou'll get a DM with your reward summary each time I claim for you.#{mom_remark(uid, 'economy')}" }
+      { type: 10, content: "Auto-claim is **ON**! I'll automatically collect your daily reward whenever it's ready. No more broken streaks — I gotchu.\n\nYou'll get a DM with your reward summary each time I claim for you.#{family_remark(uid, 'economy')}" }
     ]}]
   else
     components = [{ type: 17, accent_color: 0xFF0000, components: [
       { type: 10, content: "## #{EMOJI_STRINGS['checkmark']} Auto-Claim Daily" },
       { type: 14, spacing: 1 },
-      { type: 10, content: "Auto-claim is **OFF**. You're on your own now, don't forget to claim manually! If your streak dies, that's on you.#{mom_remark(uid, 'general')}" }
+      { type: 10, content: "Auto-claim is **OFF**. You're on your own now, don't forget to claim manually! If your streak dies, that's on you.#{family_remark(uid, 'general')}" }
     ]}]
   end
   send_cv2(event, components)

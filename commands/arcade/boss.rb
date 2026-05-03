@@ -60,7 +60,7 @@ def execute_boss(event)
       { type: 14, spacing: 1 },
       { type: 10, content: "#{bar}\n**HP:** #{boss['current_hp'].to_s.gsub(/(\d)(?=(\d{3})+(?!\d))/, '\\1,')} / #{boss['max_hp'].to_s.gsub(/(\d)(?=(\d{3})+(?!\d))/, '\\1,')} (#{hp_pct}%)" },
       { type: 14, spacing: 1 },
-      { type: 10, content: "\u{1F5E1}\u{FE0F} **Fighters:** #{total_participants} | **Reward:** #{BOSS_DEFEAT_PRISMA} #{EMOJI_STRINGS['prisma']} on defeat\n**Damage:** #{is_sub ? "100-400 (Premium)" : "50-200"} per attack | **Cooldown:** 1 hour\n\n#{player_info}#{mom_remark(uid, 'arcade')}" },
+      { type: 10, content: "\u{1F5E1}\u{FE0F} **Fighters:** #{total_participants} | **Reward:** #{BOSS_DEFEAT_PRISMA} #{EMOJI_STRINGS['prisma']} on defeat\n**Damage:** #{is_sub ? "100-400 (Premium)" : "50-200"} per attack | **Cooldown:** 1 hour\n\n#{player_info}#{family_remark(uid, 'arcade')}" },
       { type: 14, spacing: 1 },
       { type: 1, components: [
         { type: 2, style: 4, label: "\u2694\uFE0F Attack!", custom_id: "boss_attack_#{boss['id']}_#{uid}" }
@@ -95,7 +95,7 @@ def execute_bosssetup(event, channel_id)
   send_cv2(event, [{ type: 17, accent_color: 0x00FF00, components: [
     { type: 10, content: "## \u{1F409} Boss Battle Channel Set!" },
     { type: 14, spacing: 1 },
-    { type: 10, content: "Boss defeat announcements will be posted to <##{channel_id}>.\n\nUse `#{PREFIX}boss` to view the current boss and attack!#{mom_remark(event.user.id, 'admin')}" }
+    { type: 10, content: "Boss defeat announcements will be posted to <##{channel_id}>.\n\nUse `#{PREFIX}boss` to view the current boss and attack!#{family_remark(event.user.id, 'admin')}" }
   ]}])
 end
 

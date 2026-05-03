@@ -47,7 +47,7 @@ def execute_heist_admin(event, action, channel_id = nil)
     send_cv2(event, [{ type: 17, accent_color: 0x00FF00, components: [
       { type: 10, content: "## \u{1F3E6} Heist Events Enabled!" },
       { type: 14, spacing: 1 },
-      { type: 10, content: "Hourly heist events will now spawn in <##{channel_id}>!\n\nEvery hour, a vault job opportunity appears. Players have **5 minutes** to join. Minimum **#{HEIST_MIN_PLAYERS} players** needed to start the heist.\n\nSuccess odds scale with participants. Premium users get a hacker bonus!#{mom_remark(event.user.id, 'admin')}" }
+      { type: 10, content: "Hourly heist events will now spawn in <##{channel_id}>!\n\nEvery hour, a vault job opportunity appears. Players have **5 minutes** to join. Minimum **#{HEIST_MIN_PLAYERS} players** needed to start the heist.\n\nSuccess odds scale with participants. Premium users get a hacker bonus!#{family_remark(event.user.id, 'admin')}" }
     ]}])
 
   when 'disable', 'off'
@@ -57,7 +57,7 @@ def execute_heist_admin(event, action, channel_id = nil)
     send_cv2(event, [{ type: 17, accent_color: NEON_COLORS.sample, components: [
       { type: 10, content: "## \u{1F3E6} Heist Events Disabled" },
       { type: 14, spacing: 1 },
-      { type: 10, content: "Heist events are off. The vault is safe... for now.#{mom_remark(event.user.id, 'admin')}" }
+      { type: 10, content: "Heist events are off. The vault is safe... for now.#{family_remark(event.user.id, 'admin')}" }
     ]}])
 
   else

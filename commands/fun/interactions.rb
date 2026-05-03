@@ -26,7 +26,7 @@ def execute_interactions(event)
         { type: 14, spacing: 1 },
         { type: 10, content: "**🔨 Slaps**\nSent: **#{data['slap']['sent']}** | Received: **#{data['slap']['received']}**" },
         { type: 14, spacing: 1 },
-        { type: 10, content: "**#{EMOJI_STRINGS['hearts']} Pats**\nSent: **#{data['pat']['sent']}** | Received: **#{data['pat']['received']}**#{mom_remark(event.user.id, 'general')}" }
+        { type: 10, content: "**#{EMOJI_STRINGS['hearts']} Pats**\nSent: **#{data['pat']['sent']}** | Received: **#{data['pat']['received']}**#{family_remark(event.user.id, 'general')}" }
       ]
     }
   ]

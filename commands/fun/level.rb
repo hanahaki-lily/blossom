@@ -106,7 +106,7 @@ def execute_level(event, target_user)
   pet_text = pet_flavor(uid, :idle)
   inner << { type: 10, content: pet_text } unless pet_text.empty?
 
-  mama_note = mom_remark(uid, 'general')
+  mama_note = family_remark(uid, 'general')
   inner << { type: 10, content: mama_note } if mama_note
 
   accent = profile['color'] ? profile['color'].to_i(16) : NEON_COLORS.sample

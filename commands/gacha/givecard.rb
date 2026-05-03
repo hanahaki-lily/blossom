@@ -90,7 +90,7 @@ def execute_givecard(event, target, char_name)
   send_cv2(event, [{ type: 17, accent_color: NEON_COLORS.sample, components: [
     { type: 10, content: "## #{EMOJI_STRINGS['surprise']} Card Gifted!" },
     { type: 14, spacing: 1 },
-    { type: 10, content: "#{event.user.mention} just handed over **#{proper_name}** to #{target.mention}! W friend tbh.\n\n*(Rarity: #{rarity.capitalize} #{emoji})*#{envvy_comment}#{mom_remark(uid, 'gacha')}" }
+    { type: 10, content: "#{event.user.mention} just handed over **#{proper_name}** to #{target.mention}! W friend tbh.\n\n*(Rarity: #{rarity.capitalize} #{emoji})*#{envvy_comment}#{family_remark(uid, 'gacha')}" }
   ]}])
 end
 

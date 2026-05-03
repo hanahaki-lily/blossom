@@ -67,7 +67,7 @@ def execute_timeout(event, member, duration_str, reason)
     send_cv2(event, [{ type: 17, accent_color: 0x00FF00, components: [
       { type: 10, content: "## :timer: Timeout Confirmed" },
       { type: 14, spacing: 1 },
-      { type: 10, content: "**#{member.display_name}** has been timed out for #{duration_str}.\n**Reason:** #{reason}#{mom_remark(event.user.id, 'mod')}" }
+      { type: 10, content: "**#{member.display_name}** has been timed out for #{duration_str}.\n**Reason:** #{reason}#{family_remark(event.user.id, 'mod')}" }
     ]}])
 
     # 8. Logging: Create a record in the server's moderation logs

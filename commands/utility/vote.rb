@@ -14,7 +14,7 @@ def execute_vote_panel(event, action)
     send_cv2(event, [{ type: 17, accent_color: NEON_COLORS.sample, components: [
       { type: 10, content: "## #{EMOJI_STRINGS['neonsparkle']} top.gg vote reminders" },
       { type: 14, spacing: 1 },
-      { type: 10, content: "DM reminders are now **#{on ? 'ON' : 'OFF'}**.#{on ? " I'll whisper when your cooldown's up so you can snag more #{EMOJI_STRINGS['prisma']}." : ' I will leave you alone about voting.'}#{mom_remark(uid, 'general')}" }
+      { type: 10, content: "DM reminders are now **#{on ? 'ON' : 'OFF'}**.#{on ? " I'll whisper when your cooldown's up so you can snag more #{EMOJI_STRINGS['prisma']}." : ' I will leave you alone about voting.'}#{family_remark(uid, 'general')}" }
     ]}])
     return
   end
@@ -53,7 +53,7 @@ def execute_vote_panel(event, action)
   send_cv2(event, [{ type: 17, accent_color: NEON_COLORS.sample, components: [
     { type: 10, content: "## #{EMOJI_STRINGS['prisma']} top.gg votes" },
     { type: 14, spacing: 1 },
-    { type: 10, content: lines.join("\n\n") + mom_remark(uid, 'general').to_s }
+    { type: 10, content: lines.join("\n\n") + family_remark(uid, 'general').to_s }
   ]}])
 end
 

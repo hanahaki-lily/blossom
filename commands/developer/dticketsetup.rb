@@ -61,7 +61,7 @@ def execute_dticketsetup(event, channel_id)
   send_cv2(event, [{ type: 17, accent_color: 0x00FF00, components: [
     { type: 10, content: "## #{EMOJI_STRINGS['checkmark']} Ticket Panel Posted!" },
     { type: 14, spacing: 1 },
-    { type: 10, content: "Support ticket panel is live in <##{channel_id}>.#{mom_remark(event.user.id, 'dev')}" }
+    { type: 10, content: "Support ticket panel is live in <##{channel_id}>.#{family_remark(event.user.id, 'dev')}" }
   ]}])
 end
 

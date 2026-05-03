@@ -29,7 +29,7 @@ def execute_remindme(event)
         components: [
           { type: 10, content: "## 🔔 Daily Reminder" },
           { type: 14, spacing: 1 },
-          { type: 10, content: "Fine, I'll stop bugging you. Daily reminder is **OFF**. Don't come crying to me when you break your streak though.#{mom_remark(uid, 'general')}" }
+          { type: 10, content: "Fine, I'll stop bugging you. Daily reminder is **OFF**. Don't come crying to me when you break your streak though.#{family_remark(uid, 'general')}" }
         ]
       }
     ]
@@ -46,7 +46,7 @@ def execute_remindme(event)
         components: [
           { type: 10, content: "## 🔔 Daily Reminder" },
           { type: 14, spacing: 1 },
-          { type: 10, content: "Daily reminder is **ON**! I'll ping you right here in #{event.channel.mention} when your reward is ready. Consider me your personal alarm clock — you're welcome.#{mom_remark(uid, 'general')}" }
+          { type: 10, content: "Daily reminder is **ON**! I'll ping you right here in #{event.channel.mention} when your reward is ready. Consider me your personal alarm clock — you're welcome.#{family_remark(uid, 'general')}" }
         ]
       }
     ]

@@ -62,7 +62,7 @@ def execute_coinflip(event, amount, choice)
     inner = [
       { type: 10, content: "## #{EMOJI_STRINGS['s_coin']} Coinflip: #{result.capitalize}!" },
       { type: 14, spacing: 1 },
-      { type: 10, content: "Okay wait, you actually hit?? GG, you snagged **#{payout_result[:winnings]}** #{EMOJI_STRINGS['s_coin']}!#{extras[:text]}\nNew Balance: **#{DB.get_coins(uid)}** #{EMOJI_STRINGS['s_coin']}#{mom_remark(uid, 'arcade')}" }
+      { type: 10, content: "Okay wait, you actually hit?? GG, you snagged **#{payout_result[:winnings]}** #{EMOJI_STRINGS['s_coin']}!#{extras[:text]}\nNew Balance: **#{DB.get_coins(uid)}** #{EMOJI_STRINGS['s_coin']}#{family_remark(uid, 'arcade')}" }
     ]
     inner << extras[:button] if extras[:button]
     send_cv2(event, [{ type: 17, accent_color: 0x00FF00, components: inner }])
@@ -75,7 +75,7 @@ def execute_coinflip(event, amount, choice)
       components: [
         { type: 10, content: "## #{EMOJI_STRINGS['s_coin']} Coinflip: #{result.capitalize}!" },
         { type: 14, spacing: 1 },
-        { type: 10, content: "Tragic. Absolutely tragic. **#{amount}** #{EMOJI_STRINGS['s_coin']} gone, just like that.\nNew Balance: **#{DB.get_coins(uid)}** #{EMOJI_STRINGS['s_coin']}#{mom_remark(uid, 'arcade')}" }
+        { type: 10, content: "Tragic. Absolutely tragic. **#{amount}** #{EMOJI_STRINGS['s_coin']} gone, just like that.\nNew Balance: **#{DB.get_coins(uid)}** #{EMOJI_STRINGS['s_coin']}#{family_remark(uid, 'arcade')}" }
       ]
     }])
   end

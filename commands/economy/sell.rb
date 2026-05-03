@@ -138,7 +138,7 @@ def execute_sell(event, filter, rarity_opt = nil)
     { type: 14, spacing: 1 },
     { type: 10, content: "Dumped **#{sold_count}** dupes. Declutter arc activated.\n\n" \
                          "💰 **Earned:** #{coins_earned} #{EMOJI_STRINGS['s_coin']}\n" \
-                         "💳 **Balance:** #{DB.get_coins(uid)} #{EMOJI_STRINGS['s_coin']}#{undo_line}#{mom_remark(uid, 'economy')}" }
+                         "💳 **Balance:** #{DB.get_coins(uid)} #{EMOJI_STRINGS['s_coin']}#{undo_line}#{family_remark(uid, 'economy')}" }
   ]
 
   if premium

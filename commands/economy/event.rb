@@ -12,7 +12,7 @@ def execute_event_hub(event)
   embed = Discordrb::Webhooks::Embed.new(
     title: "🗓️ Blossom Event Hub",
     description: "Yo chat, you found the secret menu! Well, not secret, but definitely exclusive. 🌸\n\n" \
-                 "This is where the LIMITED TIME stuff lives — seasonal minigames, event currency, and VTubers you literally CANNOT get anywhere else. Pick an event from the dropdown and let's see what's poppin'.#{mom_remark(event.user.id, 'general')}",
+                 "This is where the LIMITED TIME stuff lives — seasonal minigames, event currency, and VTubers you literally CANNOT get anywhere else. Pick an event from the dropdown and let's see what's poppin'.#{family_remark(event.user.id, 'general')}",
     color: 0xFF69B4 # Classic Blossom Pink
   )
   

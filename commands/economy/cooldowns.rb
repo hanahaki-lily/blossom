@@ -76,7 +76,7 @@ def render_cooldown_page(event, uid, page_num)
   inner = [
     { type: 10, content: "## #{EMOJI_STRINGS['info']} #{event.user.display_name}'s Cooldowns" },
     { type: 14, spacing: 1 },
-    { type: 10, content: "#{page[:title]}#{extra}#{mom_remark(uid, 'economy')}" },
+    { type: 10, content: "#{page[:title]}#{extra}#{family_remark(uid, 'economy')}" },
     { type: 14, spacing: 1 },
     { type: 10, content: cd_lines },
     { type: 14, spacing: 1 },

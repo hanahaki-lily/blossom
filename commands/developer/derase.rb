@@ -20,7 +20,7 @@ def execute_derase(event)
   send_cv2(event, [{ type: 17, accent_color: 0x00FF99, components: [
     { type: 10, content: "## #{EMOJI_STRINGS['developer']} Global Erase Complete" },
     { type: 14, spacing: 1 },
-    { type: 10, content: "**Target:** #{target_character}\n**Users affected:** #{summary[:users]}\n**Copies removed:** #{summary[:copies_removed]}\n**Prisma refunded:** #{summary[:prisma_refunded]} (#{prisma_per_copy} each)#{mom_remark(event.user.id, 'dev')}" }
+    { type: 10, content: "**Target:** #{target_character}\n**Users affected:** #{summary[:users]}\n**Copies removed:** #{summary[:copies_removed]}\n**Prisma refunded:** #{summary[:prisma_refunded]} (#{prisma_per_copy} each)#{family_remark(event.user.id, 'dev')}" }
   ]}])
 end
 

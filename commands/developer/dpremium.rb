@@ -55,7 +55,7 @@ def execute_dpremium(event, action, target_user)
     send_cv2(event, [{ type: 17, accent_color: 0x00FF00, components: [
       { type: 10, content: "## #{EMOJI_STRINGS['neonsparkle']} Lifetime Premium Granted!" },
       { type: 14, spacing: 1 },
-      { type: 10, content: "**#{display_name}** (`#{target_id}`) has been permanently upgraded!\n10% coin boost, half cooldowns, boosted gacha luck — the works.#{mom_remark(event.user.id, 'dev')}" }
+      { type: 10, content: "**#{display_name}** (`#{target_id}`) has been permanently upgraded!\n10% coin boost, half cooldowns, boosted gacha luck — the works.#{family_remark(event.user.id, 'dev')}" }
     ]}])
 
   when 'remove'
@@ -64,7 +64,7 @@ def execute_dpremium(event, action, target_user)
     send_cv2(event, [{ type: 17, accent_color: NEON_COLORS.sample, components: [
       { type: 10, content: "## 🥀 Premium Revoked" },
       { type: 14, spacing: 1 },
-      { type: 10, content: "Lifetime Premium removed from **#{display_name}** (`#{target_id}`).#{mom_remark(event.user.id, 'dev')}" }
+      { type: 10, content: "Lifetime Premium removed from **#{display_name}** (`#{target_id}`).#{family_remark(event.user.id, 'dev')}" }
     ]}])
   end
 end

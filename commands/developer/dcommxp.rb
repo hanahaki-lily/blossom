@@ -78,7 +78,7 @@ def execute_dcommxp(event, action, amount)
   send_cv2(event, [{ type: 17, accent_color: 0x00FF00, components: [
     { type: 10, content: "## #{EMOJI_STRINGS['developer']} Community XP Override" },
     { type: 14, spacing: 1 },
-    { type: 10, content: "**#{name}** — Level **#{new_level}**, **#{new_xp}** cumulative XP (next threshold at **#{next_at}** XP for this level).#{mom_remark(event.user.id, 'dev')}" }
+    { type: 10, content: "**#{name}** — Level **#{new_level}**, **#{new_xp}** cumulative XP (next threshold at **#{next_at}** XP for this level).#{family_remark(event.user.id, 'dev')}" }
   ]}])
 end
 

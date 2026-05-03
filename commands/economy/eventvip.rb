@@ -39,7 +39,7 @@ def execute_eventvip(event)
   send_cv2(event, [{ type: 17, accent_color: NEON_COLORS.sample, components: [
     { type: 10, content: "## #{EMOJI_STRINGS['prisma']} #{ev[:name]} — VIP Lane" },
     { type: 14, spacing: 1 },
-    { type: 10, content: "Daily subscriber drip unlocked~\n\n**+#{n}** #{ev[:emoji]} *(#{ev[:currency]})*\n\n**New balance:** #{DB.get_tickets(uid)} #{ev[:emoji]}#{mom_remark(uid, 'economy')}" }
+    { type: 10, content: "Daily subscriber drip unlocked~\n\n**+#{n}** #{ev[:emoji]} *(#{ev[:currency]})*\n\n**New balance:** #{DB.get_tickets(uid)} #{ev[:emoji]}#{family_remark(uid, 'economy')}" }
   ]}])
 end
 

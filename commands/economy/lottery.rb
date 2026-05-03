@@ -53,7 +53,7 @@ def execute_lottery(event, amount)
                              "💰 **Prize Pool:** #{pool} #{EMOJI_STRINGS['s_coin']}\n" \
                              "🎫 **Total Tickets:** #{stats[:total_tickets]}\n" \
                              "👤 **Your Tickets:** #{stats[:user_tickets]}\n\n" \
-                             "*I'll DM the winner at the top of the hour. Don't mute me.*#{mom_remark(uid, 'arcade')}" }
+                             "*I'll DM the winner at the top of the hour. Don't mute me.*#{family_remark(uid, 'arcade')}" }
       ]
     }
   ]

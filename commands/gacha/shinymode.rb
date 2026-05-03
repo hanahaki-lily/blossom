@@ -30,7 +30,7 @@ def execute_shinymode(event)
   components = [{ type: 17, accent_color: new_state ? 0xFFD700 : 0x808080, components: [
     { type: 10, content: "## #{EMOJI_STRINGS['neonsparkle']} Shiny Mode: #{status}" },
     { type: 14, spacing: 1 },
-    { type: 10, content: "#{desc}#{mom_remark(uid, 'gacha')}" }
+    { type: 10, content: "#{desc}#{family_remark(uid, 'gacha')}" }
   ]}]
   send_cv2(event, components)
 end

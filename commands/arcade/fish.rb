@@ -103,7 +103,7 @@ def execute_fish(event)
                          "## #{catch[:emoji]} #{catch[:name]}\n" \
                          "*(#{catch[:tier].to_s.capitalize})*\n\n" \
                          "#{flavor}\n\n#{reward_text}#{rod_text}\n" \
-                         "💳 **Balance:** #{DB.get_coins(uid)} #{EMOJI_STRINGS['s_coin']}#{mom_remark(uid, 'arcade')}" }
+                         "💳 **Balance:** #{DB.get_coins(uid)} #{EMOJI_STRINGS['s_coin']}#{family_remark(uid, 'arcade')}" }
   ]}]
   send_cv2(event, components)
 end

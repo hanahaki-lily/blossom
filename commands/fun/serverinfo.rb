@@ -45,7 +45,7 @@ def execute_serverinfo(event)
     { type: 10, content: "#{EMOJI_STRINGS['crown']} **Server Owner**\n#{owner ? owner.mention : 'Unknown'}" },
     { type: 10, content: "👥 **Total Members**\n#{server.member_count}" },
     { type: 10, content: "#{EMOJI_STRINGS['neonsparkle']} **Community Rank**\nLevel **#{current_level}** — #{current_xp} / #{next_level_xp} XP" },
-    { type: 10, content: "#{EMOJI_STRINGS['stream']} **Created**\n<t:#{created_time}:D> (<t:#{created_time}:R>)#{mom_remark(event.user.id, 'general')}" }
+    { type: 10, content: "#{EMOJI_STRINGS['stream']} **Created**\n<t:#{created_time}:D> (<t:#{created_time}:R>)#{family_remark(event.user.id, 'general')}" }
   ]}])
 end
 

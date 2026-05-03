@@ -25,13 +25,13 @@ def execute_achievements_toggle(event)
     send_cv2(event, [{ type: 17, accent_color: 0x00FF00, components: [
       { type: 10, content: "## #{EMOJI_STRINGS['achievement']} Achievement Notifications Enabled" },
       { type: 14, spacing: 1 },
-      { type: 10, content: "Achievement unlock messages will now show up in chat. Time to flex on everyone.#{mom_remark(event.user.id, 'admin')}" }
+      { type: 10, content: "Achievement unlock messages will now show up in chat. Time to flex on everyone.#{family_remark(event.user.id, 'admin')}" }
     ]}])
   else
     send_cv2(event, [{ type: 17, accent_color: NEON_COLORS.sample, components: [
       { type: 10, content: "## #{EMOJI_STRINGS['mute']} Achievement Notifications Disabled" },
       { type: 14, spacing: 1 },
-      { type: 10, content: "Achievement unlocks will be silent in this server. Players still earn them, they just won't see the pop-up here.#{mom_remark(event.user.id, 'admin')}" }
+      { type: 10, content: "Achievement unlocks will be silent in this server. Players still earn them, they just won't see the pop-up here.#{family_remark(event.user.id, 'admin')}" }
     ]}])
   end
 end

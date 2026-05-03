@@ -57,7 +57,7 @@ def execute_cups(event, amount, guess)
     inner = [
       { type: 10, content: "## 🥤 The Shell Game" },
       { type: 14, spacing: 1 },
-      { type: 10, content: "I lift cup ##{winning_cup}...\n\n**#{cups_display}**\n\nNO WAY you actually found it?! GG, take your **#{payout_result[:winnings]}** #{EMOJI_STRINGS['s_coin']}.#{extras[:text]}\nNew Balance: **#{DB.get_coins(uid)}** #{EMOJI_STRINGS['s_coin']}#{mom_remark(uid, 'arcade')}" }
+      { type: 10, content: "I lift cup ##{winning_cup}...\n\n**#{cups_display}**\n\nNO WAY you actually found it?! GG, take your **#{payout_result[:winnings]}** #{EMOJI_STRINGS['s_coin']}.#{extras[:text]}\nNew Balance: **#{DB.get_coins(uid)}** #{EMOJI_STRINGS['s_coin']}#{family_remark(uid, 'arcade')}" }
     ]
     inner << extras[:button] if extras[:button]
     send_cv2(event, [{ type: 17, accent_color: 0x00FF00, components: inner }])
@@ -69,7 +69,7 @@ def execute_cups(event, amount, guess)
       components: [
         { type: 10, content: "## 🥤 The Shell Game" },
         { type: 14, spacing: 1 },
-        { type: 10, content: "I lift cup ##{guess} and... NOTHING. LOL it was under cup ##{winning_cup} the whole time.\n\n**#{cups_display}**\n\nSkill issue. **#{amount}** #{EMOJI_STRINGS['s_coin']} mine now.\nNew Balance: **#{DB.get_coins(uid)}** #{EMOJI_STRINGS['s_coin']}#{mom_remark(uid, 'arcade')}" }
+        { type: 10, content: "I lift cup ##{guess} and... NOTHING. LOL it was under cup ##{winning_cup} the whole time.\n\n**#{cups_display}**\n\nSkill issue. **#{amount}** #{EMOJI_STRINGS['s_coin']} mine now.\nNew Balance: **#{DB.get_coins(uid)}** #{EMOJI_STRINGS['s_coin']}#{family_remark(uid, 'arcade')}" }
       ]
     }])
   end

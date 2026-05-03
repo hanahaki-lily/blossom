@@ -40,7 +40,7 @@ def execute_notifications(event, mode = nil)
   components = [{ type: 17, accent_color: 0x00FF00, components: [
     { type: 10, content: "## #{EMOJI_STRINGS['checkmark']} Notifications Updated" },
     { type: 14, spacing: 1 },
-    { type: 10, content: "Set to **#{info[:emoji]} #{info[:label]}**.\n#{info[:desc]}#{mom_remark(uid, 'utility')}" }
+    { type: 10, content: "Set to **#{info[:emoji]} #{info[:label]}**.\n#{info[:desc]}#{family_remark(uid, 'utility')}" }
   ]}]
   send_cv2(event, components)
 end
