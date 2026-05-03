@@ -877,7 +877,7 @@ View server and global rankings for coins, Prisma, or levels.
 
 Use the dropdown menu to switch between leaderboard categories. Server-only command.
 
-**Display (all tabs):** Plain embed titles and plain dropdown labels (no decorative emojis on those). Only 1st–3rd place rows show 🏆 🥈 🥉 beside the rank. **Bold:** on *Global Communities*, only your current server name is bold when it appears; on *Server Members* and *Global Richest*, only your own row’s display name/username is bold when you’re listed — everyone else stays plain text so Discord markdown stays clean.
+**Display (all tabs):** Plain embed titles and plain dropdown labels (no decorative emojis on those). Only 1st–3rd place rows show 🏆 🥈 🥉 beside the rank. **Bold:** on *Global Communities*, only your current server name is bold when it appears; on *Server Members* and *Global Richest*, only your own row’s display name/username is bold when you’re listed — everyone else stays plain text so Discord markdown stays clean. **Global Communities** guild names use Discord’s current name for any server Blossom is in (so renames show right away); other rows fall back to the last name stored in the database.
 
 ---
 

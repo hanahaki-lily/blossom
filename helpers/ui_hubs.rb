@@ -247,11 +247,12 @@ def generate_leaderboard_page(bot, server, action, viewer_id = nil)
       embed.description = "*No servers on the board yet. First come, first flex.*"
     else
       desc = top_servers.each_with_index.map do |row, index|
-        # We pull the name directly from the database row!
-        # If for some reason it's missing (from old data), fallback to "Unknown"
-        name = row['server_name'] || "Unknown Arcade"
-
         sid = row['server_id'].to_i
+        # Prefer live guild name from the bot cache so renames show immediately;
+        # DB row may lag until the next pool write, dcommxp, boot, or server_update.
+        live = bot.servers[sid]
+        name = live&.name || row['server_name'] || "Unknown Arcade"
+
         medal = ["🏆", "🥈", "🥉"][index]
         medal_prefix = medal ? "#{medal} " : ""
         name_part = (server.id == sid) ? "**#{name}**" : name
