@@ -1290,7 +1290,7 @@ View information about Blossom, her features, and developer credits.
 ---
 
 ### `/support`
-Get the invite link to the official support server (Tsukiyo Server).
+Get the invite link to the official support server (Sakura Shrine — `https://discord.gg/cZ8zAT42u4`).
 
 | Detail | Value |
 |--------|-------|

@@ -36,6 +36,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 - **Lottery inserts are actually transactional.** `enter_lottery` used `@db.exec("BEGIN")` / separate `exec_params` / `COMMIT` on the connection pool wrapper, which can run each statement on a different pooled connection — so the BEGIN never wrapped the INSERTs. It now runs all ticket inserts inside `PGPoolWrapper#transaction` (single checked-out connection). `get_lottery_stats` no longer pulls the full lottery table into Ruby; it uses one SQL statement with aggregate subqueries.
 - **Economy-facing coin deductions are concurrency-safe.** New `DatabaseEconomy#deduct_coins_if_possible`; boot migration clamps stray negative balances then adds `global_users_coins_non_negative` CHECK. Arcade (`coinflip`, `cups`, `dice`, `roulette`, `scratch`, `slots`), blackjack (per-user Mutex + atomic deduct on start/double-down), carnival ring toss/balloon pop, Double-or-Nothing loss stash, crafting (deduct coins before removing materials), `/summon` pull cost, and `/lottery` ticket purchase (`purchase_lottery_tickets` — deduction + INSERTs in one transaction) use the new path instead of SELECT-then-UPDATE gaps.
 
+### Changed
+
+- **`/support` / `b!support`:** Invite updated to **https://discord.gg/cZ8zAT42u4** (Sakura Shrine).
+
 ### Added
 
 - **Developer command `b!dleave <server_id>`** (prefix-only): Blossom leaves the specified guild by snowflake. Developer ID only; documented in **`COMMANDS.md`** and **`b!devhelp`**.
