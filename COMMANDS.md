@@ -1064,7 +1064,7 @@ Post a **plain embed** (your text becomes the embed **description**) to another 
 | Detail | Value |
 |--------|-------|
 | **Permission** | Administrator (or Developer ID) |
-| **Usage** | `b!say #channel <message...>` |
+| **Usage** | `b!say #channel <message...>` (multi-line / blank lines between paragraphs are **preserved**) |
 | **Limits** | Message body max **4096** characters (Discord embed description cap). |
 | **Bot needs** | **Send Messages** and **Embed Links** in the target channel. |
 

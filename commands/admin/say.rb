@@ -4,7 +4,7 @@
 # CATEGORY: Admin
 # ==========================================
 
-SAY_USAGE = "**Usage:** `#{PREFIX}say #channel <your message>`\nExample: `#{PREFIX}say #announcements Tomorrow's collab night starts at 8pm EST — don't be late, chat.`"
+SAY_USAGE = "**Usage:** `#{PREFIX}say #channel <your message>`\nYou can paste **multiple paragraphs** — line breaks are preserved.\nExample: `#{PREFIX}say #announcements Line one.\n\nLine two after a blank line.`"
 
 def say_channel_id_from_arg(raw)
   return nil if raw.nil?
@@ -15,6 +15,28 @@ def say_channel_id_from_arg(raw)
     s.to_i
   else
     nil
+  end
+end
+
+# discordrb passes `*args` split on whitespace — newlines become separate tokens and
+# `join(' ')` destroys paragraph breaks. Parse the real message body from content.
+def parse_say_message(event)
+  raw = event.message.content.to_s
+  prefix = PREFIX.to_s
+  return [nil, nil] unless raw.start_with?(prefix)
+
+  tail = raw[prefix.length..].lstrip
+  return [nil, nil] unless tail.match?(/\Asay\b/i)
+
+  tail = tail.sub(/\Asay\b\s*/i, '')
+  return [nil, nil] if tail.empty?
+
+  if (m = tail.match(/\A(<#\d+>|[0-9]{17,20})\s*/))
+    channel_token = m[1]
+    body = tail[m.end(0)..].to_s
+    [channel_token, body]
+  else
+    [nil, nil]
   end
 end
 
@@ -44,7 +66,7 @@ def execute_say(event, channel_raw, text)
     ]}])
   end
 
-  body = text.to_s.strip
+  body = text.to_s.gsub("\r\n", "\n").strip
   if body.empty?
     return send_cv2(event, [{ type: 17, accent_color: 0xFFA500, components: [
       { type: 10, content: "## #{EMOJI_STRINGS['confused']} Say Something" },
@@ -99,7 +121,8 @@ end
 $bot.command(:say,
   description: 'Post an embed announcement to a channel (Admin)',
   category: 'Admin'
-) do |event, channel_raw, *text_parts|
-  execute_say(event, channel_raw, text_parts.join(' '))
+) do |event, *_legacy_args|
+  channel_raw, body = parse_say_message(event)
+  execute_say(event, channel_raw, body)
   nil
 end
