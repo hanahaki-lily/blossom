@@ -96,19 +96,38 @@ def calculate_coin_payout(bot, user_id, raw_amount)
 end
 
 # Awards crew XP derived from coins actually credited (matches legacy tier math).
-def grant_crew_xp_for_coin_payout(user_id, coin_payout)
+def grant_crew_xp_for_coin_payout(user_id, coin_payout, bot = nil)
   crew = DB.get_user_crew(user_id)
   return unless crew
 
   crew_xp_gain = [coin_payout / 50, 1].max
+  b = bot || (defined?($bot) ? $bot : nil)
+  if b && is_premium?(b, user_id)
+    crew_xp_gain = (crew_xp_gain * PREMIUM_CREW_XP_MULT).round
+  end
   award_crew_xp(crew['id'], crew_xp_gain)
 rescue => e
   puts "[CREW BONUS ERROR] #{e.message}"
 end
 
+# Daily streak: >48h gap normally resets; subscribers with /autoclaim on keep once per ISO week via insurance.
+def resolve_daily_streak(bot, uid, last_used, now, current_streak)
+  if last_used.nil? || (now - last_used) > (DAILY_COOLDOWN * 2)
+    can_save = current_streak >= 1 && is_premium?(bot, uid) && DB.get_autoclaim(uid) && DB.can_use_streak_insurance?(uid)
+    if can_save
+      DB.consume_streak_insurance(uid)
+      [current_streak + 1, :insurance]
+    else
+      [1, :reset]
+    end
+  else
+    [current_streak + 1, :continued]
+  end
+end
+
 def award_coins(bot, user_id, amount)
   payout = calculate_coin_payout(bot, user_id, amount)
-  grant_crew_xp_for_coin_payout(user_id, payout)
+  grant_crew_xp_for_coin_payout(user_id, payout, bot)
 
   DB.add_coins(user_id, payout)
   payout

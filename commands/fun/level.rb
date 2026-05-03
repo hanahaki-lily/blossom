@@ -22,7 +22,7 @@ def execute_level(event, target_user)
   is_sub = is_premium?(event.bot, uid)
   coins = DB.get_coins(uid)
   rep = DB.get_reputation(uid)
-  profile = is_sub ? DB.get_profile(uid) : { 'color' => nil, 'bio' => nil, 'favorites' => [] }
+  profile = is_sub ? DB.get_profile(uid) : { 'color' => nil, 'bio' => nil, 'favorites' => [], 'tagline' => nil }
 
   level = user['level']
   xp = user['xp']
@@ -92,6 +92,10 @@ def execute_level(event, target_user)
     partner_user = event.bot.user(marriage[:partner])
     partner_name = partner_user ? partner_user.username : "Unknown"
     inner << { type: 10, content: "#{EMOJI_STRINGS['rainbowheart']} **Married to** #{partner_name}" }
+  end
+
+  if is_sub && profile['tagline'].to_s.strip != ''
+    inner << { type: 10, content: "*#{profile['tagline']}*" }
   end
 
   unless fav_lines.empty?

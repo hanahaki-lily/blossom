@@ -11,7 +11,7 @@ def execute_premium(event)
   lines = [
     "- **Timers** — 50% shorter cooldowns on work, stream, post & fish.",
     "- **Coins** — +10% on earns; happy hour hits **3×** for subs vs **2×** free.",
-    "- **Extras** — Prisma on daily, gacha pity/shiny boosts, arcade rerolls, `/autoclaim`, `/invest`—stacked.",
+    "- **Extras** — Prisma on daily, gacha pity/shiny + **weekly summon stipend & pity head-start**, `/autoclaim`, **Streak Guard** (weekly, with autoclaim), `/invest`, **`/vipcrate`** monthly, **`/eventvip`** during seasonal events, carnival VIP tickets, showcase pins, crew XP boost, boss community XP — stacked.",
     url.empty? ? nil : "- **Ko-fi:** #{url}"
   ].compact
 

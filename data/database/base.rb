@@ -10,6 +10,7 @@ require 'connection_pool'
 # Require all the modules
 require_relative 'schema'
 require_relative 'economy'
+require_relative 'premium'
 require_relative 'gacha'
 require_relative 'leveling'
 require_relative 'cooldowns'
@@ -77,6 +78,7 @@ end
 class BotDatabase
   include DatabaseSchema
   include DatabaseEconomy
+  include DatabasePremium
   include DatabaseGacha
   include DatabaseLeveling
   include DatabaseCooldowns

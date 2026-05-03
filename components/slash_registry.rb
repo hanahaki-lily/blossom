@@ -1,14 +1,11 @@
 # ==========================================
 # SYSTEM: Slash Command Registry
-# DESCRIPTION: Tells Discord's servers what commands
-# Blossom has available and what options they require.
-# All commands below are already registered. Uncomment
-# the =begin/=end block only for a full re-register.
+# DESCRIPTION: Defines slash command schemas for Discord. Loaded during
+# `load_blossom_modules` (before command handlers) so structure is registered
+# when the bot starts. Handlers live in `commands/**/*.rb`.
 # ==========================================
 
-puts "🌸 Slash registry loaded (all commands registered)."
-
-=begin
+puts '🌸 Slash registry: registering application commands...'
 
 # =========================
 # CORE & UTILITY
@@ -27,6 +24,7 @@ $bot.register_application_command(:stats, 'View your lifetime stats dashboard')
 $bot.register_application_command(:notifications, 'Set how achievement notifications are delivered') do |cmd|
   cmd.string('mode', 'Notification mode', required: true, choices: { 'Channel' => 'channel', 'DM' => 'dm', 'Silent' => 'silent' })
 end
+$bot.register_application_command(:challenges, 'View and claim weekly challenges')
 $bot.register_application_command(:profile, 'Customize your premium profile') do |cmd|
   cmd.subcommand(:view, 'View your current profile settings')
   cmd.subcommand(:color, 'Set your profile color') do |sub|
@@ -36,11 +34,11 @@ $bot.register_application_command(:profile, 'Customize your premium profile') do
     sub.string('text', 'Your bio text (max 100 characters)', required: true)
   end
   cmd.subcommand(:fav, 'Set a favorite character on your profile') do |sub|
-    sub.integer('slot', 'Slot number', required: true, choices: { 'Slot 1' => 1, 'Slot 2' => 2, 'Slot 3' => 3 })
+    sub.integer('slot', 'Slot number', required: true, choices: { 'Slot 1' => 1, 'Slot 2' => 2, 'Slot 3' => 3, 'Slot 4' => 4, 'Slot 5' => 5 })
     sub.string('character', 'Name of the character you own', required: true)
   end
   cmd.subcommand(:unfav, 'Remove a favorite character from a slot') do |sub|
-    sub.integer('slot', 'Slot number', required: true, choices: { 'Slot 1' => 1, 'Slot 2' => 2, 'Slot 3' => 3 })
+    sub.integer('slot', 'Slot number', required: true, choices: { 'Slot 1' => 1, 'Slot 2' => 2, 'Slot 3' => 3, 'Slot 4' => 4, 'Slot 5' => 5 })
   end
   cmd.subcommand(:pet, 'Equip or view available pets') do |sub|
     sub.string('id', 'Pet ID to equip, or "none" to unequip (leave blank to browse)', required: false)
@@ -53,6 +51,12 @@ $bot.register_application_command(:profile, 'Customize your premium profile') do
   end
   cmd.subcommand(:badge, 'Equip or view badges') do |sub|
     sub.string('id', 'Badge ID to equip, or "none" to unequip (leave blank to browse)', required: false)
+  end
+  cmd.subcommand(:epithet, 'Short line next to your name on leaderboards (max 24)') do |sub|
+    sub.string('text', 'Text, or "clear" to remove', required: true)
+  end
+  cmd.subcommand(:tagline, 'Extra flair line on balance / level (max 120)') do |sub|
+    sub.string('text', 'Text, or "clear" to remove', required: true)
   end
   cmd.subcommand(:reset, 'Reset all profile customizations to default')
 end
@@ -82,6 +86,12 @@ $bot.register_application_command(:divorce, 'End your marriage')
 $bot.register_application_command(:birthday, 'Set your birthday for a special reward') do |cmd|
   cmd.string('date', 'Your birthday in MM/DD format', required: true)
 end
+$bot.register_application_command(:friends, 'View friendships and affinity') do |cmd|
+  cmd.user('user', 'Optional: inspect friendship with this user', required: false)
+end
+$bot.register_application_command(:crew, 'Create and manage your crew (use prefix for create/invite/kick)') do |cmd|
+  cmd.string('action', 'e.g. info, leaderboard, leave, disband', required: false)
+end
 
 # =========================
 # ECONOMY
@@ -105,6 +115,14 @@ $bot.register_application_command(:vote, 'top.gg: Prisma rewards & vote reminder
   cmd.string('action', 'Info or toggle reminders', required: false, choices: { 'Info & link' => 'info', 'Toggle reminder DMs' => 'remind' })
 end
 $bot.register_application_command(:event, 'Open the Limited Time Event Hub!')
+$bot.register_application_command(:vipcrate, 'Claim your monthly subscriber VIP crate (Premium)')
+$bot.register_application_command(:eventvip, 'Daily bonus event currency during seasonal events (Premium)')
+$bot.register_application_command(:invest, 'Invest coins for passive returns (Premium)') do |cmd|
+  cmd.integer('amount', 'Amount to invest (minimum 1,000)', required: true)
+end
+$bot.register_application_command(:portfolio, 'View your investment portfolio (Premium)')
+$bot.register_application_command(:withdraw, 'Cash out your investment (Premium)')
+$bot.register_application_command(:autoclaim, 'Toggle automatic daily claims (Premium)')
 $bot.register_application_command(:leaderboard, 'Show top users by level for this server')
 $bot.register_application_command(:level, 'Show a user\'s level and XP for this server') do |cmd|
   cmd.user('user', 'The user to check (optional)', required: false)
@@ -147,6 +165,11 @@ $bot.register_application_command(:rps, 'Challenge someone to Rock Paper Scissor
   cmd.integer('bet', 'How many coins to bet', required: true)
 end
 $bot.register_application_command(:fish, 'Cast a line and catch something!')
+$bot.register_application_command(:trivia, 'Answer VTuber trivia for coins!')
+$bot.register_application_command(:boss, 'View and attack the monthly boss!')
+$bot.register_application_command(:bosssetup, 'Set boss defeat announcement channel (Admin)') do |cmd|
+  cmd.channel('channel', 'Announcement channel (omit for usage)', required: false)
+end
 
 # =========================
 # GACHA & INVENTORY
@@ -163,6 +186,10 @@ $bot.register_application_command(:custombanner, 'Set a custom pull banner for 1
   cmd.string('goddesses', '3 goddess characters (comma-separated)', required: true)
 end
 $bot.register_application_command(:shop, 'View the character shop and direct-buy prices!')
+$bot.register_application_command(:buy, 'Buy a Black Market item or shop character') do |cmd|
+  cmd.string('item', 'Item or character name', required: true, autocomplete: true)
+  cmd.integer('quantity', 'Quantity (stackables)', required: false)
+end
 $bot.register_application_command(:view, 'View any VTuber character in detail') do |cmd|
   cmd.string('character', 'Name of the character', required: true, autocomplete: true)
 end
@@ -192,6 +219,15 @@ $bot.register_application_command(:autosell, 'Toggle auto-sell for common dupes 
 $bot.register_application_command(:shinymode, 'Toggle Shiny Hunting Mode — 2x cost, 2% shiny (Premium)')
 $bot.register_application_command(:giftlog, 'View your card gifting history') do |cmd|
   cmd.integer('page', 'Page number', required: false)
+end
+$bot.register_application_command(:craft, 'Craft exclusive cosmetics from materials') do |cmd|
+  cmd.string('recipe', 'Recipe id (omit to browse recipes)', required: false)
+end
+$bot.register_application_command(:salvage, 'Break down duplicate cards into crafting materials') do |cmd|
+  cmd.integer('amount', 'Number of cards', required: false)
+  cmd.string('rarity', 'Only salvage this rarity', required: false, choices: {
+    'Common' => 'common', 'Rare' => 'rare', 'Legendary' => 'legendary', 'Goddess' => 'goddess'
+  })
 end
 
 # =========================
@@ -250,9 +286,22 @@ $bot.register_application_command(:verifysetup, 'Set up a verification panel (Ad
   cmd.role('role', 'The role to give verified members', required: true)
 end
 $bot.register_application_command(:achievements, 'Toggle achievement notifications for this server (Admin Only)')
+$bot.register_application_command(:heist, 'Configure hourly heist events (Admin)') do |cmd|
+  cmd.string('action', 'setup or disable', required: false, choices: { 'Setup' => 'setup', 'Disable' => 'disable' })
+  cmd.channel('channel', 'Channel for heists (required for setup)', required: false)
+end
+$bot.register_application_command(:automod, 'Configure auto-moderation (Admin)') do |cmd|
+  cmd.string('action', 'Omit for status', required: false, choices: {
+    'Toggle link filter' => 'links', 'Toggle spam filter' => 'spam', 'Banned words' => 'words'
+  })
+  cmd.string('subaction', 'For words: add / remove / list', required: false, choices: { 'Add' => 'add', 'Remove' => 'remove', 'List' => 'list' })
+  cmd.string('word', 'Word (for add/remove)', required: false)
+end
+$bot.register_application_command(:tipsetup, 'Set daily tip channel (Admin)') do |cmd|
+  cmd.channel('channel', 'Channel for tips (omit to disable or see usage)', required: false)
+end
+$bot.register_application_command(:commleveltoggle, 'Toggle community level-up announcements')
 
-# Developer commands are prefix-only (not registered here) so they stay off the public slash list.
+# Developer commands stay prefix-only (see CHANGELOG).
 
-# NOTE: bomb and setxp are registered in ready.rb after deleting old versions
-
-=end
+puts '✅ Slash registry: application commands registered.'

@@ -38,9 +38,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 
 ### Changed
 
+- **Slash command sync:** `components/slash_registry.rb` is no longer commented out—every command that has a slash handler is registered there on boot. Duplicate **`/leaderboard`** and **`/vote`** registration was removed from **`events/passive/ready.rb`** so the registry stays the single source of truth.
 - **`/support` / `b!support`:** Invite updated to **https://discord.gg/cZ8zAT42u4** (Sakura Shrine).
 
 ### Added
+
+- **Premium expansion pack:** `/vipcrate` (monthly coins + Prisma), `/eventvip` (daily event currency during seasonal months), **Subscriber Streak Guard** (weekly streak save when `/autoclaim` is on), **weekly summon stipend** (3× −40 coins) + automatic **+5 pity** once per ISO week, **×1.12** carnival ticket wins for subscribers, **+8%** crew XP from coin→crew conversion for Premium, **+12** server **community XP** on Premium boss hits, **favorite slots 4–5** with **`/collection` showcase** row, **`profile epithet`** / **`profile tagline`**, **monthly rotating pet** (half off Prisma for subs), DB table **`premium_extras`**, and related columns on **`global_users`**.
 
 - **Neon Arcade hub account-age gate:** On the home guild (**`1499998845873033316`**), **`member_join`** kicks non-bot members whose Discord account is younger than **14 days** (`events/passive/member_logging.rb`). Documented under **`/verifysetup`** in **`COMMANDS.md`**.
 

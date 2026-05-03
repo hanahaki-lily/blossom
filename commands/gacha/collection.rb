@@ -58,6 +58,14 @@ def build_collection_page(event, target_user, col, current_rarity, page, is_edit
   end
 
   embed.description = desc
+  uid = target_user.id
+  if is_premium?(event.bot, uid)
+    sc = DB.get_profile(uid)['showcase_cards']
+    if sc.any?
+      sc_txt = sc.map { |n| format_fav_line(n) || n }.join(' · ')
+      embed.description = "#{EMOJI_STRINGS['crown']} **Showcase:** #{sc_txt}\n\n#{embed.description}"
+    end
+  end
   embed.footer = Discordrb::Webhooks::EmbedFooter.new(
     text: "Page #{page}/#{total_pages} • Total #{current_rarity.capitalize}: #{items_in_rarity.size}"
   )

@@ -47,6 +47,9 @@ $bot.button(custom_id: /^boss_attack_\d+_\d+$/) do |event|
   # Calculate and deal damage
   damage = is_sub ? rand(BOSS_DAMAGE_PREMIUM) : rand(BOSS_DAMAGE_RANGE)
   new_hp = DB.boss_attack(boss_id, uid, damage)
+  if is_sub && event.server
+    DB.add_community_xp_bonus(event.server.id, event.server.name, BOSS_ATTACK_COMMUNITY_XP)
+  end
   track_challenge(uid, 'boss_attacks', 1)
 
   # Check for defeat
@@ -96,7 +99,7 @@ $bot.button(custom_id: /^boss_attack_\d+_\d+$/) do |event|
       components: [
         { type: 10, content: "## \u{1F5E1}\u{FE0F} Attack! \u2014 #{damage} damage!" },
         { type: 14, spacing: 1 },
-        { type: 10, content: "You struck the **#{boss['boss_name']}** for **#{damage}** damage!#{is_sub ? " *(Premium power!)*" : ""}\n\n#{bar}\n**HP:** #{new_hp.to_s.gsub(/(\d)(?=(\d{3})+(?!\d))/, '\\1,')} / #{boss['max_hp'].to_s.gsub(/(\d)(?=(\d{3})+(?!\d))/, '\\1,')} (#{hp_pct}%)\n\n**Your Total Damage:** #{total_dmg}\n**Next Attack:** #{format_time_delta(BOSS_ATTACK_COOLDOWN)}#{mom_remark(uid, 'arcade')}" }
+        { type: 10, content: "You struck the **#{boss['boss_name']}** for **#{damage}** damage!#{is_sub ? " *(Premium power! +#{BOSS_ATTACK_COMMUNITY_XP} community XP for this server.)*" : ""}\n\n#{bar}\n**HP:** #{new_hp.to_s.gsub(/(\d)(?=(\d{3})+(?!\d))/, '\\1,')} / #{boss['max_hp'].to_s.gsub(/(\d)(?=(\d{3})+(?!\d))/, '\\1,')} (#{hp_pct}%)\n\n**Your Total Damage:** #{total_dmg}\n**Next Attack:** #{format_time_delta(BOSS_ATTACK_COOLDOWN)}#{mom_remark(uid, 'arcade')}" }
       ]
     }])
   end

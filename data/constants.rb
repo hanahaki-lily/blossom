@@ -16,7 +16,7 @@ ACTIVE_TICKETS      = {} # user_id => channel_id (prevents duplicate open ticket
 
 # Categorization for the Help Menu
 COMMAND_CATEGORIES = {
-  'Economy'   => [:balance, :daily, :work, :stream, :post, :collab, :cooldowns, :lottery, :lotteryinfo, :givecoins, :remindme, :invest, :portfolio, :withdraw, :autoclaim, :event],
+  'Economy'   => [:balance, :daily, :work, :stream, :post, :collab, :cooldowns, :lottery, :lotteryinfo, :givecoins, :remindme, :invest, :portfolio, :withdraw, :autoclaim, :vipcrate, :eventvip, :event],
   'Gacha'     => [:summon, :collection, :custombanner, :shop, :buy, :view, :ascend, :trade, :givecard, :sell, :autosell, :shinymode, :giftlog, :craft, :salvage],
   'Arcade'    => [:coinflip, :slots, :roulette, :scratch, :dice, :cups, :blackjack, :spin, :rps, :fish, :trivia, :boss],
   'Fun'       => [:kettle, :level, :leaderboard, :hug, :slap, :pat, :rep, :marry, :divorce, :birthday, :interactions, :serverinfo, :crew, :friends],

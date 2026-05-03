@@ -72,6 +72,18 @@ def mom_remark(uid, category = 'general')
   "\n\n*#{remarks.sample}*"
 end
 
+def format_fav_line(name)
+  result = find_character_in_pools(name)
+  return nil unless result
+  emoji = case result[:rarity]
+          when 'goddess'   then EMOJI_STRINGS['goddess']
+          when 'legendary' then EMOJI_STRINGS['legendary']
+          when 'rare'      then EMOJI_STRINGS['rare']
+          else EMOJI_STRINGS['common']
+          end
+  "#{emoji} #{name}"
+end
+
 def get_cmd_category(cmd_name)
   COMMAND_CATEGORIES.each do |category, commands|
     return category if commands.include?(cmd_name)

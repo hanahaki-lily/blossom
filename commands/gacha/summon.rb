@@ -36,9 +36,15 @@ def execute_summon(event)
     end
   end
 
-  # 3. Shiny Mode: Double cost if active
+  # 3. Shiny Mode: Double cost if active; weekly subscriber stipend: −coins on first N summons/week
   shiny_mode = is_sub && DB.get_shiny_mode(uid)
-  summon_cost = shiny_mode ? SUMMON_COST * 2 : SUMMON_COST
+  base_summon_cost = shiny_mode ? SUMMON_COST * 2 : SUMMON_COST
+  summon_discount_applied = is_sub && DB.premium_summon_discount_remaining(uid).positive?
+  summon_cost = if summon_discount_applied
+                  [base_summon_cost - WEEKLY_SUMMON_DISCOUNT_COINS, 1].max
+                else
+                  base_summon_cost
+                end
 
   # 4. Pay portal fee — concurrent opens can't race the snapshot query anymore
   if DB.deduct_coins_if_possible(uid, summon_cost).nil?
@@ -47,6 +53,11 @@ def execute_summon(event)
       { type: 14, spacing: 1 },
       { type: 10, content: "You need **#{summon_cost}** #{EMOJI_STRINGS['s_coin']} to open the portal#{shiny_mode ? ' *(Shiny Mode 2x)*' : ''}. You've got **#{DB.get_coins(uid)}**. Go grind, broke boy." }
     ]}])
+  end
+
+  if is_sub
+    DB.apply_weekly_premium_pity_headstart(uid)
+    DB.consume_premium_summon_discount(uid) if summon_discount_applied
   end
 
   active_banner = get_user_banner(uid)
@@ -147,6 +158,7 @@ def execute_summon(event)
   buff_text += "\n\n#{EMOJI_STRINGS['neonsparkle']} **PITY ACTIVATED!**\nThe gacha gods took mercy on you after #{PITY_THRESHOLD} pulls. Don't say I never did anything for you." if pity_triggered
   buff_text += "\n\n♻️ **AUTO-SOLD!** You already had 5+ of this common. Instant **+#{autosold_coins}** #{EMOJI_STRINGS['s_coin']}." if autosold
   buff_text += "\n\n#{EMOJI_STRINGS['neonsparkle']} *Shiny Hunting Mode active — 2x cost, 2x sparkle chance.*" if shiny_mode
+  buff_text += "\n\n#{EMOJI_STRINGS['neonsparkle']} *Subscriber Summon Stipend — #{WEEKLY_SUMMON_DISCOUNT_COINS} #{EMOJI_STRINGS['s_coin']} off this pull.*" if summon_discount_applied
 
   # Rarity-flavored pull messages
   pull_flavor = case rarity
@@ -196,7 +208,7 @@ def execute_summon(event)
     { type: 14, spacing: 1 },
     { type: 10, content: desc },
     { type: 14, spacing: 1 },
-    { type: 10, content: "**Wallet Damage** (-#{summon_cost} #{EMOJI_STRINGS['s_coin']}#{shiny_mode ? ' Shiny Mode' : ''})\n#{DB.get_coins(uid)} #{EMOJI_STRINGS['s_coin']}#{is_sub ? "\n**Pity:** #{DB.get_pity(uid)}/#{PITY_THRESHOLD}" : ''}#{mom_remark(uid, 'gacha')}" },
+    { type: 10, content: "**Wallet Damage** (-#{summon_cost} #{EMOJI_STRINGS['s_coin']}#{shiny_mode ? ' Shiny Mode' : ''}#{summon_discount_applied ? ' · Stipend' : ''})\n#{DB.get_coins(uid)} #{EMOJI_STRINGS['s_coin']}#{is_sub ? "\n**Pity:** #{DB.get_pity(uid)}/#{PITY_THRESHOLD} · **Stipend pulls left:** #{DB.premium_summon_discount_remaining(uid)}" : ''}#{mom_remark(uid, 'gacha')}" },
     { type: 14, spacing: 1 },
     { type: 12, items: [{ media: { url: gif_url } }] }
   ]}])

@@ -7,28 +7,7 @@
 $bot.ready do |event|
   puts "🌸 Blossom is connected and live!"
 
-  # --- SLASH COMMAND REGISTRATION ---
-  # All slash commands are live. Uncomment below to re-register if needed.
-  event.bot.register_application_command(:leaderboard, 'Show top users by level for this server')
-  event.bot.register_application_command(:vote, 'top.gg: vote for Prisma rewards & DM reminders') do |cmd|
-    cmd.string('action', 'View info or toggle reminder', required: false, choices: { 'Info & link' => 'info', 'Toggle reminder DMs' => 'remind' })
-  end
-  # event.bot.register_application_command(:spin, 'Spin the daily prize wheel!')
-  # event.bot.register_application_command(:marry, 'Propose to someone!') do |cmd|
-  #   cmd.user('user', 'The person you want to marry', required: true)
-  # end
-  # event.bot.register_application_command(:divorce, 'End your marriage')
-  # event.bot.register_application_command(:birthday, 'Set or view your birthday!') do |cmd|
-  #   cmd.string('action', 'What to do', required: true, choices: { 'Set Birthday' => 'set', 'View Birthday' => 'view' })
-  #   cmd.string('date', 'Your birthday in MM/DD format (for set)', required: false)
-  # end
-  # event.bot.register_application_command(:profile, 'Customize your premium profile!') do |cmd|
-  #   cmd.string('action', 'What to change', required: true, choices: {
-  #     'Set Color' => 'color', 'Set Bio' => 'bio', 'Set Favorite' => 'fav',
-  #     'Remove Favorite' => 'unfav', 'Reset All' => 'reset', 'View Settings' => 'view'
-  #   })
-  #   cmd.string('value', 'Hex code, bio text, or "slot name", required: false)
-  # end
+  # Slash command schemas: see components/slash_registry.rb (loaded at boot).
 
   puts "#{EMOJI_STRINGS['stream']} Syncing server names to database..."
   active_server_ids = event.bot.servers.keys

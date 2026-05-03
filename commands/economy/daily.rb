@@ -85,14 +85,16 @@ def execute_daily(event)
     return send_cv2(event, components)
   end
 
-  # Streak calculation (reset if > 48 hours since last claim)
-  if last_used.nil? || (now - last_used) > (DAILY_COOLDOWN * 2)
-    new_streak = 1
-    streak_msg = "*(Streak gone, skill issue. Claim within 48h next time!)*"
-  else
-    new_streak = current_streak + 1
-    streak_msg = "\u{1F525} **Streak:** #{new_streak} days!"
-  end
+  # Streak calculation (reset if > 48h since last claim; subscribers with /autoclaim get weekly insurance)
+  new_streak, streak_kind = resolve_daily_streak(event.bot, uid, last_used, now, current_streak)
+  streak_msg = case streak_kind
+               when :continued
+                 "\u{1F525} **Streak:** #{new_streak} days!"
+               when :insurance
+                 "\u{1F525} **Streak:** #{new_streak} days! *(Subscriber Streak Guard — /autoclaim was on.)*"
+               else
+                 "*(Streak gone, skill issue. Claim within 48h next time!)*"
+               end
 
   # Base reward + streak bonus
   reward = DAILY_REWARD + (new_streak * DAILY_STREAK_BONUS)
@@ -155,9 +157,9 @@ def execute_daily(event)
   prisma_grant_total = prisma_reward + prisma_milestone_bonus
 
   DB.commit_daily_claim_atomic(uid, coin_grant_total, prisma_grant_total, new_streak, now, today)
-  grant_crew_xp_for_coin_payout(uid, final_coin_payout)
-  grant_crew_xp_for_coin_payout(uid, milestone_14_pay) if milestone_14_pay.positive?
-  grant_crew_xp_for_coin_payout(uid, milestone_28_pay) if milestone_28_pay.positive?
+  grant_crew_xp_for_coin_payout(uid, final_coin_payout, event.bot)
+  grant_crew_xp_for_coin_payout(uid, milestone_14_pay, event.bot) if milestone_14_pay.positive?
+  grant_crew_xp_for_coin_payout(uid, milestone_28_pay, event.bot) if milestone_28_pay.positive?
 
   final_reward = final_coin_payout
 

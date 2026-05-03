@@ -34,7 +34,7 @@ Claim your daily coin reward with a visual monthly login calendar. Consecutive c
 | **Aliases** | `d` |
 | **Cooldown** | 24 hours |
 | **Base Reward** | 350 coins + (streak &times; 30) |
-| **Streak Reset** | Resets if more than 48 hours pass between claims |
+| **Streak Reset** | Resets if more than 48 hours pass between claims (unless **Subscriber Streak Guard** applies — see **Premium Perks**) |
 | **14-Day Milestone** | 1,000 coins (2,000 for Premium) |
 | **28-Day Milestone** | 5,000 coins (10,000 coins + 10 Prisma for Premium) |
 
@@ -83,8 +83,31 @@ Toggle automatic daily reward claiming. When enabled, Blossom will automatically
 | **Requirement** | Premium |
 | **Behavior** | Auto-claims daily when cooldown expires |
 | **Notification** | DM with reward summary |
-| **Streak Protection** | Prevents streak loss from forgetting to claim |
+| **Streak Protection** | Auto-claim helps avoid missing a day; **Subscriber Streak Guard** can save a broken streak **once per ISO week** if `/autoclaim` is on when you manually claim after a 48h+ gap |
 | **Weekly Challenge Tracking** | Auto-claims count toward `daily_claims` weekly challenge progress |
+
+---
+
+### `/vipcrate`
+Claim a **monthly** subscriber reward bundle (coins + Prisma). Resets on the first claim each calendar month.
+
+| Detail | Value |
+|--------|-------|
+| **Aliases** | `subcrate`, `monthlycrate` |
+| **Requirement** | Premium |
+| **Reward** | 2,500 coins (before +10% / happy hour / crew) + **8** Prisma |
+
+---
+
+### `/eventvip`
+During **any active seasonal event month**, claim **once per day** a bundle of **event currency** (same balance as carnival tickets / seasonal shops).
+
+| Detail | Value |
+|--------|-------|
+| **Aliases** | `eventlane`, `vipbonus` |
+| **Requirement** | Premium |
+| **Reward** | Random **35–95** event currency |
+| **Cooldown** | Once per calendar day |
 
 ---
 
@@ -162,7 +185,7 @@ View your (or another player's) balance, cosmetics, and profile.
 | **Aliases** | `bal` |
 | **Usage** | `/balance` or `/balance user:@player` |
 
-**Displays:** Coins, Prisma, reputation, daily streak, title, badge, marriage status, favorite cards (Premium), pet, and bio (Premium). Includes a dropdown menu to navigate to inventory, VTubers, or achievements.
+**Displays:** Coins, Prisma, reputation, daily streak, title, badge, marriage status, favorite cards (Premium — up to **5**, with **2** extra **showcase** pins on `/collection`), pet, bio, and optional **tagline** (Premium). Includes a dropdown menu to navigate to inventory, VTubers, or achievements.
 
 ---
 
@@ -301,6 +324,8 @@ Spend coins to pull a random VTuber card from the gacha.
 **Rarity Tiers:** Common, Rare, Legendary, Goddess
 
 **Mechanics:**
+- **Subscriber Summon Stipend:** First **3** summons each ISO week cost **40** fewer coins each (minimum **1** coin); Shiny Mode costs are stipend-eligible too
+- **Weekly pity head-start (Premium):** Once per ISO week, **+5** pity progress is applied automatically on your next summon (capped just below the 30-pull threshold)
 - **Pity System (Premium):** Guaranteed Legendary or Goddess after 30 pulls that are **below** Legendary or Goddess (Rare pulls still count toward pity)
 - **Shiny Ascended Chance:** 1% normally, 2% with Shiny Hunting Mode (Premium)
 - **Event Pull Chance:** 5% chance to pull an event character during event months
@@ -862,7 +887,7 @@ View your (or another player's) level, XP, and profile card.
 | **Aliases** | `lvl`, `rank` |
 | **Usage** | `/level` or `/level user:@player` |
 
-**Displays:** Level, XP progress bar, coins, reputation, daily streak, marriage status, favorite cards (Premium), pet, and bio.
+**Displays:** Level, XP progress bar, coins, reputation, daily streak, marriage status, favorite cards (Premium), optional **tagline**, pet, and bio.
 
 **XP System:** Earn 5 XP per message (10-second cooldown between XP gains).
 
@@ -1446,12 +1471,20 @@ Premium subscribers unlock the following benefits across all systems:
 
 | Perk | Details |
 |------|---------|
+| **Subscriber Streak Guard** | With `/autoclaim` **on**, once per **ISO week** you can **save** your daily streak when a claim would reset after a **48h+** gap (manual or auto-claim path) |
+| **VIP Crate** | `/vipcrate` — monthly coins + Prisma bundle |
+| **Event VIP Lane** | `/eventvip` — daily event currency during seasonal months; carnival minigames pay **~12%** more tickets |
+| **Summon stipend & pity** | 3× weekly **−40 coin** summon discounts; **+5** automatic pity progress once per ISO week (first qualifying summon) |
+| **Crew bonus XP** | **+8%** crew XP from the usual “coins earned → crew XP” conversion |
+| **Boss co-op** | Premium boss attacks add **+12 community XP** to the current server’s arcade pool |
+| **Profile flair** | Up to **5** favorite slots; slots **4–5** pin a **Showcase** row on `/collection`; **`profile epithet`** (leaderboards); **`profile tagline`** (balance / level) |
+| **Rotating pet spotlight** | One shop pet each month is **half off** Prisma for subscribers |
 | **Cooldown Reduction** | 50% shorter cooldowns on work, stream, post, and fish |
 | **Coin Bonus** | +10% coins on all earning commands |
 | **Happy Hour Boost** | 3x coins during happy hours (vs 2x for free users) |
 | **Prisma Currency** | Earn 1-3 Prisma per daily claim (scales with streak) |
 | **Calendar Milestones** | Enhanced milestone rewards (2,000 at 14 days, 10,000 + 10 Prisma at 28 days) |
-| **Auto-Claim Daily** | Automatic daily claiming with DM notifications — never break streaks |
+| **Auto-Claim Daily** | Automatic daily claiming with DM notifications + **Subscriber Streak Guard** (weekly) |
 | **Passive Income** | Invest coins for 0.5%/hr compounding returns (up to 2x principal) |
 | **Pity System** | Guaranteed Legendary/Goddess after 30 pulls below Legendary/Goddess (Rare counts toward pity) |
 | **Shiny Hunting Mode** | Toggle 2&times; summon cost for 2&times; shiny chance |
@@ -1461,20 +1494,20 @@ Premium subscribers unlock the following benefits across all systems:
 | **Extended Windows** | Longer trade (180s vs 60s) and collab (300s vs 180s) windows |
 | **Spin Reroll** | One free reroll on the daily wheel |
 | **Reputation** | 3 reps per day instead of 1 |
-| **Profile Customization** | Color, bio, favorites, pets, titles, themes, badges |
+| **Profile Customization** | Color, bio, favorites (5), pets (**monthly spotlight** discount), titles, themes, badges, epithet, tagline |
+| **Favorite Cards** | Display up to **5** favorite VTubers on profile; **2** can double as collection showcase pins |
 | **Gold Fishing Rod** | Access to 3 premium-only fish catches |
-| **Favorite Cards** | Display up to 3 favorite VTubers on your profile |
 | **Weekly Challenge** | 4th weekly challenge slot (vs 3 for free users) |
 | **Chat XP** | 1.5× XP per qualifying message (vs base message XP) |
 | **Arcade winnings** | +10% base payout from arcade flows; chance at a ×5 jackpot overlay on those winnings |
 | **Scratch — Double or Nothing** | Extra gamble button after a win (premium-only) |
 | **Trivia** | Higher coin rewards on correct answers |
-| **Boss battles** | Higher per-attack damage range |
+| **Boss battles** | Higher per-attack damage range **and** **+12** community XP for the server per premium swing |
 | **Heist events** | +3% success chance per premium participant (stacks with other bonuses) |
 | **Birthdays** | Standard coin gift for everyone with a birthday set; subscribers get bonus DM flair |
-| **Leaderboards** | Prisma sparkle next to subscriber names on lists |
+| **Leaderboards** | Prisma sparkle next to subscriber names + optional custom **epithet** |
 
-**Note:** The +5% crew bonus stacks with Premium bonuses. A Premium crew member gets +10% (Premium) + 5% (Crew) = +15% total bonus.
+**Note:** The +5% crew coin bonus stacks with Premium bonuses. A Premium crew member gets roughly +10% (Premium) + 5% (Crew) = +15% total coin bonus. Premium **also** earns **+8%** more **crew XP** than free users from the same coin payouts.
 
 ### Premium membership via Ko-fi and Discord
 
@@ -1710,6 +1743,8 @@ A carnival-themed event with exclusive characters, minigames, and treats.
 | 5K Tickets | 10,000 coins |
 
 Access the event hub using `/event` during the event month.
+
+**Premium:** Carnival minigame **ticket** payouts are multiplied (**&times;1.12**). During **any** seasonal month, `/eventvip` grants a daily lump of event currency.
 
 ---
 

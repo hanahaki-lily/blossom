@@ -417,5 +417,23 @@ module DatabaseSchema # <--- Changed from 'class' to 'module'
       SQL
     rescue PG::Error
     end
+
+    # Premium extras: monthly chest, weekly stipends, event VIP claim, streak insurance
+    @db.exec(<<-SQL)
+      CREATE TABLE IF NOT EXISTS premium_extras (
+        user_id BIGINT PRIMARY KEY,
+        monthly_chest_ym VARCHAR(7),
+        streak_insurance_iso_week VARCHAR(10),
+        event_vip_claim_date DATE,
+        summon_disc_iso_week VARCHAR(10),
+        summon_disc_uses INTEGER DEFAULT 0,
+        pity_headstart_iso_week VARCHAR(10)
+      );
+    SQL
+
+    begin; @db.exec("ALTER TABLE global_users ADD COLUMN IF NOT EXISTS favorite_card_4 VARCHAR(255)"); rescue PG::Error; end
+    begin; @db.exec("ALTER TABLE global_users ADD COLUMN IF NOT EXISTS favorite_card_5 VARCHAR(255)"); rescue PG::Error; end
+    begin; @db.exec("ALTER TABLE global_users ADD COLUMN IF NOT EXISTS leaderboard_epithet VARCHAR(24)"); rescue PG::Error; end
+    begin; @db.exec("ALTER TABLE global_users ADD COLUMN IF NOT EXISTS profile_tagline VARCHAR(120)"); rescue PG::Error; end
   end # Closes 'def setup_schema'
 end # Closes 'module DatabaseSchema'

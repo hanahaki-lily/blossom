@@ -120,6 +120,28 @@ BADGES = {
   'scrap_king'    => { name: 'Scrap King', emoji: "\u{1F451}", desc: 'Built an empire from scraps.', price: 0, earnable: false, craftable: true }
 }.freeze
 
+# Monthly "Spotlight" pet for subscribers (50% Prisma discount that month, shop pets only).
+ROTATING_PREMIUM_PET_BY_MONTH = {
+  1 => 'shadow_cat', 2 => 'pixel_slime', 3 => 'neon_fox', 4 => 'arcade_drone',
+  5 => 'ghost_flame', 6 => 'star_jellyfish', 7 => 'neon_fox', 8 => 'ghost_flame',
+  9 => 'arcade_drone', 10 => 'shadow_cat', 11 => 'pixel_slime', 12 => 'star_jellyfish'
+}.freeze
+
+def rotating_premium_pet_id
+  ROTATING_PREMIUM_PET_BY_MONTH[Time.now.utc.month] || 'neon_fox'
+end
+
+def prisma_pet_price_for_user(bot, user_id, pet_id)
+  pet = PETS[pet_id]
+  return pet[:price] if pet[:craftable]
+
+  if is_premium?(bot, user_id) && pet_id == rotating_premium_pet_id
+    [(pet[:price] / 2.0).ceil, 1].max
+  else
+    pet[:price]
+  end
+end
+
 # Helper to get pet flavor text based on context
 def pet_flavor(uid, mood = :idle)
   cosmetics = DB.get_cosmetics(uid)

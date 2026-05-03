@@ -4,6 +4,12 @@
 # for the seasonal Carnival minigames, shops, and navigation.
 # ==========================================
 
+def carnival_scaled_ticket_win(bot, uid, base_winnings)
+  return base_winnings unless is_premium?(bot, uid)
+
+  (base_winnings * CARNIVAL_PREMIUM_TICKET_MULT).round
+end
+
 # 1. Main Hub Entrance
 $bot.select_menu(custom_id: /^event_hub_/) do |event|
   owner_id = event.custom_id.split('_').last
@@ -66,13 +72,15 @@ $bot.button(custom_id: /^carnival_ringtoss_/) do |event|
   embed = Discordrb::Webhooks::Embed.new(color: 0xFF69B4)
   
   if rand(100) < 40 
-    winnings = rand(15..50)
+    base = rand(15..50)
+    winnings = carnival_scaled_ticket_win(event.bot, uid, base)
+    prem_note = is_premium?(event.bot, uid) ? "\n\n*#{EMOJI_STRINGS['prisma']} VIP lane — +#{(CARNIVAL_PREMIUM_TICKET_MULT * 100 - 100).round}% tickets!*" : ''
     DB.add_tickets(uid, winnings)
     total_tickets = DB.get_tickets(uid)
     check_achievement(event.channel, uid, 'tickets_1k') if total_tickets >= 1000
     check_achievement(event.channel, uid, 'tickets_5k') if total_tickets >= 5000
     embed.title = "⭕ Ring Toss Winner!"
-    embed.description = "You toss the ring... and it lands perfectly on a bottle!\n\nYou won **#{winnings}** #{SPRING_CARNIVAL[:emoji]}!\n*Balance: #{DB.get_tickets(uid)} #{SPRING_CARNIVAL[:emoji]}*"
+    embed.description = "You toss the ring... and it lands perfectly on a bottle!\n\nYou won **#{winnings}** #{SPRING_CARNIVAL[:emoji]}!\n*Balance: #{DB.get_tickets(uid)} #{SPRING_CARNIVAL[:emoji]}*#{prem_note}"
   else
     embed.title = "⭕ Ring Toss Miss"
     embed.description = "You toss the ring... and it bounces right off the bottle.\n\nBetter luck next time! (-#{cost} #{EMOJI_STRINGS['s_coin']})\n*Balance: #{DB.get_tickets(uid)} #{SPRING_CARNIVAL[:emoji]}*"
@@ -106,13 +114,15 @@ $bot.button(custom_id: /^carnival_game2_/) do |event|
   successes = pops.count(true)
 
   if successes > 0
-    winnings = successes * rand(10..30)
+    base = successes * rand(10..30)
+    winnings = carnival_scaled_ticket_win(event.bot, uid, base)
+    prem_note = is_premium?(event.bot, uid) ? "\n\n*#{EMOJI_STRINGS['prisma']} VIP lane — bonus tickets!*" : ''
     DB.add_tickets(uid, winnings)
     total_tickets = DB.get_tickets(uid)
     check_achievement(event.channel, uid, 'tickets_1k') if total_tickets >= 1000
     check_achievement(event.channel, uid, 'tickets_5k') if total_tickets >= 5000
     embed.title = "🎈 Balloon Pop!"
-    embed.description = "You throw your darts and pop **#{successes}** balloons!\n\nYou won **#{winnings}** #{SPRING_CARNIVAL[:emoji]}!\n*Balance: #{DB.get_tickets(uid)} #{SPRING_CARNIVAL[:emoji]}*"
+    embed.description = "You throw your darts and pop **#{successes}** balloons!\n\nYou won **#{winnings}** #{SPRING_CARNIVAL[:emoji]}!\n*Balance: #{DB.get_tickets(uid)} #{SPRING_CARNIVAL[:emoji]}*#{prem_note}"
   else
     embed.title = "🎈 Balloon Pop Miss"
     embed.description = "You throw your darts... and miss every single balloon. The carnie laughs at you.\n\nBetter luck next time! (-#{cost} #{EMOJI_STRINGS['s_coin']})\n*Balance: #{DB.get_tickets(uid)} #{SPRING_CARNIVAL[:emoji]}*"

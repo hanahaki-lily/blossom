@@ -4,18 +4,6 @@
 # CATEGORY: Utility
 # ==========================================
 
-def format_fav_line(name)
-  result = find_character_in_pools(name)
-  return nil unless result
-  emoji = case result[:rarity]
-          when 'goddess'   then EMOJI_STRINGS['goddess']
-          when 'legendary' then EMOJI_STRINGS['legendary']
-          when 'rare'      then EMOJI_STRINGS['rare']
-          else EMOJI_STRINGS['common']
-          end
-  "#{emoji} #{name}"
-end
-
 def execute_profile(event, action, args)
   uid = event.user.id
   is_sub = is_premium?(event.bot, uid)
@@ -42,15 +30,20 @@ def execute_profile(event, action, args)
     title_display = cosmetics['title'] && TITLES[cosmetics['title']] ? "**#{TITLES[cosmetics['title']][:name]}**" : "*None*"
     theme_display = COLLECTION_THEMES[cosmetics['theme']] ? COLLECTION_THEMES[cosmetics['theme']][:name] : "Default"
     badge_display = cosmetics['badge'] && BADGES[cosmetics['badge']] ? "#{BADGES[cosmetics['badge']][:emoji]} #{BADGES[cosmetics['badge']][:name]}" : "*None*"
+    epithet_d = profile['epithet'].to_s.strip != '' ? "\n#{EMOJI_STRINGS['crown']} **Leaderboard epithet:** *#{profile['epithet']}*" : ""
+    tagline_d = profile['tagline'].to_s.strip != '' ? "\n**Tagline:** *#{profile['tagline']}*" : ""
+    spot = rotating_premium_pet_id
+    spet = PETS[spot]
+    spotlight_line = "\n\n#{EMOJI_STRINGS['neonsparkle']} **Monthly pet spotlight:** `#{spot}` — #{spet[:emoji]} **#{spet[:name]}** *(half off Prisma for subs)*"
 
     return send_cv2(event, [{ type: 17, accent_color: profile['color'] ? profile['color'].to_i(16) : NEON_COLORS.sample, components: [
       { type: 10, content: "## #{EMOJI_STRINGS['neonsparkle']} Profile Settings" },
       { type: 14, spacing: 1 },
-      { type: 10, content: "🎨 **Color:** #{color_display}\n📝 **Bio:** #{bio_display}\n#{EMOJI_STRINGS['hearts']} **Favorites:**\n#{fav_display}" },
+      { type: 10, content: "🎨 **Color:** #{color_display}\n📝 **Bio:** #{bio_display}#{epithet_d}#{tagline_d}\n#{EMOJI_STRINGS['hearts']} **Favorites:**\n#{fav_display}" },
       { type: 14, spacing: 1 },
-      { type: 10, content: "🐾 **Pet:** #{pet_display}\n🏷️ **Title:** #{title_display}\n🎨 **Theme:** #{theme_display}\n🏅 **Badge:** #{badge_display}" },
+      { type: 10, content: "🐾 **Pet:** #{pet_display}\n🏷️ **Title:** #{title_display}\n🎨 **Theme:** #{theme_display}\n🏅 **Badge:** #{badge_display}#{spotlight_line}" },
       { type: 14, spacing: 1 },
-      { type: 10, content: "-# `#{PREFIX}profile color/bio/fav/unfav/pet/title/theme/badge/reset`\n-# `#{PREFIX}profile shop` to browse cosmetics" }
+      { type: 10, content: "-# `#{PREFIX}profile color/bio/epithet/tagline/fav/unfav/pet/title/theme/badge/reset`\n-# `#{PREFIX}profile shop` to browse cosmetics" }
     ]}])
   end
 
@@ -101,11 +94,11 @@ def execute_profile(event, action, args)
     slot = args[0]&.to_i
     name = args[1..].join(' ').strip if args.length > 1
 
-    unless slot && (1..3).include?(slot) && name && !name.empty?
+    unless slot && (1..5).include?(slot) && name && !name.empty?
       return send_cv2(event, [{ type: 17, accent_color: 0xFF0000, components: [
         { type: 10, content: "## #{EMOJI_STRINGS['x_']} Usage" },
         { type: 14, spacing: 1 },
-        { type: 10, content: "`#{PREFIX}profile fav <1/2/3> <character name>`\nSlot 1 is available to all premium users. Slots 2 and 3 let you flex harder." }
+        { type: 10, content: "`#{PREFIX}profile fav <1-5> <character name>`\nSlots **1–3** show on balance & level. **4–5** are collection showcase pins." }
       ]}])
     end
 
@@ -130,11 +123,11 @@ def execute_profile(event, action, args)
 
   when 'unfav'
     slot = args[0]&.to_i
-    unless slot && (1..3).include?(slot)
+    unless slot && (1..5).include?(slot)
       return send_cv2(event, [{ type: 17, accent_color: 0xFF0000, components: [
         { type: 10, content: "## #{EMOJI_STRINGS['x_']} Usage" },
         { type: 14, spacing: 1 },
-        { type: 10, content: "`#{PREFIX}profile unfav <1/2/3>`" }
+        { type: 10, content: "`#{PREFIX}profile unfav <1-5>`" }
       ]}])
     end
 
@@ -147,8 +140,13 @@ def execute_profile(event, action, args)
 
   when 'pet'
     pet_id = args.first&.downcase
+    rid = rotating_premium_pet_id
     if pet_id.nil?
-      list = PETS.map { |id, p| "#{p[:emoji]} **#{p[:name]}** — #{p[:price]} #{EMOJI_STRINGS['prisma']} (`#{id}`)" }.join("\n")
+      list = PETS.map do |id, p|
+        price = prisma_pet_price_for_user(event.bot, uid, id)
+        spot = id == rid ? " #{EMOJI_STRINGS['neonsparkle']} *Subscriber Spotlight — half off!*" : ''
+        "#{p[:emoji]} **#{p[:name]}** — #{price} #{EMOJI_STRINGS['prisma']} (`#{id}`)#{spot}"
+      end.join("\n")
       return send_cv2(event, [{ type: 17, accent_color: NEON_COLORS.sample, components: [
         { type: 10, content: "## 🐾 Available Pets" },
         { type: 14, spacing: 1 },
@@ -175,22 +173,23 @@ def execute_profile(event, action, args)
 
     pet = PETS[pet_id]
     prisma = DB.get_prisma(uid)
+    price = prisma_pet_price_for_user(event.bot, uid, pet_id)
     # Check if already owned (already equipped or re-equipping is free)
     current = cosmetics['pet']
-    if current != pet_id && prisma < pet[:price]
+    if current != pet_id && prisma < price
       return send_cv2(event, [{ type: 17, accent_color: 0xFF0000, components: [
         { type: 10, content: "## #{EMOJI_STRINGS['x_']} Not Enough Prisma" },
         { type: 14, spacing: 1 },
-        { type: 10, content: "**#{pet[:name]}** costs **#{pet[:price]}** #{EMOJI_STRINGS['prisma']}. You have **#{prisma}**." }
+        { type: 10, content: "**#{pet[:name]}** costs **#{price}** #{EMOJI_STRINGS['prisma']}. You have **#{prisma}**." }
       ]}])
     end
 
-    DB.add_prisma(uid, -pet[:price]) unless current == pet_id
+    DB.add_prisma(uid, -price) unless current == pet_id
     DB.set_pet(uid, pet_id)
     send_cv2(event, [{ type: 17, accent_color: 0x00FF00, components: [
       { type: 10, content: "## #{pet[:emoji]} #{pet[:name]} Equipped!" },
       { type: 14, spacing: 1 },
-      { type: 10, content: "#{pet[:idle]}\n\nYour new companion will appear in your commands!#{"" if current == pet_id}#{current != pet_id ? "\n-#{pet[:price]} #{EMOJI_STRINGS['prisma']}" : ''}" }
+      { type: 10, content: "#{pet[:idle]}\n\nYour new companion will appear in your commands!#{"" if current == pet_id}#{current != pet_id ? "\n-#{price} #{EMOJI_STRINGS['prisma']}" : ''}" }
     ]}])
 
   when 'title'
@@ -361,10 +360,60 @@ def execute_profile(event, action, args)
       { type: 10, content: "**#{badge[:name]}** — *#{badge[:desc]}*\nThis will show on your profile and level page!" }
     ]}])
 
+  when 'epithet'
+    text = args.join(' ').strip
+    if text.empty? || text.casecmp('clear').zero?
+      DB.set_leaderboard_epithet(uid, nil)
+      return send_cv2(event, [{ type: 17, accent_color: 0x00FF00, components: [
+        { type: 10, content: "## #{EMOJI_STRINGS['checkmark']} Epithet Cleared" },
+        { type: 14, spacing: 1 },
+        { type: 10, content: "Leaderboards won't show a custom epithet anymore." }
+      ]}])
+    end
+    if text.length > 24
+      return send_cv2(event, [{ type: 17, accent_color: 0xFF0000, components: [
+        { type: 10, content: "## #{EMOJI_STRINGS['x_']} Too Long" },
+        { type: 14, spacing: 1 },
+        { type: 10, content: "Max **24** characters for leaderboard epithets. You wrote #{text.length}." }
+      ]}])
+    end
+    DB.set_leaderboard_epithet(uid, text)
+    send_cv2(event, [{ type: 17, accent_color: 0x00FF00, components: [
+      { type: 10, content: "## #{EMOJI_STRINGS['crown']} Epithet Set" },
+      { type: 14, spacing: 1 },
+      { type: 10, content: "Leaderboards will show: *#{text}* next to your name while you're subscribed~" }
+    ]}])
+
+  when 'tagline'
+    text = args.join(' ').strip
+    if text.empty? || text.casecmp('clear').zero?
+      DB.set_profile_tagline(uid, nil)
+      return send_cv2(event, [{ type: 17, accent_color: 0x00FF00, components: [
+        { type: 10, content: "## #{EMOJI_STRINGS['checkmark']} Tagline Cleared" },
+        { type: 14, spacing: 1 },
+        { type: 10, content: "Removed your profile tagline." }
+      ]}])
+    end
+    if text.length > 120
+      return send_cv2(event, [{ type: 17, accent_color: 0xFF0000, components: [
+        { type: 10, content: "## #{EMOJI_STRINGS['x_']} Too Long" },
+        { type: 14, spacing: 1 },
+        { type: 10, content: "Max **120** characters. You wrote #{text.length}." }
+      ]}])
+    end
+    DB.set_profile_tagline(uid, text)
+    send_cv2(event, [{ type: 17, accent_color: 0x00FF00, components: [
+      { type: 10, content: "## #{EMOJI_STRINGS['neonsparkle']} Tagline Set" },
+      { type: 14, spacing: 1 },
+      { type: 10, content: "Cards and balance can flex: *#{text}*" }
+    ]}])
+
   when 'reset'
     DB.set_profile_color(uid, nil)
     DB.set_profile_bio(uid, nil)
-    (1..3).each { |s| DB.clear_favorite_slot(uid, s) }
+    DB.set_leaderboard_epithet(uid, nil)
+    DB.set_profile_tagline(uid, nil)
+    (1..5).each { |s| DB.clear_favorite_slot(uid, s) }
     DB.set_pet(uid, nil)
     DB.set_title(uid, nil)
     DB.set_collection_theme(uid, 'default')
@@ -379,7 +428,7 @@ def execute_profile(event, action, args)
     send_cv2(event, [{ type: 17, accent_color: 0xFF0000, components: [
       { type: 10, content: "## #{EMOJI_STRINGS['confused']} Unknown Option" },
       { type: 14, spacing: 1 },
-      { type: 10, content: "Options: `color`, `bio`, `fav`, `unfav`, `pet`, `title`, `theme`, `badge`, `reset`.\n`#{PREFIX}profile` with no args to see your current settings." }
+      { type: 10, content: "Options: `color`, `bio`, `epithet`, `tagline`, `fav`, `unfav`, `pet`, `title`, `theme`, `badge`, `reset`.\n`#{PREFIX}profile` with no args to see your current settings." }
     ]}])
   end
 end
@@ -433,6 +482,14 @@ end
 $bot.application_command(:profile).subcommand(:badge) do |event|
   id = event.options['id']
   execute_profile(event, 'badge', id ? [id] : [])
+end
+
+$bot.application_command(:profile).subcommand(:epithet) do |event|
+  execute_profile(event, 'epithet', [event.options['text']])
+end
+
+$bot.application_command(:profile).subcommand(:tagline) do |event|
+  execute_profile(event, 'tagline', [event.options['text']])
 end
 
 $bot.application_command(:profile).subcommand(:reset) do |event|

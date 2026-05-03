@@ -89,6 +89,17 @@ module DatabaseLeveling
     false
   end
 
+  def add_community_xp_bonus(server_id, server_name, delta)
+    d = delta.to_i
+    return if d <= 0 || !server_id
+
+    stats = get_community_level(server_id)
+    new_xp = stats['xp'].to_i + d
+    new_level = community_level_from_total_xp(new_xp)
+    nm = server_name.to_s.empty? ? 'Arcade' : server_name
+    update_community_level(server_id, nm, new_xp, new_level)
+  end
+
   # --- ACTIVITY STREAKS ---
   def get_chat_streak(sid, uid)
     row = @db.exec_params("SELECT chat_streak, last_chat_date FROM server_xp WHERE server_id = $1 AND user_id = $2", [sid, uid]).first

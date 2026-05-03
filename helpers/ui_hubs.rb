@@ -232,9 +232,14 @@ def generate_leaderboard_page(bot, server, action, viewer_id = nil)
         medal = ["🏆", "🥈", "🥉"][index]
         medal_prefix = medal ? "#{medal} " : ""
         uid_row = row['user_id'].to_i
+        epithet_txt = ''
+        if is_premium?(bot, uid_row)
+          ep = DB.get_leaderboard_epithet(uid_row)
+          epithet_txt = " *— #{ep}*" if ep && !ep.to_s.strip.empty?
+        end
         name_part = (vid.positive? && uid_row == vid) ? "**#{name}**" : name
 
-        "**#{index + 1}.** #{medal_prefix}#{name_part}#{premium_badge} — Level **#{row['level']}** *(#{row['xp']} XP)*"
+        "**#{index + 1}.** #{medal_prefix}#{name_part}#{premium_badge}#{epithet_txt} — Level **#{row['level']}** *(#{row['xp']} XP)*"
       end.join("\n\n")
       embed.description = desc
     end
@@ -285,9 +290,14 @@ def generate_leaderboard_page(bot, server, action, viewer_id = nil)
         medal = ["🏆", "🥈", "🥉"][index]
         medal_prefix = medal ? "#{medal} " : ""
         uid_row = row['user_id'].to_i
+        epithet_txt = ''
+        if user_obj && is_premium?(bot, uid_row)
+          ep = DB.get_leaderboard_epithet(uid_row)
+          epithet_txt = " *— #{ep}*" if ep && !ep.to_s.strip.empty?
+        end
         name_part = (vid.positive? && uid_row == vid) ? "**#{name}**" : name
 
-        "**#{index + 1}.** #{medal_prefix}#{name_part}#{premium_badge} — **#{row['coins']}** #{EMOJI_STRINGS['s_coin']}"
+        "**#{index + 1}.** #{medal_prefix}#{name_part}#{premium_badge}#{epithet_txt} — **#{row['coins']}** #{EMOJI_STRINGS['s_coin']}"
       end.join("\n\n")
       embed.description = desc
     end

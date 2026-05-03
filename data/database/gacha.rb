@@ -64,15 +64,22 @@ module DatabaseGacha
   # --- PREMIUM PROFILE ---
   def get_profile(uid)
     CACHE.fetch(:profile, uid, ttl: CACHE_TTL_PROFILE) do
-      row = @db.exec_params("SELECT profile_color, bio, favorite_card, favorite_card_2, favorite_card_3 FROM global_users WHERE user_id = $1", [uid]).first
+      row = @db.exec_params(
+        "SELECT profile_color, bio, favorite_card, favorite_card_2, favorite_card_3, favorite_card_4, favorite_card_5, leaderboard_epithet, profile_tagline FROM global_users WHERE user_id = $1",
+        [uid]
+      ).first
       if row
+        favs = [row['favorite_card'], row['favorite_card_2'], row['favorite_card_3'], row['favorite_card_4'], row['favorite_card_5']].compact
         {
           'color' => row['profile_color'],
           'bio' => row['bio'],
-          'favorites' => [row['favorite_card'], row['favorite_card_2'], row['favorite_card_3']].compact
+          'favorites' => favs,
+          'showcase_cards' => [row['favorite_card_4'], row['favorite_card_5']].compact,
+          'epithet' => row['leaderboard_epithet'],
+          'tagline' => row['profile_tagline']
         }
       else
-        { 'color' => nil, 'bio' => nil, 'favorites' => [] }
+        { 'color' => nil, 'bio' => nil, 'favorites' => [], 'showcase_cards' => [], 'epithet' => nil, 'tagline' => nil }
       end
     end
   end
@@ -92,7 +99,11 @@ module DatabaseGacha
           when 1 then 'favorite_card'
           when 2 then 'favorite_card_2'
           when 3 then 'favorite_card_3'
+          when 4 then 'favorite_card_4'
+          when 5 then 'favorite_card_5'
           end
+    raise ArgumentError, "Invalid slot: #{slot}" unless col
+
     @db.exec_params("INSERT INTO global_users (user_id, #{col}) VALUES ($1, $2) ON CONFLICT (user_id) DO UPDATE SET #{col} = $2", [uid, name])
     CACHE.invalidate(:profile, uid)
   end
@@ -307,7 +318,8 @@ module DatabaseGacha
     @db.exec_params("DELETE FROM collections WHERE character_name = $1", [character_name])
     @db.exec_params("UPDATE global_users SET favorite_card = NULL WHERE favorite_card = $1", [character_name])
     @db.exec_params("UPDATE global_users SET favorite_card_2 = NULL WHERE favorite_card_2 = $1", [character_name])
-    @db.exec_params("UPDATE global_users SET favorite_card_3 = NULL WHERE favorite_card_3 = $1", [character_name])
+    @db.exec_params("UPDATE global_users SET favorite_card_4 = NULL WHERE favorite_card_4 = $1", [character_name])
+    @db.exec_params("UPDATE global_users SET favorite_card_5 = NULL WHERE favorite_card_5 = $1", [character_name])
 
     { users: refunded_users, copies_removed: total_copies, prisma_refunded: total_refund }
   end

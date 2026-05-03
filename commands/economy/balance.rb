@@ -16,7 +16,7 @@ def execute_balance(event, target_user)
 
   # 2. Check: Determine if the user has active Premium status
   is_sub = is_premium?(event.bot, uid)
-  profile = is_sub ? DB.get_profile(uid) : { 'color' => nil, 'bio' => nil, 'favorites' => [] }
+  profile = is_sub ? DB.get_profile(uid) : { 'color' => nil, 'bio' => nil, 'favorites' => [], 'tagline' => nil }
 
   # 3. Data Retrieval: Get the daily streak info from the cooldowns module
   daily_info = DB.get_daily_info(uid)
@@ -47,8 +47,9 @@ def execute_balance(event, target_user)
   # Status badges (Premium only now — developer is handled via cosmetics)
   status_line = is_sub ? "#{EMOJI_STRINGS['prisma']} **Premium**\n" : ""
 
-  # 5. Bio line (premium only)
+  # 5. Bio + tagline (premium)
   bio_line = (profile['bio'] && !profile['bio'].empty?) ? "*\"#{profile['bio']}\"*\n" : ""
+  tagline_line = (is_sub && profile['tagline'].to_s.strip != '') ? "*#{profile['tagline']}*\n" : ""
 
   # 6. Marriage line
   marriage = DB.get_marriage(uid)
@@ -76,7 +77,7 @@ def execute_balance(event, target_user)
   accent = profile['color'] ? profile['color'].to_i(16) : 0xFFB6C1
   embed = Discordrb::Webhooks::Embed.new(
     title: "🌸 #{target_user.display_name}'s Balance",
-    description: "#{title_badge_line}#{status_line}#{bio_line}\n" \
+    description: "#{title_badge_line}#{status_line}#{bio_line}#{tagline_line}\n" \
                  "**Coins:** #{coins} #{EMOJI_STRINGS['s_coin']}\n" \
                  "**Prisma:** #{prisma} #{EMOJI_STRINGS['prisma']}\n" \
                  "**Reputation:** #{rep} #{EMOJI_STRINGS['rainbowheart']}\n" \
