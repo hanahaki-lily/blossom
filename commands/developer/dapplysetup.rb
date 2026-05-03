@@ -64,8 +64,3 @@ $bot.command(:dapplysetup,
   execute_dapplysetup(event, channel_id)
   nil
 end
-
-$bot.application_command(:dapplysetup) do |event|
-  channel_id = event.options['channel']&.to_i
-  execute_dapplysetup(event, channel_id)
-end

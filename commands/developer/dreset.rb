@@ -45,9 +45,3 @@ $bot.command(:dreset,
   execute_dreset(event, target)
   nil
 end
-
-$bot.application_command(:dreset) do |event|
-  target_id = event.options['user']
-  target = target_id ? event.bot.user(target_id.to_i) : event.user
-  execute_dreset(event, target)
-end

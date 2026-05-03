@@ -54,6 +54,20 @@ module DatabaseLeveling
     @db.exec_params("INSERT INTO community_levels (server_id, server_name, xp, level) VALUES ($1, $2, $3, $4) ON CONFLICT (server_id) DO UPDATE SET server_name = EXCLUDED.server_name, xp = EXCLUDED.xp, level = EXCLUDED.level", [server_id, server_name, new_xp, new_level])
   end
 
+  # XP required to advance from +level+ to level+1 (same curve as passive community leveling).
+  def community_xp_threshold(level)
+    lv = [level.to_i, 1].max
+    (100 * (lv**2)) + (1000 * lv)
+  end
+
+  # Community pool stores cumulative XP; derive the level that matches that total.
+  def community_level_from_total_xp(total_xp)
+    xp = [total_xp.to_i, 0].max
+    level = 1
+    level += 1 while xp >= community_xp_threshold(level)
+    level
+  end
+
   # --- COMMUNITY LEVEL-UP ANNOUNCEMENT TOGGLE ---
   def toggle_community_levelup(server_id)
     begin

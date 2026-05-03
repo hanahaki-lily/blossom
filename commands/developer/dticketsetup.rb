@@ -73,8 +73,3 @@ $bot.command(:dticketsetup,
   execute_dticketsetup(event, channel_id)
   nil
 end
-
-$bot.application_command(:dticketsetup) do |event|
-  channel_id = event.options['channel']&.to_i
-  execute_dticketsetup(event, channel_id)
-end

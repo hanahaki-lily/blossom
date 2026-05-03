@@ -27,6 +27,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 
 ### Added
 
+- Developer commands `b!dcommxp` (aliases `dcomm`, `communityxp`) to adjust **community** (server-wide pooled) XP and level for the current guild — separate from per-user `setxp`. `add` / `remove` / `set` recalc level from cumulative XP; `level` sets rank while preserving stored XP. DB helpers `community_xp_threshold` and `community_level_from_total_xp` on `DatabaseLeveling`; passive community leveling now uses the shared threshold method.
 - New DB module `DatabaseTrivia` with `get_trivia_session`, `save_trivia_session`, `mark_trivia_answered`, and `clear_trivia_session`.
 - New `trivia_sessions` table (one row per user, upserted on each new question).
 - New `helpers/blacklist_guard.rb` that monkey-patches `ApplicationCommandEventHandler#call` and `ComponentEventHandler#call` to enforce the blacklist on all interaction types.
@@ -36,6 +37,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 
 ### Changed
 
+- **Developer commands are prefix-only.** Slash handlers and slash registry entries for dev tools were removed so they do not appear in Discord’s public command list (`dcommxp`, `dreset`, `dticketsetup`, `dapplysetup`, and the dev-only registrations in `slash_registry.rb` such as addcoins/prisma/blacklist/card/premium/backup/syncachievements). Use prefix commands and `b!devhelp` instead.
 - `.ruby-version` bumped to **3.4.9** (Ruby 3.4 patch). README tech table updated: **PostgreSQL** (`pg` + `connection_pool`) and **discordrb 3.7.2** (replacing stale SQLite / generic discordrb rows).
 - Giveaway scheduler sleeps until the next scheduled end time (with a short cap so newly posted giveaways are picked up) instead of polling Postgres every 10 seconds.
 - Premium auto-claim batches per-user daily context into one query and runs daily/calendar/Prisma writes in a single transaction.

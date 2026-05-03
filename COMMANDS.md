@@ -1354,6 +1354,16 @@ Developer-only emergency command that removes `Kyvrixon` from all user collectio
 | **Refund** | 100 Prisma per removed copy (base + ascended) |
 | **Scope** | Global (all users) |
 
+### `b!dcommxp`
+Developer-only: adjust **community** (server-wide pooled) XP and level for the **current server**. Does not change individual user XP (`setxp`). Prefix-only (not a slash command).
+
+| Detail | Value |
+|--------|-------|
+| **Permission** | Developer ID only |
+| **Aliases** | `dcomm`, `communityxp` |
+| **Usage** | `b!dcommxp add 5000`, `b!dcommxp remove 100`, `b!dcommxp set 25000`, `b!dcommxp level 12` |
+| **Behavior** | `add` / `remove` / `set` update cumulative community XP and **recalculate** level from the pool curve. `level` sets the server's community level and **leaves XP unchanged** (useful for overrides; chat gains still use stored level for thresholds until another adjustment). |
+
 ### `b!dserver`
 Developer-only command that DMs the developer debug information about Blossom's connected servers — currently a numbered, alphabetically sorted list of every server name. Output is automatically chunked across multiple DMs to stay under Discord's 2000-character message limit. Prefix-only (intentionally not exposed as a slash command).
 

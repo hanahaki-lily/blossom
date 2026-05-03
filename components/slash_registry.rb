@@ -248,51 +248,8 @@ $bot.register_application_command(:verifysetup, 'Set up a verification panel (Ad
 end
 $bot.register_application_command(:achievements, 'Toggle achievement notifications for this server (Admin Only)')
 
-# =========================
-# DEVELOPER
-# =========================
-
-$bot.register_application_command(:addcoins, 'Add or remove coins from a user (Dev Only)') do |cmd|
-  cmd.user('user', 'The user to modify', required: true)
-  cmd.integer('amount', 'Amount of coins (use negative to remove)', required: true)
-end
-$bot.register_application_command(:removecoins, 'Remove coins from a user (Dev Only)') do |cmd|
-  cmd.user('user', 'Who?', required: true)
-  cmd.integer('amount', 'How much?', required: true)
-end
-$bot.register_application_command(:setcoins, 'Set a user\'s balance to an exact amount (Dev Only)') do |cmd|
-  cmd.user('user', 'The user to modify', required: true)
-  cmd.integer('amount', 'The new balance', required: true)
-end
-$bot.register_application_command(:prisma, 'Manage user Prisma balance (Dev Only)') do |cmd|
-  cmd.string('action', 'Add, remove, or set', required: true, choices: { 'Add' => 'add', 'Remove' => 'remove', 'Set' => 'set' })
-  cmd.user('user', 'Target user', required: true)
-  cmd.integer('amount', 'Amount of Prisma', required: true)
-end
-$bot.register_application_command(:blacklist, 'Toggle blacklist for a user (Dev Only)') do |cmd|
-  cmd.user('user', 'The user to blacklist or forgive', required: true)
-end
-$bot.register_application_command(:card, 'Manage user cards (Dev Only)') do |cmd|
-  cmd.string('action', 'add / remove / giveascended / takeascended', required: true)
-  cmd.user('user', 'The user to modify', required: true)
-  cmd.string('character', 'The character name', required: true)
-end
-$bot.register_application_command(:givepremium, 'Give a user lifetime premium (Dev only)') do |cmd|
-  cmd.user('user', 'The user to upgrade', required: true)
-end
-$bot.register_application_command(:removepremium, 'Remove lifetime premium (Dev only)') do |cmd|
-  cmd.user('user', 'The user to downgrade', required: true)
-end
-$bot.register_application_command(:backup, 'Manually trigger a database backup (Dev Only)')
-$bot.register_application_command(:syncachievements, 'Retroactively grant achievements to everyone! (Dev Only)')
+# Developer commands are prefix-only (not registered here) so they stay off the public slash list.
 
 # NOTE: bomb and setxp are registered in ready.rb after deleting old versions
-
-$bot.register_application_command(:dticketsetup, 'Post support ticket panel (Dev Only)') do |cmd|
-  cmd.channel('channel', 'Channel to post the ticket panel in', required: true)
-end
-$bot.register_application_command(:dapplysetup, 'Post mod application panel (Dev Only)') do |cmd|
-  cmd.channel('channel', 'Channel to post the application panel in', required: true)
-end
 
 =end

@@ -7,7 +7,7 @@
 # Calculates the total XP required to reach the NEXT server level.
 # The curve is steep to account for hundreds of users chatting at once.
 def community_xp_needed(current_level)
-  (100 * (current_level ** 2)) + (1000 * current_level)
+  DB.community_xp_threshold(current_level)
 end
 
 # An in-memory cache to track when a user last earned XP for a specific server.
