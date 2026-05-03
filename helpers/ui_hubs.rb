@@ -196,20 +196,21 @@ def leaderboard_select_menu(user_id, current_page)
   Discordrb::Components::View.new do |v|
     v.row do |r|
       r.select_menu(custom_id: "lb_menu_#{user_id}", placeholder: "Who's on top? Pick a board...", max_values: 1) do |s|
-        s.option(label: 'Server Members (XP)', value: 'server_users', emoji: '👥', description: 'The grinders of this server', default: current_page == 'server_users')
+        s.option(label: 'Server Members (XP)', value: 'server_users', description: 'The grinders of this server', default: current_page == 'server_users')
         s.option(label: 'Global Communities', value: 'global_servers', description: 'Most active arcades worldwide', default: current_page == 'global_servers')
-        s.option(label: 'Global Richest (Coins)', value: 'global_coins', emoji: '💰', description: 'The whales. Respect.', default: current_page == 'global_coins')
+        s.option(label: 'Global Richest (Coins)', value: 'global_coins', description: 'The whales. Respect.', default: current_page == 'global_coins')
       end
     end
   end
 end
 
-def generate_leaderboard_page(bot, server, action)
+def generate_leaderboard_page(bot, server, action, viewer_id = nil)
   embed = Discordrb::Webhooks::Embed.new(color: 0xFFD700)
-  
+  vid = viewer_id&.to_i
+
   case action
   when 'server_users'
-    embed.title = "👥 #{server.name} — Top Grinders"
+    embed.title = "#{server.name} — Top Grinders"
     raw_top = DB.get_top_users(server.id, 50) 
     
     active_humans = []
@@ -228,8 +229,12 @@ def generate_leaderboard_page(bot, server, action)
         user_obj = bot.user(row['user_id'])
         name = user_obj.display_name
         premium_badge = is_premium?(bot, row['user_id']) ? " #{EMOJI_STRINGS['prisma']}" : ""
-        medal = ["🥇", "🥈", "🥉"][index] || "🏅"
-        "**#{index + 1}.** #{medal} **#{name}**#{premium_badge} — Level **#{row['level']}** *(#{row['xp']} XP)*"
+        medal = ["🏆", "🥈", "🥉"][index]
+        medal_prefix = medal ? "#{medal} " : ""
+        uid_row = row['user_id'].to_i
+        name_part = (vid.positive? && uid_row == vid) ? "**#{name}**" : name
+
+        "**#{index + 1}.** #{medal_prefix}#{name_part}#{premium_badge} — Level **#{row['level']}** *(#{row['xp']} XP)*"
       end.join("\n\n")
       embed.description = desc
     end
@@ -257,9 +262,9 @@ def generate_leaderboard_page(bot, server, action)
     end
 
   when 'global_coins'
-    embed.title = "💰 Global Rich List"
-    raw_top = DB.get_top_coins(50) 
-    
+    embed.title = "Global Rich List"
+    raw_top = DB.get_top_coins(50)
+
     active_humans = []
     raw_top.each do |row|
       user_obj = bot.user(row['user_id'])
@@ -276,9 +281,12 @@ def generate_leaderboard_page(bot, server, action)
         user_obj = bot.user(row['user_id'])
         name = user_obj ? user_obj.username : "User #{row['user_id']}"
         premium_badge = user_obj && is_premium?(bot, row['user_id']) ? " #{EMOJI_STRINGS['prisma']}" : ""
-        medal = ["🥇", "🥈", "🥉"][index] || "🏅"
+        medal = ["🏆", "🥈", "🥉"][index]
+        medal_prefix = medal ? "#{medal} " : ""
+        uid_row = row['user_id'].to_i
+        name_part = (vid.positive? && uid_row == vid) ? "**#{name}**" : name
 
-        "**#{index + 1}.** #{medal} **#{name}**#{premium_badge} — **#{row['coins']}** #{EMOJI_STRINGS['s_coin']}"
+        "**#{index + 1}.** #{medal_prefix}#{name_part}#{premium_badge} — **#{row['coins']}** #{EMOJI_STRINGS['s_coin']}"
       end.join("\n\n")
       embed.description = desc
     end

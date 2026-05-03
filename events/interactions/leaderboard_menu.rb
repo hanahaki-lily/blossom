@@ -35,7 +35,7 @@ $bot.select_menu(custom_id: /^lb_menu_/) do |event|
   selected_page = event.values.first
 
   begin
-    new_embed = generate_leaderboard_page(event.bot, event.server, selected_page)
+    new_embed = generate_leaderboard_page(event.bot, event.server, selected_page, owner_id)
     new_view  = leaderboard_select_menu(owner_id, selected_page)
     event.edit_response(embeds: [new_embed], components: new_view)
   rescue StandardError => e

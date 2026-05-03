@@ -25,7 +25,7 @@ def execute_leaderboard(event)
   
   # 3. Data Retrieval: Call the helper to generate the initial Embed
   # This helper handles the heavy SQL lifting for the top 10 rankings.
-  embed = generate_leaderboard_page(event.bot, event.server, default_page)
+  embed = generate_leaderboard_page(event.bot, event.server, default_page, uid)
   
   # 4. Components: Attach the interactive Select Menu for navigation
   view = leaderboard_select_menu(uid, default_page)

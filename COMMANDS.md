@@ -861,7 +861,7 @@ View server and global rankings for coins, Prisma, or levels.
 
 Use the dropdown menu to switch between leaderboard categories. Server-only command.
 
-**Global Communities:** Your current server’s name is shown in **bold** only when it appears in the list; other server names are plain text so Discord’s markdown renders correctly. The board title has no globe emoji; only 1st–3rd place rows include trophy/medal emojis beside the rank.
+**Display (all tabs):** Plain embed titles and plain dropdown labels (no decorative emojis on those). Only 1st–3rd place rows show 🏆 🥈 🥉 beside the rank. **Bold:** on *Global Communities*, only your current server name is bold when it appears; on *Server Members* and *Global Richest*, only your own row’s display name/username is bold when you’re listed — everyone else stays plain text so Discord markdown stays clean.
 
 ---
 
