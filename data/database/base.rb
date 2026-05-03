@@ -23,7 +23,14 @@ require_relative 'kofi'
 class PGPoolWrapper
   def initialize(url)
     @url = url
-    @pool = ConnectionPool.new(size: 20, timeout: 5) { PG.connect(url) }
+    @pool = ConnectionPool.new(size: 20, timeout: 5) do
+      PG.connect(url).tap do |c|
+        # IF NOT EXISTS / ADD COLUMN IF NOT EXISTS otherwise spam NOTICE on every boot.
+        c.exec("SET client_min_messages TO WARNING")
+      rescue PG::Error
+        # non-fatal if connection rejects session vars
+      end
+    end
   end
 
   def exec(*args)

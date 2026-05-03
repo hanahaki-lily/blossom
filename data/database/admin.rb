@@ -217,14 +217,15 @@ module DatabaseAdmin
   # to any user already on the blacklist) so blacklisted users have nothing
   # left to come back to.
   #
-  # Wrapped in a single transaction so a partial failure never leaves the
-  # user half-deleted. Returns a hash of { table_name => deleted_row_count }
-  # so the caller can log a meaningful summary.
+  # Single COMMIT for atomicity. Per-table deletes use SAVEPOINT so one bad
+  # statement (missing table/column on an older schema) does not abort the
+  # whole transaction — a plain rescue does not recover a failed PG txn.
+  # Returns { table_name => deleted_row_count }.
   def purge_user_data(uid)
     user_id = uid.to_i
     return {} if user_id.zero?
 
-    # Tables keyed by user_id (the simple case).
+    # Mostly `user_id`; Ko-fi idempotency rows use `discord_user_id`.
     user_id_tables = %w[
       global_users
       user_prisma
@@ -261,29 +262,45 @@ module DatabaseAdmin
     counts = {}
 
     @db.transaction do |conn|
-      user_id_tables.each do |table|
-        result = conn.exec_params("DELETE FROM #{table} WHERE user_id = $1", [user_id])
-        counts[table] = result.cmd_tuples.to_i
-      rescue PG::Error => e
-        # Table or column might not exist on older schemas — log and continue
-        # rather than poisoning the whole transaction.
-        puts "[PURGE] skipping #{table}: #{e.class}: #{e.message}"
-        counts[table] = 0
+      user_id_tables.each_with_index do |table, idx|
+        col = table == 'kofi_webhooks_processed' ? 'discord_user_id' : 'user_id'
+        sp = "pu#{idx}"
+        conn.exec("SAVEPOINT #{sp}")
+        begin
+          result = conn.exec_params("DELETE FROM #{table} WHERE #{col} = $1", [user_id])
+          counts[table] = result.cmd_tuples.to_i
+        rescue PG::Error
+          conn.exec("ROLLBACK TO SAVEPOINT #{sp}")
+          counts[table] = 0
+        ensure
+          begin
+            conn.exec("RELEASE SAVEPOINT #{sp}")
+          rescue PG::Error
+          end
+        end
       end
 
-      pairwise_tables.each do |table, columns|
-        clause = columns.map { |c| "#{c} = $1" }.join(' OR ')
-        result = conn.exec_params("DELETE FROM #{table} WHERE #{clause}", [user_id])
-        counts[table] = result.cmd_tuples.to_i
-      rescue PG::Error => e
-        puts "[PURGE] skipping #{table}: #{e.class}: #{e.message}"
-        counts[table] = 0
+      pairwise_tables.each_with_index do |(table, columns), idx|
+        sp = "pp#{idx}"
+        conn.exec("SAVEPOINT #{sp}")
+        begin
+          clause = columns.map { |c| "#{c} = $1" }.join(' OR ')
+          result = conn.exec_params("DELETE FROM #{table} WHERE #{clause}", [user_id])
+          counts[table] = result.cmd_tuples.to_i
+        rescue PG::Error
+          conn.exec("ROLLBACK TO SAVEPOINT #{sp}")
+          counts[table] = 0
+        ensure
+          begin
+            conn.exec("RELEASE SAVEPOINT #{sp}")
+          rescue PG::Error
+          end
+        end
       end
     end
 
     counts
-  rescue => e
-    puts "[PURGE] purge_user_data(#{user_id}) transaction failed: #{e.class}: #{e.message}"
+  rescue StandardError
     {}
   end
 
