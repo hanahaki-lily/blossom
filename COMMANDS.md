@@ -1128,6 +1128,8 @@ Create a button-based verification gate for new members.
 
 Creates an embed with a "Start Verification" button in the specified channel. New members click the button to receive the assigned role.
 
+**Blossom hub (guild ID `1499998845873033316`):** The bot also **auto-kicks** any non-bot join whose Discord account is **under 14 days** old (audit-log reason explains the requirement). Grant the bot **Kick Members** in that server or kicks will fail and joins continue through the normal verification flow.
+
 ---
 
 ### `/achievements`

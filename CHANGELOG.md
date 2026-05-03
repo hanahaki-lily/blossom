@@ -42,6 +42,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 
 ### Added
 
+- **Neon Arcade hub account-age gate:** On the home guild (**`1499998845873033316`**), **`member_join`** kicks non-bot members whose Discord account is younger than **14 days** (`events/passive/member_logging.rb`). Documented under **`/verifysetup`** in **`COMMANDS.md`**.
+
 - **Developer command `b!dleave <server_id>`** (prefix-only): Blossom leaves the specified guild by snowflake. Developer ID only; documented in **`COMMANDS.md`** and **`b!devhelp`**.
 - **Owner hub join/leave log:** `events/passive/hub_guild_logger.rb` posts Components V2 (section + icon thumbnail) to hub channel **1500339783610929192** (guild **1499998845873033316**) on **`GUILD_CREATE`** / **`GUILD_DELETE`** with members, owner username, created time, guild id, and current arcade + member totals. Channel id in **`data/settings.rb`** as **`HUB_GUILD_LOG_CHANNEL_ID`**.
 

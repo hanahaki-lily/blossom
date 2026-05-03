@@ -16,9 +16,26 @@ WELCOME_MESSAGES = [
 UNVERIFIED_ROLE_ID  = 1499998845894135835
 UNVERIFIED_SERVER_ID = 1499998845873033316
 
+# Neon Arcade hub: kick joins whose Discord account is younger than this (seconds).
+HOME_SERVER_MIN_ACCOUNT_AGE_SECONDS = 14 * 86_400
+
 $bot.member_join do |event|
   user = event.member
   server = event.server
+
+  # --- HOME SERVER: ACCOUNT MUST BE AT LEAST 2 WEEKS OLD ---
+  if server.id == UNVERIFIED_SERVER_ID && !user.bot_account?
+    age_sec = Time.now.to_f - user.creation_time.to_f
+    if age_sec < HOME_SERVER_MIN_ACCOUNT_AGE_SECONDS
+      begin
+        user.kick('Your Discord account must be at least 2 weeks old to join this server.')
+        puts "[HOME SERVER] Kicked uid=#{user.id} (#{user.username}) — account #{(age_sec / 86_400.0).round(2)}d old (< 14d)"
+        next
+      rescue StandardError => e
+        puts "[HOME SERVER AGE GATE] Kick failed uid=#{user.id}: #{e.class}: #{e.message}"
+      end
+    end
+  end
 
   # --- AUTO-ASSIGN UNVERIFIED ROLE ---
   if server.id == UNVERIFIED_SERVER_ID
