@@ -393,9 +393,17 @@ $bot.ready do |event|
               sleep(HEIST_JOIN_WINDOW)
               execute_heist_result($bot, sid)
             end
-          rescue => e
-            puts "[HEIST ERROR] Server #{row['server_id']}: #{e.class}: #{e.message}"
-            puts e.backtrace&.first(3)&.map { |l| "  #{l}" }&.join("\n")
+          rescue Discordrb::Errors::UnknownChannel
+            begin
+              DB.set_heist_channel(sid, nil)
+            rescue StandardError => db_err
+              puts "[HEIST] Server #{sid}: could not clear stale heist channel — #{db_err.message}"
+            end
+            puts "[HEIST] Server #{sid}: channel #{chan_id} no longer exists or isn't visible — cleared heist config. Run `#{PREFIX}heist setup` there to pick a new channel."
+          rescue Discordrb::Errors::NoPermission
+            puts "[HEIST] Server #{sid}: no permission to post in channel #{chan_id} — check View Channel, Send Messages, and Use External Apps (components). Still configured; fix perms or `#{PREFIX}heist setup` elsewhere."
+          rescue StandardError => e
+            puts "[HEIST ERROR] Server #{sid}: #{e.class}: #{e.message}"
           end
         end
       rescue => e

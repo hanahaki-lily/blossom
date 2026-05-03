@@ -12,7 +12,8 @@
 # cause that line to be silently dropped. Keep this list small —
 # anything we add here is genuinely invisible.
 SUPPRESSED_LOG_PATTERNS = [
-  'Unknown Member' # 10007: stale member fetch (left/kicked/etc.)
+  'Unknown Member', # 10007: stale member fetch (left/kicked/etc.)
+  'Unknown Channel' # 10003: deleted/missing channel; callers rescue and log in context
 ].freeze
 
 module Discordrb

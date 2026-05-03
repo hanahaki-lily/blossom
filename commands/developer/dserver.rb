@@ -28,14 +28,15 @@ def execute_dserver(event)
     ]}])
   end
 
-  names = servers.map { |s| s.name.to_s }.sort_by(&:downcase)
+  rows = servers.map { |s| [s.name.to_s, s.id] }.sort_by { |(name, _)| name.downcase }
 
   # Chunk lines into messages under Discord's 2000-char cap.
-  header = "## #{EMOJI_STRINGS['stream']} Connected Servers (#{total})\n\n"
+  header = "## #{EMOJI_STRINGS['stream']} Connected Servers (#{total})\n\n" \
+           "*Each line: name then guild snowflake (for `#{PREFIX}dleave`, support, etc.).*\n\n"
   chunks = []
   current = String.new(header)
-  names.each_with_index do |name, i|
-    line = "#{i + 1}. #{name}\n"
+  rows.each_with_index do |(name, sid), i|
+    line = "#{i + 1}. #{name} — `#{sid}`\n"
     if current.length + line.length > DSERVER_DM_CHAR_LIMIT
       chunks << current
       current = String.new
