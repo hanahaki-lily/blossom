@@ -64,8 +64,8 @@ $bot = Discordrb::Commands::CommandBot.new(
 require_relative 'components/loader'
 load_blossom_modules # Pass the 'bot' variable context to the loader
 
-require_relative 'components/topgg_webhook_server'
-TopggWebhookServer.start!
+require_relative 'components/blossom_webhook_server'
+BlossomWebhookServer.start!
 
 # 5. Connect to Discord
 puts "\n🌸 Blossom is starting with prefix #{PREFIX.inspect}..."

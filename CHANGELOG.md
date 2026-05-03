@@ -8,6 +8,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 
 ## [Unreleased]
 
+### Documentation
+
+- **Premium perks & Ko-fi ops:** Expanded **`COMMANDS.md`** perks table (arcade, scratch Double or Nothing, chat XP, trivia, boss, heist, birthdays, leaderboard flair, etc.). Documented explicit **Path A** (Discord roles via Ko‑fi rewards) vs **Path B** (`POST /webhooks/kofi`): Path B verifies/dedupes and runs **`grant_premium_roles_after_kofi`** (**`PREMIUM_SERVERS`**) when payloads include a Discord snowflake — **automatic role removal when membership ends** remains primarily **[Ko‑fi Discord rewards](https://help.ko-fi.com/hc/en-us/articles/360020363857-Setting-up-Discord-rewards-with-Ko-fi)** (Ko‑fi does not webhook cancel today). **`README.md`** lays out reverse-proxy **URL → `127.0.0.1:<port>`**, shared **`TOPGG_WEBHOOK_*`** bind/port, and env (**`KOFI_VERIFICATION_TOKEN`**, **`KOFI_MEMBERSHIP_WEBHOOK_TYPES`**, **`KOFI_PAGE_URL`**) plus **`https://ko-fi.com/manage/webhooks`**.
+- **Pity wording (historical):** Corrected **`[v1.0.0]`** Premium / gacha changelog lines to match code—pity counts pulls **below** Legendary/Goddess (Rare counts toward the counter).
+
 ### Fixed
 
 - **Leaderboards (all three tabs):** Embeds use plain titles (no 👥💰 globe icons on the board). Dropdown options have no decorative emojis. Only **1st–3rd** place rows use 🏆 🥈 🥉; ranks 4+ have no rank-side medal. **Bold highlighting:** Global Communities bolds only the server you’re in when it appears; Server Members (XP) and Global Richest bold only **your** username when you’re on that list (fixes markdown noise from double-wrapping every name).
@@ -29,6 +34,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 ### Added
 
 - **Top.gg voting:** WEBrick webhook listener on `POST /webhooks/topgg` (v1 `x-topgg-signature` + legacy `Authorization`), Prisma **5 + streak** (streak capped at **10**, reset after **>28h** between votes), multiplied by top.gg **weight**, idempotent `vote_id`, blacklist records vote without paying. Tables `topgg_votes_processed`, `topgg_vote_state`. Env: `TOPGG_WEBHOOK_SECRET`, `TOPGG_BOT_DISCORD_ID`, optional `TOPGG_VOTE_PAGE_URL`, `TOPGG_WEBHOOK_PORT`, `TOPGG_WEBHOOK_BIND`. Commands `b!vote` / `/vote` and DM reminder loop. **Gem:** `webrick`.
+- **Ko-fi membership webhook:** `POST /webhooks/kofi` mounts when **`KOFI_VERIFICATION_TOKEN`** is set. Verifies Ko-fi JSON **`verification_token`**, accepts configurable membership `type`s (comma-separated **`KOFI_MEMBERSHIP_WEBHOOK_TYPES`**, default **`Subscription`**), persists idempotent **`kofi_webhooks_processed`** rows, runs **`grant_premium_roles_after_kofi`** (**`PREMIUM_SERVERS`**) when a Discord snowflake is present on replay-safe membership receipts, clears **`CACHE`** premium keys after sync. Shares **`TOPGG_WEBHOOK_*`** bind/port with Top.gg. Listener lives in **`components/blossom_webhook_server.rb`** (**`TopggWebhookServer`** aliases **`BlossomWebhookServer`**).
+- **`b!premium` / `/premium`** (`vip`, `supporter`, `subscribe`) — short Neon Arcade VIP rundown + **`KOFI_PAGE_URL`** Ko‑fi link line when configured.
 
 - Developer commands `b!dcommxp` (aliases `dcomm`, `communityxp`) to adjust **community** (server-wide pooled) XP and level for the current guild — separate from per-user `setxp`. `add` / `remove` / `set` recalc level from cumulative XP; `level` sets rank while preserving stored XP. DB helpers `community_xp_threshold` and `community_level_from_total_xp` on `DatabaseLeveling`; passive community leveling now uses the shared threshold method.
 - New DB module `DatabaseTrivia` with `get_trivia_session`, `save_trivia_session`, `mark_trivia_answered`, and `clear_trivia_session`.
@@ -40,6 +47,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 
 ### Changed
 
+- **`PREMIUM_SERVERS`** (guild **`1499998845873033316`**): subscriber role id is now **`1500326377780547604`** (`helpers/economy_engine.rb`).
 - **Main server auto level roles:** IDs updated for milestones 5 / 10 / 20 / 30 / 40 / 50 / 75 / 100 (`events/passive/user_leveling.rb`).
 - **Weekly challenges CV2:** Decorative Unicode emoji (status icons, headers, bonus lines, claim button, completion screen) removed so only the custom **coin** and **Prisma** server emojis remain beside amounts.
 - **Developer commands are prefix-only.** Slash handlers and slash registry entries for dev tools were removed so they do not appear in Discord’s public command list (`dcommxp`, `dreset`, `dticketsetup`, `dapplysetup`, and the dev-only registrations in `slash_registry.rb` such as addcoins/prisma/blacklist/card/premium/backup/syncachievements). Use prefix commands and `b!devhelp` instead.
@@ -450,7 +458,7 @@ Initial documented release of Blossom Bot — a full-featured Discord bot built 
 #### Gacha Mechanics
 
 - Four rarity tiers: Common, Rare, Legendary, Goddess
-- Pity system: Guaranteed Legendary/Goddess after 30 non-Rare+ pulls (Premium)
+- Pity system: Guaranteed Legendary/Goddess after 30 pulls below Legendary or Goddess—Rare pulls count toward pity (Premium)
 - Shiny Ascended variants: 1% base chance, 2% with Shiny Hunting Mode
 - Event pull chance: 5% during active event months
 - Custom banner system with user-selected character pools
@@ -571,7 +579,7 @@ Initial documented release of Blossom Bot — a full-featured Discord bot built 
 - 50% cooldown reduction on work, stream, post, and fish
 - +10% coin bonus on all earning commands
 - Prisma currency earned from daily claims (1-3, scales with streak)
-- Pity system on gacha pulls (guaranteed rare+ after 30 pulls)
+- Pity system on gacha pulls (Premium): guaranteed Legendary or Goddess after 30 pulls below those tiers—Rare pulls count toward the counter
 - Shiny Hunting Mode toggle (2x cost for 2x shiny chance)
 - Auto-sell commons toggle during summon
 - Custom banner creation (20 Prisma, 1 hour duration)

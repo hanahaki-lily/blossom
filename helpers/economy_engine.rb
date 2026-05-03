@@ -7,8 +7,44 @@
 # Server IDs => Role IDs 
 PREMIUM_SERVERS = {
   1125196330646638592 => 1125222184533639338,
-  1499998845873033316 => 1477179978004041788
+  1499998845873033316 => 1500326377780547604
 }
+
+# Idempotent: used after verified Ko‑fi membership webhook (when caller has discord_user_id).
+# Grants each PREMIUM_SERVERS role where the bot is present and member is in-guild (skips if already role).
+def grant_premium_roles_after_kofi(bot, discord_user_id)
+  uid = discord_user_id.to_i
+  return unless uid.positive?
+
+  PREMIUM_SERVERS.each do |guild_id, role_id|
+    server = bot&.servers&.[](guild_id)
+    unless server
+      puts "[KOFI] Role sync skip — bot not connected to guild #{guild_id}"
+      next
+    end
+
+    begin
+      member = server.member(uid)
+    rescue StandardError => e
+      puts "[KOFI] Role sync skip — member #{uid} guild #{guild_id}: #{e.class}: #{e.message}"
+      next
+    end
+    next unless member
+
+    begin
+      if member.roles.any? { |r| r.id == role_id }
+        puts "[KOFI] Subscriber role #{role_id} already on #{uid} (#{guild_id})"
+      else
+        member.add_role(role_id)
+        puts "[KOFI] Granted subscriber role #{role_id} to #{uid} (#{guild_id})"
+      end
+    rescue StandardError => e
+      puts "[KOFI] add_role failed guild #{guild_id} role #{role_id} uid #{uid}: #{e.class}: #{e.message}"
+    end
+  end
+
+  CACHE.invalidate(:premium, uid)
+end
 
 def is_premium?(bot, user_id)
   CACHE.fetch(:premium, user_id, ttl: CACHE_TTL_PREMIUM) do

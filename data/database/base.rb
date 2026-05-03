@@ -18,6 +18,7 @@ require_relative 'admin'
 require_relative 'crews'
 require_relative 'trivia'
 require_relative 'votes'
+require_relative 'kofi'
 
 class PGPoolWrapper
   def initialize(url)
@@ -77,6 +78,7 @@ class BotDatabase
   include DatabaseCrews
   include DatabaseTrivia
   include DatabaseVotes
+  include DatabaseKofi
 
   def initialize
     @db = PGPoolWrapper.new(ENV['DATABASE_URL'])

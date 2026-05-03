@@ -242,6 +242,7 @@ module DatabaseAdmin
       trivia_sessions
       topgg_vote_state
       topgg_votes_processed
+      kofi_webhooks_processed
       lottery
       boss_participants
       crew_members

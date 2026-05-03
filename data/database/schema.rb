@@ -405,5 +405,17 @@ module DatabaseSchema # <--- Changed from 'class' to 'module'
       end
     rescue PG::Error
     end
+
+    # --- Ko-fi membership webhooks (idempotency logs; entitlement = Discord roles) ---
+    begin
+      @db.exec(<<-SQL)
+        CREATE TABLE IF NOT EXISTS kofi_webhooks_processed (
+          event_id VARCHAR(160) PRIMARY KEY,
+          discord_user_id BIGINT,
+          processed_at TIMESTAMPTZ DEFAULT NOW()
+        );
+      SQL
+    rescue PG::Error
+    end
   end # Closes 'def setup_schema'
 end # Closes 'module DatabaseSchema'

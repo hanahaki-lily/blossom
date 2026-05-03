@@ -1,0 +1,263 @@
+# ==========================================
+# COMPONENT: Optional WEBrick webhook listeners (shared port)
+#
+# Routes:
+#   POST /webhooks/topgg — when ENV['TOPGG_WEBHOOK_SECRET'] is set (Top.gg docs)
+#   POST /webhooks/kofi — when ENV['KOFI_VERIFICATION_TOKEN'] is set; verifies payloads and syncs PREMIUM_SERVERS roles when Discord uid present
+#
+# Shared bind/port: TOPGG_WEBHOOK_BIND / TOPGG_WEBHOOK_PORT (default 8081 / 0.0.0.0)
+# ==========================================
+
+require 'webrick'
+require 'json'
+require 'digest'
+require_relative '../helpers/topgg'
+require_relative '../helpers/kofi'
+
+module BlossomWebhookServer
+  module_function
+
+  def start!
+    top_secret = ENV['TOPGG_WEBHOOK_SECRET'].to_s.strip
+    kofi_token = ENV['KOFI_VERIFICATION_TOKEN'].to_s.strip
+    return if top_secret.empty? && kofi_token.empty?
+
+    port = ENV.fetch('TOPGG_WEBHOOK_PORT', '8081').to_i
+    bind = ENV.fetch('TOPGG_WEBHOOK_BIND', '0.0.0.0')
+
+    Thread.new do
+      server = WEBrick::HTTPServer.new(
+        Port: port,
+        BindAddress: bind,
+        Logger: WEBrick::Log.new($stdout),
+        AccessLog: []
+      )
+
+      unless top_secret.empty?
+        server.mount_proc('/webhooks/topgg') do |req, res|
+          handle_topgg(req, res, top_secret)
+        end
+      end
+
+      unless kofi_token.empty?
+        server.mount_proc('/webhooks/kofi') do |req, res|
+          handle_kofi(req, res, kofi_token)
+        end
+      end
+
+      mounts = []
+      mounts << "#{bind}:#{port}/webhooks/topgg" unless top_secret.empty?
+      mounts << "#{bind}:#{port}/webhooks/kofi" unless kofi_token.empty?
+      puts "\u{1F338} [WEBHOOKS] Listening: #{mounts.join(' · ')}"
+
+      server.start
+    rescue StandardError => e
+      puts "[WEBHOOKS] Server failed: #{e.class}: #{e.message}"
+    end
+  end
+
+  # --- Ko-fi ---
+  def handle_kofi(req, res, verification_token)
+    res['Content-Type'] = 'text/plain'
+
+    unless req.request_method == 'POST'
+      res.status = 405
+      res.body = 'Method Not Allowed'
+      return
+    end
+
+    raw = read_request_body(req)
+    payload = KofiWebhook.parse_payload(raw, req['Content-Type'])
+
+    unless payload.is_a?(Hash)
+      res.status = 400
+      res.body = 'bad payload'
+      return
+    end
+
+    unless KofiWebhook.verified?(payload, verification_token)
+      res.status = 401
+      res.body = 'Unauthorized'
+      return
+    end
+
+    unless KofiWebhook.membership_webhook?(payload)
+      # Acknowledge legitimate pings that are tips/shop/other so Ko-fi stops retrying
+      res.status = 200
+      res.body = 'ok'
+      return
+    end
+
+    event_id = KofiWebhook.message_identifier(payload)
+    if event_id.empty?
+      puts '[KOFI] Membership payload missing message_id-like field (ignored)'
+      res.status = 200
+      res.body = 'ok'
+      return
+    end
+
+    discord_uid = KofiWebhook.discord_uid(payload)
+    result = DB.record_kofi_webhook_processed(event_id: event_id, discord_user_id: discord_uid)
+
+    case result
+    when :duplicate
+      puts "[KOFI] Duplicate webhook #{event_id} (ignored)"
+    when :reject
+      puts "[KOFI] Could not record webhook #{event_id}"
+    when :ok
+      if discord_uid
+        puts "[KOFI] Membership #{event_id} — syncing Discord subscriber roles for user #{discord_uid}"
+      else
+        puts '[KOFI] Membership ' \
+             "#{event_id} — #{payload['from_name'] || '?'}#{payload['amount'] ? " (#{payload['amount']})" : ''} " \
+             '(no Discord user id on payload — use Ko‑fi Discord integration or ensure Ko‑fi exposes a Discord snowflake)'
+      end
+    end
+
+    if discord_uid && result != :reject && $bot
+      grant_premium_roles_after_kofi($bot, discord_uid)
+    end
+
+    res.status = 200
+    res.body = 'ok'
+  rescue StandardError => e
+    puts "[KOFI] Handler error: #{e.class}: #{e.message}"
+    res.status = 500
+    res.body = 'error'
+  end
+
+  # --- Top.gg (delegated handlers, same semantics as legacy TopggWebhookServer) ---
+  def handle_topgg(req, res, secret)
+    res['Content-Type'] = 'text/plain'
+
+    unless req.request_method == 'POST'
+      res.status = 405
+      res.body = 'Method Not Allowed'
+      return
+    end
+
+    raw = read_request_body(req)
+    sig_header = req['x-topgg-signature'] || req['X-Topgg-Signature']
+
+    v1_ok = TopggWebhook.signature_valid?(raw, sig_header.to_s, secret)
+    v0_ok = !v1_ok && TopggWebhook.legacy_authorized?(req, secret)
+
+    unless v1_ok || v0_ok
+      res.status = 401
+      res.body = 'Unauthorized'
+      return
+    end
+
+    payload = JSON.parse(raw)
+    kind = payload['type'].to_s
+
+    if kind == 'vote.create'
+      topgg_vote_create(payload, raw)
+    elsif kind == 'webhook.test'
+      # dashboard ping only
+    elsif v0_ok && %w[upvote test].include?(payload['type'].to_s)
+      topgg_vote_v0(payload, raw)
+    end
+
+    res.status = 200
+    res.body = 'ok'
+  rescue JSON::ParserError
+    res.status = 400
+    res.body = 'bad json'
+  rescue StandardError => e
+    puts "[TOP.GG] Webhook handler error: #{e.class}: #{e.message}"
+    res.status = 500
+    res.body = 'error'
+  end
+
+  def topgg_vote_create(payload, _raw_body)
+    data = payload['data'] || {}
+    vote_id = data['id'].to_s
+    return if vote_id.empty?
+
+    expected_bot = ENV['TOPGG_BOT_DISCORD_ID'].to_s.strip
+    bot_ok = expected_bot.empty? || data.dig('project', 'platform_id').to_s == expected_bot
+    unless bot_ok
+      puts '[TOP.GG] Rejected vote: project platform_id mismatch'
+      return
+    end
+
+    uid = data.dig('user', 'platform_id')
+    weight = (data['weight'] || 1).to_i
+    next_after = TopggWebhookServerLegacy.parse_iso_time(data['expires_at'])
+
+    result = DB.apply_topgg_vote(
+      vote_id: vote_id,
+      discord_uid: uid,
+      weight: weight,
+      next_vote_after: next_after
+    )
+
+    TopggWebhookServerLegacy.log_vote_result(result, vote_id)
+  rescue StandardError => e
+    puts "[TOP.GG] vote.create error: #{e.class}: #{e.message}"
+    raise
+  end
+
+  def topgg_vote_v0(payload, raw_body)
+    return if payload['type'].to_s == 'test'
+
+    vote_id = Digest::SHA256.hexdigest(raw_body)
+    expected_bot = ENV['TOPGG_BOT_DISCORD_ID'].to_s.strip
+    bot_ok = expected_bot.empty? || payload['bot'].to_s == expected_bot
+    unless bot_ok
+      puts '[TOP.GG] Rejected v0 vote: bot id mismatch'
+      return
+    end
+
+    uid = payload['user']
+    weight = payload['isWeekend'] ? 2 : 1
+    next_after = Time.now + (12 * 3600)
+
+    result = DB.apply_topgg_vote(
+      vote_id: "v0-#{vote_id}",
+      discord_uid: uid,
+      weight: weight,
+      next_vote_after: next_after
+    )
+    TopggWebhookServerLegacy.log_vote_result(result, vote_id)
+  end
+
+  def read_request_body(req)
+    raw = req.body
+    case raw
+    when String
+      raw
+    else
+      raw.respond_to?(:read) ? raw.read : raw.to_s
+    end
+  end
+
+  module TopggWebhookServerLegacy
+    module_function
+
+    def parse_iso_time(str)
+      return nil if str.nil? || str.to_s.empty?
+
+      Time.parse(str.to_s)
+    rescue ArgumentError
+      nil
+    end
+
+    def log_vote_result(result, vote_id)
+      case result[:status]
+      when :duplicate
+        puts "[TOP.GG] Duplicate webhook #{vote_id} (ignored)"
+      when :skipped_blacklist
+        puts "[TOP.GG] Vote #{vote_id} recorded; user blacklisted (no Prisma)"
+      when :reject
+        puts "[TOP.GG] Vote #{vote_id} ignored (invalid user id)"
+      when :ok
+        puts "[TOP.GG] Vote #{vote_id} -> +#{result[:prisma]} Prisma (streak grant #{result[:streak_used]}, stored #{result[:streak]})"
+      end
+    end
+  end
+end
+
+# Back-compat for any external references / muscle memory from docs
+TopggWebhookServer = BlossomWebhookServer

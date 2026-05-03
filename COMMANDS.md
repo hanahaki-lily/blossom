@@ -279,7 +279,9 @@ Shows your **top.gg** voting link, current vote streak, Prisma reward rules, and
 
 **Rewards (webhook):** Each verified vote grants **5 + streak** Prisma (streak capped at **10**), multiplied by top.gg vote **weight** (e.g. weekend ×2). Streak resets if you go **more than 28 hours** without a successful vote. Blacklisted users do not receive Prisma; webhook is still acknowledged.
 
-**Setup:** Configure top.gg webhooks to `POST` your public URL `.../webhooks/topgg` with the same secret as env `TOPGG_WEBHOOK_SECRET`. Set `TOPGG_BOT_DISCORD_ID` to your bot’s Discord application/snowflake ID. Optional: `TOPGG_VOTE_PAGE_URL`, `TOPGG_WEBHOOK_PORT` (default `8081`), `TOPGG_WEBHOOK_BIND` (default `0.0.0.0`).
+**Setup:** Blossom runs one WEBrick on **`TOPGG_WEBHOOK_PORT`** (default **`8081`**) / **`TOPGG_WEBHOOK_BIND`**. Reverse-proxy **`…/webhooks/topgg`** to that process when **`TOPGG_WEBHOOK_SECRET`** is set — same secrets and **`TOPGG_BOT_DISCORD_ID`** as documented in the README; optional **`TOPGG_VOTE_PAGE_URL`**.
+
+**Ko-fi (optional membership ping):** If **`KOFI_VERIFICATION_TOKEN`** is also set on the host, proxy **`…/webhooks/kofi`** to the same listener. Does **not** replace Discord role grants — see **[Premium membership](#premium-membership-via-ko-fi-and-discord)**.
 
 ---
 
@@ -299,7 +301,7 @@ Spend coins to pull a random VTuber card from the gacha.
 **Rarity Tiers:** Common, Rare, Legendary, Goddess
 
 **Mechanics:**
-- **Pity System (Premium):** Guaranteed Legendary or Goddess after 30 pulls without a Rare+ result
+- **Pity System (Premium):** Guaranteed Legendary or Goddess after 30 pulls that are **below** Legendary or Goddess (Rare pulls still count toward pity)
 - **Shiny Ascended Chance:** 1% normally, 2% with Shiny Hunting Mode (Premium)
 - **Event Pull Chance:** 5% chance to pull an event character during event months
 - **Auto-Sell (Premium):** Automatically sells common duplicates (5+ owned) if enabled
@@ -1294,6 +1296,17 @@ Get the invite link to the official support server (Tsukiyo Server).
 
 ---
 
+### `/premium`
+Quick rundown of subscriber perks plus your **Ko-fi** page (`KOFI_PAGE_URL` on the bot host).
+
+| Detail | Value |
+|--------|-------|
+| **Aliases** | `vip`, `supporter`, `subscribe` |
+
+Premium access comes from Blossom’s Discord **subscriber role** (often granted via **[Ko‑fi Discord rewards](https://help.ko-fi.com/hc/en-us/articles/360020363857-Setting-up-Discord-rewards-with-Ko-fi)**). See **[Premium Perks](#premium-perks)** for the full grid.
+
+---
+
 ### `/suggest`
 Send a suggestion directly to the bot developer.
 
@@ -1427,7 +1440,7 @@ Premium subscribers unlock the following benefits across all systems:
 | **Calendar Milestones** | Enhanced milestone rewards (2,000 at 14 days, 10,000 + 10 Prisma at 28 days) |
 | **Auto-Claim Daily** | Automatic daily claiming with DM notifications — never break streaks |
 | **Passive Income** | Invest coins for 0.5%/hr compounding returns (up to 2x principal) |
-| **Pity System** | Guaranteed Legendary/Goddess after 30 pulls |
+| **Pity System** | Guaranteed Legendary/Goddess after 30 pulls below Legendary/Goddess (Rare counts toward pity) |
 | **Shiny Hunting Mode** | Toggle 2&times; summon cost for 2&times; shiny chance |
 | **Auto-Sell** | Automatically sell common duplicates during summon |
 | **Custom Banner** | Create a custom 1-hour summon banner (20 Prisma) |
@@ -1439,9 +1452,42 @@ Premium subscribers unlock the following benefits across all systems:
 | **Gold Fishing Rod** | Access to 3 premium-only fish catches |
 | **Favorite Cards** | Display up to 3 favorite VTubers on your profile |
 | **Weekly Challenge** | 4th weekly challenge slot (vs 3 for free users) |
+| **Chat XP** | 1.5× XP per qualifying message (vs base message XP) |
+| **Arcade winnings** | +10% base payout from arcade flows; chance at a ×5 jackpot overlay on those winnings |
+| **Scratch — Double or Nothing** | Extra gamble button after a win (premium-only) |
+| **Trivia** | Higher coin rewards on correct answers |
+| **Boss battles** | Higher per-attack damage range |
+| **Heist events** | +3% success chance per premium participant (stacks with other bonuses) |
+| **Birthdays** | Standard coin gift for everyone with a birthday set; subscribers get bonus DM flair |
+| **Leaderboards** | Prisma sparkle next to subscriber names on lists |
 
 **Note:** The +5% crew bonus stacks with Premium bonuses. A Premium crew member gets +10% (Premium) + 5% (Crew) = +15% total bonus.
 
+### Premium membership via Ko-fi and Discord
+
+Premium is **`is_lifetime_premium?`** **or** having the Discord **subscriber role** Blossom is configured with for your guild (mirror of **`PREMIUM_SERVERS`** in code).
+
+#### How Blossom treats Ko-fi (Path A vs Path B)
+
+- **Path A (recommended)** — **[Ko-fi Discord rewards](https://help.ko-fi.com/hc/en-us/articles/360020363857-Setting-up-Discord-rewards-with-Ko-fi)** grant and remove the **same role IDs** as **`PREMIUM_SERVERS`**. Blossom reads premium from Discord; Ko-fi’s integration handles **automatic revocation** when a paid membership lapses. No Ruby changes needed when tiers or guild layouts stay aligned with that mapping.
+- **Path B (optional add-on)** — Run **`POST /webhooks/kofi`** with **`KOFI_VERIFICATION_TOKEN`**. Blossom verifies payment pings, dedupes rows, clears cached **`is_premium?`** after syncing: when the JSON carries a recognizable Discord snowflake, **`grant_premium_roles_after_kofi`** tries to add each **`PREMIUM_SERVERS`** subscriber role wherever that user is currently in-server (bot needs **Manage Roles**). Path B **does not replace Ko‑fi’s Discord linkage for cancellation** — Ko-fi’s webhook **still does not** fire when membership *ends*, so **automatic role removal** should stay tied to **[Ko‑fi Discord rewards](https://help.ko-fi.com/hc/en-us/articles/360020363857-Setting-up-Discord-rewards-with-Ko-fi)** (or **`dpremium`** / audits).
+
+For webhook configuration UI and test payloads, use **[Ko-fi → Manage → Webhooks](https://ko-fi.com/manage/webhooks)**.
+
+#### Recommended setup (Ko-fi assigns the role)
+
+Configure **[Ko-fi Discord rewards](https://help.ko-fi.com/hc/en-us/articles/360020363857-Setting-up-Discord-rewards-with-Ko-fi)** so subscribing members receive the **exact Premium role IDs** Blossom already checks. Ko-fi removes Discord roles when paid memberships lapse. *(Ko-fi payment webhooks do **not** cover subscription-cancel events—you rely on Discord for removal.)*
+
+#### Optional webhook (`POST /webhooks/kofi`)
+
+When **`KOFI_VERIFICATION_TOKEN`** is set alongside your Top.gg webhook host, Blossom mounts **`POST /webhooks/kofi`** on the same **`TOPGG_WEBHOOK_PORT` / `TOPGG_WEBHOOK_BIND`**. Reverse-proxy **`https://YOUR_HOST/webhooks/kofi`** accordingly.
+
+- **`KOFI_VERIFICATION_TOKEN`** — required; copied from Ko-fi’s Webhooks Advanced / verification settings.
+- **`KOFI_MEMBERSHIP_WEBHOOK_TYPES`** — optional comma-separated whitelist of JSON **`type`** values treated as memberships (defaults to **`Subscription`**).
+
+The listener verifies payloads, dedupes in **`kofi_webhooks_processed`**, and **`grant_premium_roles_after_kofi`** adds each **`PREMIUM_SERVERS`** subscriber role wherever the payer is in-guild **and** Discord user id appears on the JSON (see **`helpers/kofi.rb`** **`DISCORD_ID_KEYS`**). Skips cleanly if Blossom lacks **Manage Roles** / hierarchy, or member isn’t in that server—check logs for **`[KOFI]`** lines.
+
+**Removing premium** when a subscription lapses still relies on **[Ko‑fi Discord rewards](https://help.ko-fi.com/hc/en-us/articles/360020363857-Setting-up-Discord-rewards-with-Ko-fi)** (recommended) — Ko‑fi’s payment webhook does **not** fire on membership-end.
 ---
 
 ## Achievements
