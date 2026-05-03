@@ -38,6 +38,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 
 ### Changed
 
+- **Main server auto level roles:** IDs updated for milestones 5 / 10 / 20 / 30 / 40 / 50 / 75 / 100 (`events/passive/user_leveling.rb`).
 - **Weekly challenges CV2:** Decorative Unicode emoji (status icons, headers, bonus lines, claim button, completion screen) removed so only the custom **coin** and **Prisma** server emojis remain beside amounts.
 - **Developer commands are prefix-only.** Slash handlers and slash registry entries for dev tools were removed so they do not appear in Discord’s public command list (`dcommxp`, `dreset`, `dticketsetup`, `dapplysetup`, and the dev-only registrations in `slash_registry.rb` such as addcoins/prisma/blacklist/card/premium/backup/syncachievements). Use prefix commands and `b!devhelp` instead.
 - `.ruby-version` bumped to **3.4.9** (Ruby 3.4 patch). README tech table updated: **PostgreSQL** (`pg` + `connection_pool`) and **discordrb 3.7.2** (replacing stale SQLite / generic discordrb rows).
