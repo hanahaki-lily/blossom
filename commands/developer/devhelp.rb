@@ -19,6 +19,7 @@ def execute_devhelp(event)
     "`#{PREFIX}dapplysetup #channel` — Post mod application panel",
     "`#{PREFIX}derase` — Remove a character globally and refund Prisma",
     "`#{PREFIX}dserver` — DM the developer debug information",
+    "`#{PREFIX}dleave <server_id>` — Make Blossom leave a guild by snowflake",
     "`#{PREFIX}dcommxp <add/remove/set/level> <amount>` — Adjust this server's community XP/level",
     "`#{PREFIX}devhelp` — This list"
   ].join("\n")

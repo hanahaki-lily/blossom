@@ -1406,6 +1406,15 @@ Developer-only command that DMs the developer debug information about Blossom's 
 | **Delivery** | DM to the invoking developer |
 | **In-channel reply** | Confirmation showing total servers and DM chunk count |
 
+### `b!dleave`
+Developer-only: makes Blossom **leave** the guild with the given Discord snowflake. Works from any channel or from DMs as long as the bot is online. Prefix-only (no slash).
+
+| Detail | Value |
+|--------|-------|
+| **Permission** | Developer ID only |
+| **Usage** | `b!dleave <server_id>` |
+| **Note** | Running this **in** the server you're leaving can prevent the confirmation from showing—using a DM or another server is safer. Stale leaderboard/XP rows for that guild are removed on the next bot restart. |
+
 ### `/challenges`
 View and claim your weekly challenge progress.
 
