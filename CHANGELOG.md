@@ -38,7 +38,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 
 ### Changed
 
-- **Slash command sync:** `components/slash_registry.rb` is no longer commented out—every command that has a slash handler is registered there on boot. Duplicate **`/leaderboard`** and **`/vote`** registration was removed from **`events/passive/ready.rb`** so the registry stays the single source of truth.
+- **Slash command sync:** `components/slash_registry.rb` lists every slash schema in one place; the block is **`=begin` / `=end`** by default so Blossom does **not** re-register with Discord on every boot (handlers still work). Remove the comment wrapper when you need a one-time sync. Duplicate **`/leaderboard`** and **`/vote`** registration remains removed from **`events/passive/ready.rb`**.
 - **`/support` / `b!support`:** Invite updated to **https://discord.gg/cZ8zAT42u4** (Sakura Shrine).
 
 ### Added

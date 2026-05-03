@@ -1,10 +1,18 @@
 # ==========================================
 # SYSTEM: Slash Command Registry
-# DESCRIPTION: Defines slash command schemas for Discord. Loaded during
-# `load_blossom_modules` (before command handlers) so structure is registered
-# when the bot starts. Handlers live in `commands/**/*.rb`.
+# DESCRIPTION: Canonical `$bot.register_application_command` definitions for Discord.
+# Loaded during `load_blossom_modules` (before command handlers in `commands/**`).
+#
+# Default: the whole registration body is wrapped in `=begin` … `=end` so we do NOT
+# hit Discord's command API on every process start. Slash still works—definitions
+# must already be registered on the application (dev portal or a prior run with
+# this block enabled). When you change options/subcommands, temporarily remove the
+# wrapper, start the bot once, then comment again.
 # ==========================================
 
+puts '🌸 Slash registry: registration disabled on boot (see slash_registry.rb =begin block).'
+
+=begin
 puts '🌸 Slash registry: registering application commands...'
 
 # =========================
@@ -305,3 +313,4 @@ $bot.register_application_command(:commleveltoggle, 'Toggle community level-up a
 # Developer commands stay prefix-only (see CHANGELOG).
 
 puts '✅ Slash registry: application commands registered.'
+=end
