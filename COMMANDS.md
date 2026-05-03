@@ -269,6 +269,20 @@ When enabled, Blossom will ping you in the channel when your daily reward is rea
 
 ---
 
+### `/vote`
+Shows your **top.gg** voting link, current vote streak, Prisma reward rules, and optional **DM reminders** when your vote cooldown ends.
+
+| Detail | Value |
+|--------|-------|
+| **Prefix** | `vote`, `vote remind` (toggle DM reminders) |
+| **Slash** | `/vote` with optional action: Info & link, or Toggle reminder DMs |
+
+**Rewards (webhook):** Each verified vote grants **5 + streak** Prisma (streak capped at **10**), multiplied by top.gg vote **weight** (e.g. weekend ×2). Streak resets if you go **more than 28 hours** without a successful vote. Blacklisted users do not receive Prisma; webhook is still acknowledged.
+
+**Setup:** Configure top.gg webhooks to `POST` your public URL `.../webhooks/topgg` with the same secret as env `TOPGG_WEBHOOK_SECRET`. Set `TOPGG_BOT_DISCORD_ID` to your bot’s Discord application/snowflake ID. Optional: `TOPGG_VOTE_PAGE_URL`, `TOPGG_WEBHOOK_PORT` (default `8081`), `TOPGG_WEBHOOK_BIND` (default `0.0.0.0`).
+
+---
+
 ## Gacha & Collection
 
 Commands for summoning, collecting, trading, and managing VTuber cards.

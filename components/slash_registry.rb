@@ -101,6 +101,9 @@ $bot.register_application_command(:givecoins, 'Give your coins to another user')
   cmd.integer('amount', 'How much?', required: true)
 end
 $bot.register_application_command(:remindme, 'Toggle your daily reward reminder ping')
+$bot.register_application_command(:vote, 'top.gg: Prisma rewards & vote reminder DMs') do |cmd|
+  cmd.string('action', 'Info or toggle reminders', required: false, choices: { 'Info & link' => 'info', 'Toggle reminder DMs' => 'remind' })
+end
 $bot.register_application_command(:event, 'Open the Limited Time Event Hub!')
 $bot.register_application_command(:leaderboard, 'Show top users by level for this server')
 $bot.register_application_command(:level, 'Show a user\'s level and XP for this server') do |cmd|

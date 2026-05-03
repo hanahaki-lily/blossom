@@ -379,5 +379,31 @@ module DatabaseSchema # <--- Changed from 'class' to 'module'
     rescue PG::Error
       # Duplicate constraint name after prior boot, etc.
     end
+
+    # --- Top.gg voting (webhook rewards, streak, DM reminders) ---
+    begin
+      @db.exec(<<-SQL)
+        CREATE TABLE IF NOT EXISTS topgg_votes_processed (
+          vote_id VARCHAR(128) PRIMARY KEY,
+          user_id BIGINT NOT NULL,
+          processed_at TIMESTAMPTZ DEFAULT NOW()
+        );
+        CREATE INDEX IF NOT EXISTS idx_topgg_votes_processed_user ON topgg_votes_processed (user_id);
+
+        CREATE TABLE IF NOT EXISTS topgg_vote_state (
+          user_id BIGINT PRIMARY KEY,
+          last_vote_at TIMESTAMPTZ,
+          vote_streak INTEGER DEFAULT 0,
+          reminder_dm INTEGER DEFAULT 0,
+          next_vote_after TIMESTAMPTZ,
+          last_reminder_at TIMESTAMPTZ
+        );
+      SQL
+      begin
+        @db.exec('ALTER TABLE topgg_votes_processed ALTER COLUMN vote_id TYPE VARCHAR(128)')
+      rescue PG::Error
+      end
+    rescue PG::Error
+    end
   end # Closes 'def setup_schema'
 end # Closes 'module DatabaseSchema'

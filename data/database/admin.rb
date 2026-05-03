@@ -240,6 +240,8 @@ module DatabaseAdmin
       lifetime_premium
       custom_banners
       trivia_sessions
+      topgg_vote_state
+      topgg_votes_processed
       lottery
       boss_participants
       crew_members

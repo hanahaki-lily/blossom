@@ -28,6 +28,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 
 ### Added
 
+- **Top.gg voting:** WEBrick webhook listener on `POST /webhooks/topgg` (v1 `x-topgg-signature` + legacy `Authorization`), Prisma **5 + streak** (streak capped at **10**, reset after **>28h** between votes), multiplied by top.gg **weight**, idempotent `vote_id`, blacklist records vote without paying. Tables `topgg_votes_processed`, `topgg_vote_state`. Env: `TOPGG_WEBHOOK_SECRET`, `TOPGG_BOT_DISCORD_ID`, optional `TOPGG_VOTE_PAGE_URL`, `TOPGG_WEBHOOK_PORT`, `TOPGG_WEBHOOK_BIND`. Commands `b!vote` / `/vote` and DM reminder loop. **Gem:** `webrick`.
+
 - Developer commands `b!dcommxp` (aliases `dcomm`, `communityxp`) to adjust **community** (server-wide pooled) XP and level for the current guild — separate from per-user `setxp`. `add` / `remove` / `set` recalc level from cumulative XP; `level` sets rank while preserving stored XP. DB helpers `community_xp_threshold` and `community_level_from_total_xp` on `DatabaseLeveling`; passive community leveling now uses the shared threshold method.
 - New DB module `DatabaseTrivia` with `get_trivia_session`, `save_trivia_session`, `mark_trivia_answered`, and `clear_trivia_session`.
 - New `trivia_sessions` table (one row per user, upserted on each new question).

@@ -10,6 +10,9 @@ $bot.ready do |event|
   # --- SLASH COMMAND REGISTRATION ---
   # All slash commands are live. Uncomment below to re-register if needed.
   event.bot.register_application_command(:leaderboard, 'Show top users by level for this server')
+  event.bot.register_application_command(:vote, 'top.gg: vote for Prisma rewards & DM reminders') do |cmd|
+    cmd.string('action', 'View info or toggle reminder', required: false, choices: { 'Info & link' => 'info', 'Toggle reminder DMs' => 'remind' })
+  end
   # event.bot.register_application_command(:spin, 'Spin the daily prize wheel!')
   # event.bot.register_application_command(:marry, 'Propose to someone!') do |cmd|
   #   cmd.user('user', 'The person you want to marry', required: true)

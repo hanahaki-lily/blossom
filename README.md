@@ -65,7 +65,12 @@ Subscribers get the VIP treatment:
 | **Language** | Ruby 3.4 |
 | **Framework** | discordrb 3.7.2 |
 | **Database** | PostgreSQL (via `pg` + `connection_pool`) |
+| **HTTP (optional)** | WEBrick — top.gg vote webhooks (`POST /webhooks/topgg`) when `TOPGG_WEBHOOK_SECRET` is set |
 | **Architecture** | Modular loader system |
+
+## top.gg voting (self-hosted)
+
+Expose port **8081** (or `TOPGG_WEBHOOK_PORT`) to the internet (reverse proxy → `http://127.0.0.1:8081/webhooks/topgg`). In the top.gg dashboard, set the webhook URL to that path and paste the **v1 webhook secret** (`whs_…`) into `TOPGG_WEBHOOK_SECRET`. Set `TOPGG_BOT_DISCORD_ID` to your bot’s Discord ID so payloads are rejected if they target another app.
 
 ## The Creator
 

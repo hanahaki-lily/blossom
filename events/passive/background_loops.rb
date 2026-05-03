@@ -65,6 +65,39 @@ $bot.ready do |event|
     end
   end
 
+  # --- TOP.GG VOTE REMINDER DM ---
+  Thread.new do
+    loop do
+      sleep(120)
+      next unless ENV['TOPGG_WEBHOOK_SECRET']
+
+      begin
+        now_iso = Time.now.getutc.iso8601
+        rows = DB.topgg_users_ready_for_reminder(now_iso)
+        url = TopggWebhook.vote_page_url
+
+        rows.each do |row|
+          uid = row['user_id'].to_i
+          next if uid.zero?
+
+          u = event.bot.user(uid)
+          next unless u
+
+          body = "#{EMOJI_STRINGS['neonsparkle']} **Vote cooldown's up!** You can hit top.gg again and rake in more #{EMOJI_STRINGS['prisma']}.\n**Vote:** #{url}\n\n_Streak stays alive if you keep voting within 28 hours._"
+          begin
+            u.pm(body)
+          rescue StandardError => e
+            Discordrb::LOGGER.warn("[VOTE REMINDER] DM failed uid=#{uid}: #{e.class}: #{e.message}")
+          end
+
+          DB.mark_topgg_vote_reminder_sent(uid)
+        end
+      rescue => e
+        puts "[VOTE REMINDER ERROR] #{e.message}"
+      end
+    end
+  end
+
   # --- DAILY BIRTHDAY CHECK ---
   Thread.new do
     last_checked_date = nil

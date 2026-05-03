@@ -20,7 +20,7 @@ COMMAND_CATEGORIES = {
   'Gacha'     => [:summon, :collection, :custombanner, :shop, :buy, :view, :ascend, :trade, :givecard, :sell, :autosell, :shinymode, :giftlog, :craft, :salvage],
   'Arcade'    => [:coinflip, :slots, :roulette, :scratch, :dice, :cups, :blackjack, :spin, :rps, :fish, :trivia, :boss],
   'Fun'       => [:kettle, :level, :leaderboard, :hug, :slap, :pat, :rep, :marry, :divorce, :birthday, :interactions, :serverinfo, :crew, :friends],
-  'Utility'   => [:ping, :help, :about, :support, :premium, :suggest, :profile, :stats, :notifications, :challenges],
+  'Utility'   => [:ping, :help, :about, :support, :premium, :suggest, :profile, :stats, :notifications, :challenges, :vote],
   'Admin'     => [:setxp, :bomb, :levelup, :giveaway, :logsetup, :logtoggle, :purge, :kick, :ban, :timeout, :verifysetup, :achievements, :welcomer, :reactionrole, :commleveltoggle, :heist, :automod, :bosssetup, :tipsetup],
   'Developer' => [:dcoin, :dpremium, :blacklist, :card, :prisma, :dbomb, :dreset, :syncachievements, :dticketsetup, :dapplysetup, :devhelp, :dcommxp]
 }.freeze
