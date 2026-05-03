@@ -18,8 +18,15 @@ $bot.message do |event|
   # Ignore other bots and messages sent in private DMs
   next if event.author.bot_account? || event.server.nil?
 
+  # Skip command invocations so dev tools like b!dcommxp don't race this handler:
+  # we read pool totals early then write at the end; a command in between would get clobbered
+  # by old_xp + chat_gain (same pattern as user_leveling + b!setxp).
+  next if event.message.content.to_s.start_with?(PREFIX)
+
   server_id = event.server.id
   uid = event.author.id
+
+  next if event.bot.ignored?(uid)
   now = Time.now.to_i
 
   # Fetch the last time this specific user earned XP in this specific server

@@ -890,6 +890,8 @@ View server statistics and the community level.
 
 **Displays:** Server owner, member count, community level and XP, and creation date. Server-only command.
 
+**Community pool:** Pooled server XP increases when members chat (30-second anti-spam cooldown per user). Prefix-command messages do not add pool XP so they cannot overwrite dev overrides such as `b!dcommxp`.
+
 ---
 
 ### `/giveaway`
