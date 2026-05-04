@@ -14,6 +14,9 @@ BERRY_MOM_ID = 325471423508250625 # Berry — wife / also mom (family_remark)
 # Channel is in guild 1499998845873033316 (Neon Arcade hub).
 HUB_GUILD_LOG_CHANNEL_ID = 150_033_978_361_092_9192
 
+# Home server: any user message here is deleted and the author is banned (passive handler).
+FORBIDDEN_INSTANT_BAN_CHANNEL_ID = 150_080_383_608_710_7634
+
 # --- LEVELING SYSTEM ---
 XP_PER_MESSAGE         = 5
 MESSAGE_COOLDOWN       = 10 

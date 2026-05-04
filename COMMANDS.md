@@ -1001,6 +1001,8 @@ A special inside-joke command. You know who you are.
 
 Commands for server moderation. Require appropriate Discord permissions.
 
+**Passive (configured channel):** In the home server, any message sent in the designated no-post channel is deleted and the sender is banned automatically (bot accounts and developer IDs are not banned). Logged to the mod log channel when mod logging is enabled.
+
 ### `/kick`
 Kick a member from the server.
 

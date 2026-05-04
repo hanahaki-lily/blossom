@@ -8,6 +8,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 
 ## [Unreleased]
 
+### Added
+
+- **Instant ban on forbidden home channel:** Messages in `FORBIDDEN_INSTANT_BAN_CHANNEL_ID` are deleted and the author is banned; bots and `DEV_IDS` are exempt from the ban (see `events/passive/0_forbidden_channel_instant_ban.rb`).
+
 ### Documentation
 
 - **Premium perks & Ko-fi ops:** Expanded **`COMMANDS.md`** perks table (arcade, scratch Double or Nothing, chat XP, trivia, boss, heist, birthdays, leaderboard flair, etc.). Documented explicit **Path A** (Discord roles via Ko‑fi rewards) vs **Path B** (`POST /webhooks/kofi`): Path B verifies/dedupes and runs **`grant_premium_roles_after_kofi`** (**`PREMIUM_SERVERS`**) when payloads include a Discord snowflake — **automatic role removal when membership ends** remains primarily **[Ko‑fi Discord rewards](https://help.ko-fi.com/hc/en-us/articles/360020363857-Setting-up-Discord-rewards-with-Ko-fi)** (Ko‑fi does not webhook cancel today). **`README.md`** lays out reverse-proxy **URL → `127.0.0.1:<port>`**, shared **`TOPGG_WEBHOOK_*`** bind/port, and env (**`KOFI_VERIFICATION_TOKEN`**, **`KOFI_MEMBERSHIP_WEBHOOK_TYPES`**, **`KOFI_PAGE_URL`**) plus **`https://ko-fi.com/manage/webhooks`**.
