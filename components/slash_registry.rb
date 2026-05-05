@@ -1,18 +1,26 @@
 # ==========================================
-# SYSTEM: Slash Command Registry
-# DESCRIPTION: Canonical `$bot.register_application_command` definitions for Discord.
-# Loaded during `load_blossom_modules` (before command handlers in `commands/**`).
+# SYSTEM: Slash commands (Discord schema + smart sync)
 #
-# Default: the whole registration body is wrapped in `=begin` … `=end` so we do NOT
-# hit Discord's command API on every process start. Slash still works—definitions
-# must already be registered on the application (dev portal or a prior run with
-# this block enabled). When you change options/subcommands, temporarily remove the
-# wrapper, start the bot once, then comment again.
+# Source of truth for **registration payloads** is inside the `=begin` / `=end`
+# block below. Regenerate `slash_definitions.rb` after editing that block:
+#
+#   ruby components/_gen_slash_definitions.rb
+#
+# On `$bot.ready`, `BlossomSlashSync` fetches Discord's global commands, compares
+# a normalized fingerprint, and **bulk-overwrites only when the schema differs**
+# (see `slash_sync.rb`).
+#
+# Env: `BLOSSOM_SLASH_SYNC` = auto (default) | never | force
 # ==========================================
 
-puts '🌸 Slash registry: registration disabled on boot (see slash_registry.rb =begin block).'
+require_relative 'slash_definitions'
+require_relative 'slash_sync'
+
+puts '🌸 Slash: definitions loaded; smart sync runs on ready.'
 
 =begin
+# --- Edit commands below, then: ruby components/_gen_slash_definitions.rb ---
+
 puts '🌸 Slash registry: registering application commands...'
 
 # =========================
@@ -35,6 +43,7 @@ end
 $bot.register_application_command(:challenges, 'View and claim weekly challenges')
 $bot.register_application_command(:profile, 'Customize your premium profile') do |cmd|
   cmd.subcommand(:view, 'View your current profile settings')
+  cmd.subcommand(:shop, 'Cosmetic shop — Prisma prices and equip commands')
   cmd.subcommand(:color, 'Set your profile color') do |sub|
     sub.string('hex', 'Hex color code (e.g. FF00AA)', required: true)
   end

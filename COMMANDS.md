@@ -2,6 +2,8 @@
 
 > **Version:** 1.3 &bull; **Prefix:** `b!` &bull; **Slash Commands:** Supported
 > All commands can be used with either the `b!` prefix or as Discord slash commands (`/`).
+>
+> **Slash registration (dev):** After editing the `=begin` / `=end` schemas in `components/slash_registry.rb`, run `ruby components/_gen_slash_definitions.rb`, then restart the bot. Ready sync compares to Discord and bulk-overwrites **only when the schema changed** (env: `BLOSSOM_SLASH_SYNC=auto|never|force`).
 
 ---
 
@@ -1397,25 +1399,28 @@ Customize your profile card with colors, bio, favorites, and cosmetics. **Premiu
 
 | Detail | Value |
 |--------|-------|
-| **Usage (Slash)** | `/profile view`, `/profile color hex:#FF69B4`, `/profile bio text:Hello!` |
-| **Usage (Prefix)** | `b!profile color #FF69B4`, `b!profile bio Hello world` |
+| **Usage (Slash)** | `/profile view`, `/profile shop`, `/profile color hex:#FF69B4`, `/profile bio text:Hello!` |
+| **Usage (Prefix)** | `b!profile`, `b!profile shop`, `b!profile color #FF69B4`, `b!profile bio Hello world` |
 
 **Customization Options:**
 
 | Option | Description | Notes |
 |--------|-------------|-------|
 | `view` | Preview your profile | — |
+| `shop` | Lists Prisma shop pet prices + equip commands | Prefix: `b!profile shop` |
 | `color <hex>` | Set accent color | Hex format (e.g., `#FF69B4`) |
 | `bio <text>` | Set profile bio | Max 100 characters |
 | `fav <slot> <name>` | Set a favorite card (slots 1-3) | Slot 1 always available; slots 2-3 flex only |
 | `unfav <slot>` | Clear a favorite slot | — |
-| `pet <id\|none>` | Equip or unequip a cosmetic pet | Costs Prisma |
-| `title <id\|none>` | Equip or unequip a title | Costs Prisma |
-| `theme <id>` | Apply a collection theme | Costs Prisma |
-| `badge <id\|none>` | Equip or unequip a badge | Some are achievement-locked |
+| `pet <id\|none>` | Equip or unequip a cosmetic pet | Costs Prisma; charge uses an atomic DB debit |
+| `title <id\|none>` | Equip or unequip a title | Costs Prisma; charge uses an atomic DB debit |
+| `theme <id>` | Apply a collection theme | Costs Prisma; charge uses an atomic DB debit |
+| `badge <id\|none>` | Equip or unequip a badge | Some are achievement-locked; purchasable badges debit Prisma atomically |
 | `reset` | Clear all customizations | — |
 
-You must own the character to set it as a favorite. Re-equipping the same cosmetic does not cost additional Prisma.
+You must own the character to set it as a favorite. Re-equipping **the same** cosmetic you already have active does not charge Prisma again.
+
+**Prefix note:** A bare `b!profile` or stray whitespace on the first argument is treated as `view`.
 
 ---
 

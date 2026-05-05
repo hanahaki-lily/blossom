@@ -146,7 +146,34 @@ module DatabaseEconomy
   end
 
   def add_prisma(uid, amount)
-    @db.exec_params("INSERT INTO user_prisma (user_id, balance) VALUES ($1, $2) ON CONFLICT (user_id) DO UPDATE SET balance = user_prisma.balance + $3", [uid, amount, amount])
+    delta = amount.to_i
+    return if delta.zero?
+
+    if delta.positive?
+      @db.exec_params(
+        "INSERT INTO user_prisma (user_id, balance) VALUES ($1, $2) ON CONFLICT (user_id) DO UPDATE SET balance = user_prisma.balance + $3",
+        [uid, delta, delta]
+      )
+    else
+      # Never INSERT a negative starting balance for users with no user_prisma row.
+      @db.exec_params(
+        'UPDATE user_prisma SET balance = balance + $1 WHERE user_id = $2 AND balance + $1 >= 0',
+        [delta, uid]
+      )
+    end
+  end
+
+  # Subtract Prisma only if the row exists and balance is sufficient. Amount must be > 0.
+  # Used for shop-style spends so a failed UPDATE cannot be followed by granting the item.
+  def deduct_prisma!(uid, amount)
+    amt = amount.to_i
+    return true if amt <= 0
+
+    row = @db.exec_params(
+      'UPDATE user_prisma SET balance = balance - $1 WHERE user_id = $2 AND balance >= $1 RETURNING balance',
+      [amt, uid]
+    ).first
+    !row.nil?
   end
 
   def set_prisma(uid, amount)

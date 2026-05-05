@@ -4,6 +4,13 @@
 # CATEGORY: Utility
 # ==========================================
 
+# Slash command option keys are usually strings; tolerate symbol keys too.
+def profile_slash_opt(options, name)
+  return nil unless options
+
+  options[name.to_s] || options[name.to_sym]
+end
+
 def execute_profile(event, action, args)
   uid = event.user.id
   is_sub = is_premium?(event.bot, uid)
@@ -15,6 +22,9 @@ def execute_profile(event, action, args)
       { type: 10, content: "Profile customization is a **Blossom Premium** perk! Subscribe to flex on the peasants." }
     ]}])
   end
+
+  action = action&.to_s&.strip
+  action = nil if action&.empty?
 
   profile = DB.get_profile(uid)
   cosmetics = DB.get_cosmetics(uid)
@@ -43,11 +53,24 @@ def execute_profile(event, action, args)
       { type: 14, spacing: 1 },
       { type: 10, content: "🐾 **Pet:** #{pet_display}\n🏷️ **Title:** #{title_display}\n🎨 **Theme:** #{theme_display}\n🏅 **Badge:** #{badge_display}#{spotlight_line}" },
       { type: 14, spacing: 1 },
-      { type: 10, content: "-# `#{PREFIX}profile color/bio/epithet/tagline/fav/unfav/pet/title/theme/badge/reset`\n-# `#{PREFIX}profile shop` to browse cosmetics" }
+      { type: 10, content: "-# `#{PREFIX}profile color/bio/epithet/tagline/fav/unfav/pet/title/theme/badge/shop/reset`\n-# `#{PREFIX}profile shop` — Prisma prices + how to equip" }
     ]}])
   end
 
   case action.downcase
+  when 'shop'
+    prisma_bal = DB.get_prisma(uid)
+    rid = rotating_premium_pet_id
+    pet_lines = PETS.reject { |_, p| p[:craftable] }.map do |pid, p|
+      cost = prisma_pet_price_for_user(event.bot, uid, pid)
+      tag = pid == rid ? " #{EMOJI_STRINGS['neonsparkle']} *spotlight*" : ''
+      "• #{p[:emoji]} **#{p[:name]}** (`#{pid}`) — **#{cost}** #{EMOJI_STRINGS['prisma']}#{tag}"
+    end
+    shop_body = "## #{EMOJI_STRINGS['neonsparkle']} Cosmetic shop\nYour Prisma: **#{prisma_bal}** #{EMOJI_STRINGS['prisma']}\n\n🐾 **Pets**\nPurchase + equip by id (already-equipped pets swap free):\n`#{PREFIX}profile pet <id>` · `/profile pet`\n#{pet_lines.join("\n")}\n\n🏷️ **Titles** — `#{PREFIX}profile title` · `/profile title`\n🎨 **Themes** — `#{PREFIX}profile theme` · `/profile theme`\n🏅 **Badges** — `#{PREFIX}profile badge` · `/profile badge`\n\n#{EMOJI_STRINGS['neonsparkle']} Craft-only cosmetics unlock via **`#{PREFIX}craft`** *(priced shop cosmetics deduct Prisma once each).*"
+    send_cv2(event, [{ type: 17, accent_color: NEON_COLORS.sample, components: [
+      { type: 10, content: shop_body }
+    ]}])
+
   when 'color'
     hex = args.first&.delete('#')&.strip
     unless hex && hex.match?(/\A[0-9a-fA-F]{6}\z/)
@@ -139,7 +162,8 @@ def execute_profile(event, action, args)
     ]}])
 
   when 'pet'
-    pet_id = args.first&.downcase
+    pet_id = args.first&.downcase&.strip
+    pet_id = nil if pet_id&.empty?
     rid = rotating_premium_pet_id
     if pet_id.nil?
       list = PETS.map do |id, p|
@@ -172,19 +196,21 @@ def execute_profile(event, action, args)
     end
 
     pet = PETS[pet_id]
-    prisma = DB.get_prisma(uid)
     price = prisma_pet_price_for_user(event.bot, uid, pet_id)
-    # Check if already owned (already equipped or re-equipping is free)
     current = cosmetics['pet']
-    if current != pet_id && prisma < price
-      return send_cv2(event, [{ type: 17, accent_color: 0xFF0000, components: [
-        { type: 10, content: "## #{EMOJI_STRINGS['x_']} Not Enough Prisma" },
-        { type: 14, spacing: 1 },
-        { type: 10, content: "**#{pet[:name]}** costs **#{price}** #{EMOJI_STRINGS['prisma']}. You have **#{prisma}**." }
-      ]}])
+    unless current == pet_id
+      if price.positive?
+        unless DB.deduct_prisma!(uid, price)
+          prisma = DB.get_prisma(uid)
+          return send_cv2(event, [{ type: 17, accent_color: 0xFF0000, components: [
+            { type: 10, content: "## #{EMOJI_STRINGS['x_']} Not Enough Prisma" },
+            { type: 14, spacing: 1 },
+            { type: 10, content: "**#{pet[:name]}** costs **#{price}** #{EMOJI_STRINGS['prisma']}. You have **#{prisma}**." }
+          ]}])
+        end
+      end
     end
 
-    DB.add_prisma(uid, -price) unless current == pet_id
     DB.set_pet(uid, pet_id)
     send_cv2(event, [{ type: 17, accent_color: 0x00FF00, components: [
       { type: 10, content: "## #{pet[:emoji]} #{pet[:name]} Equipped!" },
@@ -193,7 +219,8 @@ def execute_profile(event, action, args)
     ]}])
 
   when 'title'
-    title_id = args.first&.downcase
+    title_id = args.first&.downcase&.strip
+    title_id = nil if title_id&.empty?
     if title_id.nil?
       list = TITLES.reject { |_, t| t[:dev_only] }.map { |id, t| "**#{t[:name]}** — #{t[:price]} #{EMOJI_STRINGS['prisma']} (`#{id}`)" }.join("\n")
       return send_cv2(event, [{ type: 17, accent_color: NEON_COLORS.sample, components: [
@@ -231,15 +258,19 @@ def execute_profile(event, action, args)
 
     prisma = DB.get_prisma(uid)
     current = cosmetics['title']
-    if current != title_id && prisma < title[:price]
-      return send_cv2(event, [{ type: 17, accent_color: 0xFF0000, components: [
-        { type: 10, content: "## #{EMOJI_STRINGS['x_']} Not Enough Prisma" },
-        { type: 14, spacing: 1 },
-        { type: 10, content: "**#{title[:name]}** costs **#{title[:price]}** #{EMOJI_STRINGS['prisma']}. You have **#{prisma}**." }
-      ]}])
+    unless current == title_id
+      price = title[:price].to_i
+      if price.positive?
+        unless DB.deduct_prisma!(uid, price)
+          return send_cv2(event, [{ type: 17, accent_color: 0xFF0000, components: [
+            { type: 10, content: "## #{EMOJI_STRINGS['x_']} Not Enough Prisma" },
+            { type: 14, spacing: 1 },
+            { type: 10, content: "**#{title[:name]}** costs **#{price}** #{EMOJI_STRINGS['prisma']}. You have **#{prisma}**." }
+          ]}])
+        end
+      end
     end
 
-    DB.add_prisma(uid, -title[:price]) unless current == title_id
     DB.set_title(uid, title_id)
     send_cv2(event, [{ type: 17, accent_color: 0x00FF00, components: [
       { type: 10, content: "## 🏷️ Title Equipped!" },
@@ -248,7 +279,8 @@ def execute_profile(event, action, args)
     ]}])
 
   when 'theme'
-    theme_id = args.first&.downcase
+    theme_id = args.first&.downcase&.strip
+    theme_id = nil if theme_id&.empty?
     if theme_id.nil?
       list = COLLECTION_THEMES.map { |id, t| "#{t[:bullet]}#{t[:prefix]}#{t[:name]}#{t[:suffix]}#{t[:price] > 0 ? " — #{t[:price]} #{EMOJI_STRINGS['prisma']}" : ' (Free)'} (`#{id}`)" }.join("\n")
       return send_cv2(event, [{ type: 17, accent_color: NEON_COLORS.sample, components: [
@@ -269,15 +301,19 @@ def execute_profile(event, action, args)
     theme = COLLECTION_THEMES[theme_id]
     prisma = DB.get_prisma(uid)
     current = cosmetics['theme']
-    if current != theme_id && theme[:price] > 0 && prisma < theme[:price]
-      return send_cv2(event, [{ type: 17, accent_color: 0xFF0000, components: [
-        { type: 10, content: "## #{EMOJI_STRINGS['x_']} Not Enough Prisma" },
-        { type: 14, spacing: 1 },
-        { type: 10, content: "**#{theme[:name]}** costs **#{theme[:price]}** #{EMOJI_STRINGS['prisma']}. You have **#{prisma}**." }
-      ]}])
+    unless current == theme_id
+      price = theme[:price].to_i
+      if price.positive?
+        unless DB.deduct_prisma!(uid, price)
+          return send_cv2(event, [{ type: 17, accent_color: 0xFF0000, components: [
+            { type: 10, content: "## #{EMOJI_STRINGS['x_']} Not Enough Prisma" },
+            { type: 14, spacing: 1 },
+            { type: 10, content: "**#{theme[:name]}** costs **#{price}** #{EMOJI_STRINGS['prisma']}. You have **#{prisma}**." }
+          ]}])
+        end
+      end
     end
 
-    DB.add_prisma(uid, -theme[:price]) if current != theme_id && theme[:price] > 0
     DB.set_collection_theme(uid, theme_id)
     send_cv2(event, [{ type: 17, accent_color: theme[:color] || NEON_COLORS.sample, components: [
       { type: 10, content: "## 🎨 Theme Applied: #{theme[:name]}" },
@@ -286,7 +322,8 @@ def execute_profile(event, action, args)
     ]}])
 
   when 'badge'
-    badge_id = args.first&.downcase
+    badge_id = args.first&.downcase&.strip
+    badge_id = nil if badge_id&.empty?
     if badge_id.nil?
       owned = DB.get_badges(uid).map { |r| r['badge_id'] }
       visible_badges = BADGES.reject { |_, b| b[:dev_only] && !DEV_IDS.include?(uid) }
@@ -340,16 +377,18 @@ def execute_profile(event, action, args)
       end
 
       # Purchasable badge
+      price = badge[:price].to_i
       prisma = DB.get_prisma(uid)
-      if prisma < badge[:price]
-        return send_cv2(event, [{ type: 17, accent_color: 0xFF0000, components: [
-          { type: 10, content: "## #{EMOJI_STRINGS['x_']} Not Enough Prisma" },
-          { type: 14, spacing: 1 },
-          { type: 10, content: "**#{badge[:name]}** costs **#{badge[:price]}** #{EMOJI_STRINGS['prisma']}. You have **#{prisma}**." }
-        ]}])
+      if price.positive?
+        unless DB.deduct_prisma!(uid, price)
+          return send_cv2(event, [{ type: 17, accent_color: 0xFF0000, components: [
+            { type: 10, content: "## #{EMOJI_STRINGS['x_']} Not Enough Prisma" },
+            { type: 14, spacing: 1 },
+            { type: 10, content: "**#{badge[:name]}** costs **#{price}** #{EMOJI_STRINGS['prisma']}. You have **#{prisma}**." }
+          ]}])
+        end
       end
 
-      DB.add_prisma(uid, -badge[:price])
       DB.unlock_badge(uid, badge_id)
     end
 
@@ -428,7 +467,7 @@ def execute_profile(event, action, args)
     send_cv2(event, [{ type: 17, accent_color: 0xFF0000, components: [
       { type: 10, content: "## #{EMOJI_STRINGS['confused']} Unknown Option" },
       { type: 14, spacing: 1 },
-      { type: 10, content: "Options: `color`, `bio`, `epithet`, `tagline`, `fav`, `unfav`, `pet`, `title`, `theme`, `badge`, `reset`.\n`#{PREFIX}profile` with no args to see your current settings." }
+      { type: 10, content: "Options: `color`, `bio`, `epithet`, `tagline`, `fav`, `unfav`, `pet`, `title`, `theme`, `badge`, `shop`, `reset`.\n`#{PREFIX}profile` with no args to see your current settings." }
     ]}])
   end
 end
@@ -448,48 +487,59 @@ $bot.application_command(:profile).subcommand(:view) do |event|
   execute_profile(event, nil, [])
 end
 
+$bot.application_command(:profile).subcommand(:shop) do |event|
+  execute_profile(event, 'shop', [])
+end
+
 $bot.application_command(:profile).subcommand(:color) do |event|
-  execute_profile(event, 'color', [event.options['hex']])
+  execute_profile(event, 'color', [profile_slash_opt(event.options, 'hex')])
 end
 
 $bot.application_command(:profile).subcommand(:bio) do |event|
-  execute_profile(event, 'bio', [event.options['text']])
+  execute_profile(event, 'bio', [profile_slash_opt(event.options, 'text')])
 end
 
 $bot.application_command(:profile).subcommand(:fav) do |event|
-  execute_profile(event, 'fav', [event.options['slot'].to_s, *event.options['character'].split(' ')])
+  slot = profile_slash_opt(event.options, 'slot')
+  char = profile_slash_opt(event.options, 'character').to_s
+  execute_profile(event, 'fav', [slot.to_s, *char.split(/\s+/)])
 end
 
 $bot.application_command(:profile).subcommand(:unfav) do |event|
-  execute_profile(event, 'unfav', [event.options['slot'].to_s])
+  slot = profile_slash_opt(event.options, 'slot')
+  execute_profile(event, 'unfav', [slot.to_s])
 end
 
 $bot.application_command(:profile).subcommand(:pet) do |event|
-  id = event.options['id']
+  id = profile_slash_opt(event.options, 'id')&.to_s&.strip
+  id = nil if id&.empty?
   execute_profile(event, 'pet', id ? [id] : [])
 end
 
 $bot.application_command(:profile).subcommand(:title) do |event|
-  id = event.options['id']
+  id = profile_slash_opt(event.options, 'id')&.to_s&.strip
+  id = nil if id&.empty?
   execute_profile(event, 'title', id ? [id] : [])
 end
 
 $bot.application_command(:profile).subcommand(:theme) do |event|
-  id = event.options['id']
+  id = profile_slash_opt(event.options, 'id')&.to_s&.strip
+  id = nil if id&.empty?
   execute_profile(event, 'theme', id ? [id] : [])
 end
 
 $bot.application_command(:profile).subcommand(:badge) do |event|
-  id = event.options['id']
+  id = profile_slash_opt(event.options, 'id')&.to_s&.strip
+  id = nil if id&.empty?
   execute_profile(event, 'badge', id ? [id] : [])
 end
 
 $bot.application_command(:profile).subcommand(:epithet) do |event|
-  execute_profile(event, 'epithet', [event.options['text']])
+  execute_profile(event, 'epithet', [profile_slash_opt(event.options, 'text')])
 end
 
 $bot.application_command(:profile).subcommand(:tagline) do |event|
-  execute_profile(event, 'tagline', [event.options['text']])
+  execute_profile(event, 'tagline', [profile_slash_opt(event.options, 'text')])
 end
 
 $bot.application_command(:profile).subcommand(:reset) do |event|

@@ -79,7 +79,13 @@ def execute_custombanner(event, commons_str, rares_str, legendaries_str, goddess
   end
 
   # 4. Charge Prisma and set the custom banner
-  DB.add_prisma(uid, -CUSTOM_BANNER_COST)
+  unless DB.deduct_prisma!(uid, CUSTOM_BANNER_COST)
+    return send_cv2(event, [{ type: 17, accent_color: 0xFF0000, components: [
+      { type: 10, content: "## #{EMOJI_STRINGS['prisma']} Custom Banner" },
+      { type: 14, spacing: 1 },
+      { type: 10, content: "Payment didn't go through — you need **#{CUSTOM_BANNER_COST}** #{EMOJI_STRINGS['prisma']} Prisma (balance may have changed)." }
+    ]}])
+  end
   DB.set_custom_banner(uid, parsed, 3600)
 
   expires_at = (Time.now + 3600).to_i

@@ -10,6 +10,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 
 ### Added
 
+- **Smart global slash sync:** On ready, Blossom GETs Discord’s global commands and bulk-overwrites **only when** the normalized schema differs from `slash_definitions.rb` (or always when `BLOSSOM_SLASH_SYNC=force`). Regenerate payloads with **`ruby components/_gen_slash_definitions.rb`** after editing the **`slash_registry.rb`** `=begin` block.
+- **`/profile shop` / `b!profile shop`:** Premium users get a single CV2 panel listing shop pet Prisma prices (and pointers to title/theme/badge commands).
 - **Instant ban on forbidden home channel:** Messages in `FORBIDDEN_INSTANT_BAN_CHANNEL_ID` are deleted and the author is banned; bots and `DEV_IDS` are exempt from the ban (see `events/passive/0_forbidden_channel_instant_ban.rb`).
 
 ### Documentation
@@ -19,9 +21,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 
 ### Fixed
 
+- **Profile Prisma cosmetics:** Shop pets, titles, themes, and purchasable badges now debit Prisma with a single **`UPDATE … WHERE balance >= cost`** (`deduct_prisma!`) so a failed payment cannot still apply the cosmetic; negative `add_prisma` no longer creates a bad first row for users without a **`user_prisma`** record. **Custom banner** uses the same atomic debit. Prefix **`b!profile`** normalizes empty first args to **view**; **`b!profile shop`** (and **`/profile shop`**) lists shop pet prices and commands. Slash handlers read options with string or symbol keys.
+- **Heist console noise:** The hourly heist loop and result runner no longer **`puts`** routine heist diagnostics to the terminal.
 - **`b!say` multiline:** The command no longer flattens your announcement into one line — it parses the raw message after `#channel` so **newlines and paragraph spacing** survive into the embed. PostgreSQL **`NOTICE`** lines from idempotent DDL (`CREATE … IF NOT EXISTS`, `ADD COLUMN IF NOT EXISTS`) are suppressed per pooled connection via **`client_min_messages = WARNING`**. **`purge_user_data`** deletes Ko-fi rows with **`discord_user_id`** (not **`user_id`**), uses **`SAVEPOINT`** per table so one failure no longer aborts the whole transaction, and no longer prints **`[PURGE]`** skip / failure lines on every boot.
 - **`b!dserver` DM list includes guild snowflakes** next to each name (sorted A→Z, still chunked for Discord limits).
-- **Hourly heist announcements:** unknown/missing channels no longer spam multi-line stack traces — discordrb’s duplicate **Unknown Channel** log line is filtered like **Unknown Member**; the loop **clears** a dead `heist_channel` from `server_configs` and prints a one-line hint to run **`heist setup`** again. **NoPermission** is logged once with a permissions hint (config left in place so you can fix overrides without re-setup).
+- **Hourly heist announcements:** unknown/missing channels no longer spam multi-line stack traces — discordrb’s duplicate **Unknown Channel** log line is filtered like **Unknown Member**; the loop **clears** a dead `heist_channel` from `server_configs` so you can run **`heist setup`** again in a valid channel. Misconfigured channels stay registered until an admin fixes overrides or picks a new channel (**NoPermission** no longer emits loop `puts`; config stays in place).
 - **`b!dcommxp` no longer silently reverts.** The passive community-pool handler ran on the same message as the command, read stale totals, and could write `old_xp + chat_gain` after the dev update — mirroring the old `b!setxp` race. Prefix command messages are now skipped by the community leveling event (and blacklisted users no longer contribute pool XP), consistent with per-user leveling.
 - **Global Communities leaderboard names after guild renames:** Not a Discord API delay — the tab read cached `server_name` from the database, which only refreshed on boot, community XP writes, or `dcommxp`. The embed now prefers the live guild name from Blossom’s cache when she’s in that server, and **`GUILD_UPDATE`** syncs the stored name so the DB stays current too.
 - **Leaderboards (all three tabs):** Embeds use plain titles (no 👥💰 globe icons on the board). Dropdown options have no decorative emojis. Only **1st–3rd** place rows use 🏆 🥈 🥉; ranks 4+ have no rank-side medal. **Bold highlighting:** Global Communities bolds only the server you’re in when it appears; Server Members (XP) and Global Richest bold only **your** username when you’re on that list (fixes markdown noise from double-wrapping every name).
@@ -44,7 +48,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 
 - **Family flavor text:** **`mom_remark`** still fires **only** for **`DEV_ID`** (primary creator). Command responses now use **`family_remark`**, which adds **Uncle Z / Zin** lines (`DEV_IDS[1]`) and **Berry** (`BERRY_MOM_ID`, other mom) while keeping mama as #1 in Blossom’s bit. **`DEV_IDS`** now includes Z’s snowflake as second dev.
 
-- **Slash command sync:** `components/slash_registry.rb` lists every slash schema in one place; the block is **`=begin` / `=end`** by default so Blossom does **not** re-register with Discord on every boot (handlers still work). Remove the comment wrapper when you need a one-time sync. Duplicate **`/leaderboard`** and **`/vote`** registration remains removed from **`events/passive/ready.rb`**.
+- **Slash command sync:** On ready, **`BlossomSlashSync`** GETs Discord’s global commands, compares a normalized fingerprint to **`BlossomSlashDefinitions`** (from `components/slash_definitions.rb`), and calls **bulk overwrite** only when they differ. **`BLOSSOM_SLASH_SYNC`**: `auto` (default), `never` (no HTTP), `force` (always PUT). Edit the `=begin` block in **`components/slash_registry.rb`**, then run **`ruby components/_gen_slash_definitions.rb`** to refresh the generated payloads. Duplicate **`/leaderboard`** and **`/vote`** registration remains removed from **`events/passive/ready.rb`**.
 - **`/support` / `b!support`:** Invite updated to **https://discord.gg/cZ8zAT42u4** (Sakura Shrine).
 
 ### Added

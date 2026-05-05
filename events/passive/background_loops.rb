@@ -317,19 +317,16 @@ $bot.ready do |event|
 
   # --- HOURLY HEIST EVENTS ---
   Thread.new do
-    puts "[HEIST] \u{1F3E6} Heist loop started. Waiting for first trigger..."
     loop do
       now = Time.now.to_i
       # Align to top of each hour (offset by 30 min so it doesn't collide with lottery)
       sleep_time = 3600 - (now % 3600) + 1800
       sleep_time -= 3600 if sleep_time > 3600
       sleep_time = [sleep_time, 60].max
-      puts "[HEIST] Next heist check in #{sleep_time}s (at #{Time.at(Time.now.to_i + sleep_time).strftime('%H:%M:%S')})"
       sleep(sleep_time)
 
       begin
         heist_configs = DB.get_all_heist_channels
-        puts "[HEIST] Tick \u2014 #{heist_configs.size} server(s) with heist channels"
 
         heist_configs.each do |row|
           begin
@@ -337,16 +334,13 @@ $bot.ready do |event|
             chan_id = row['heist_channel'].to_i
 
             if chan_id == 0
-              puts "[HEIST] Server #{sid}: channel ID is 0, skipping"
               next
             end
 
             if ACTIVE_HEISTS[sid]
-              puts "[HEIST] Server #{sid}: heist already active, skipping"
               next
             end
 
-            puts "[HEIST] Server #{sid}: Sending announcement to channel #{chan_id}..."
             vault_amount = HEIST_BASE_VAULT + (HEIST_PER_PLAYER_VAULT * 5) # Preview with 5 players
 
             # Send heist announcement with join button via raw API (no channel cache needed)
@@ -382,8 +376,6 @@ $bot.ready do |event|
               channel_id: chan_id
             }
 
-            puts "[HEIST] Server #{sid}: \u2705 Announcement sent! (msg #{msg_data['id']})"
-
             # Schedule heist execution after join window
             Thread.new do
               sleep(HEIST_JOIN_WINDOW)
@@ -392,19 +384,17 @@ $bot.ready do |event|
           rescue Discordrb::Errors::UnknownChannel
             begin
               DB.set_heist_channel(sid, nil)
-            rescue StandardError => db_err
-              puts "[HEIST] Server #{sid}: could not clear stale heist channel — #{db_err.message}"
+            rescue StandardError
+              # ignore DB clear failure
             end
-            puts "[HEIST] Server #{sid}: channel #{chan_id} no longer exists or isn't visible — cleared heist config. Run `#{PREFIX}heist setup` there to pick a new channel."
           rescue Discordrb::Errors::NoPermission
-            puts "[HEIST] Server #{sid}: no permission to post in channel #{chan_id} — check View Channel, Send Messages, and Use External Apps (components). Still configured; fix perms or `#{PREFIX}heist setup` elsewhere."
-          rescue StandardError => e
-            puts "[HEIST ERROR] Server #{sid}: #{e.class}: #{e.message}"
+            # still configured; admin must fix channel perms
+          rescue StandardError
+            # ignore per-server heist errors
           end
         end
-      rescue => e
-        puts "[HEIST LOOP ERROR] #{e.class}: #{e.message}"
-        puts e.backtrace&.first(3)&.map { |l| "  #{l}" }&.join("\n")
+      rescue StandardError
+        # ignore outer heist loop errors
       end
     end
   end
@@ -415,13 +405,11 @@ end
 def execute_heist_result(bot, sid)
   heist = ACTIVE_HEISTS.delete(sid)
   unless heist
-    puts "[HEIST RESULT] Server #{sid}: No active heist found (already cleaned up?)"
     return
   end
 
   chan_id = heist[:channel_id]
   players = heist[:participants]
-  puts "[HEIST RESULT] Server #{sid}: Join window closed. #{players.size} player(s) joined."
 
   if players.size < HEIST_MIN_PLAYERS
     # Not enough players — send via raw API
@@ -433,9 +421,8 @@ def execute_heist_result(bot, sid)
         "#{Discordrb::API.api_base}/channels/#{chan_id}/messages",
         body, Authorization: bot.token, content_type: :json
       )
-      puts "[HEIST RESULT] Server #{sid}: Cancelled (not enough players)"
-    rescue => e
-      puts "[HEIST RESULT ERROR] Cancel message failed: #{e.class}: #{e.message}"
+    rescue StandardError
+      # ignore cancel message failure
     end
     return
   end
@@ -473,8 +460,7 @@ def execute_heist_result(bot, sid)
       "#{Discordrb::API.api_base}/channels/#{chan_id}/messages",
       body, Authorization: bot.token, content_type: :json
     )
-    puts "[HEIST RESULT] Server #{sid}: #{success ? 'SUCCESS' : 'FAILED'} \u2014 #{players.size} players, #{total_chance}% chance"
-  rescue => e
-    puts "[HEIST RESULT ERROR] Result message failed: #{e.class}: #{e.message}"
+  rescue StandardError
+    # ignore result message failure
   end
 end

@@ -7,7 +7,7 @@
 $bot.ready do |event|
   puts "🌸 Blossom is connected and live!"
 
-  # Slash command schemas: see components/slash_registry.rb (loaded at boot).
+  BlossomSlashSync.sync_global_application_commands(event.bot)
 
   puts "#{EMOJI_STRINGS['stream']} Syncing server names to database..."
   active_server_ids = event.bot.servers.keys
