@@ -20,8 +20,7 @@ puts '🌸 Slash: definitions loaded; smart sync runs on ready.'
 
 =begin
 # --- Edit commands below, then: ruby components/_gen_slash_definitions.rb ---
-
-puts '🌸 Slash registry: registering application commands...'
+# (If you remove =begin/=end, these register live with Discord — keep sync + gen workflow instead.)
 
 # =========================
 # CORE & UTILITY
@@ -320,6 +319,4 @@ end
 $bot.register_application_command(:commleveltoggle, 'Toggle community level-up announcements')
 
 # Developer commands stay prefix-only (see CHANGELOG).
-
-puts '✅ Slash registry: application commands registered.'
 =end

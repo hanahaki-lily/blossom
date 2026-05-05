@@ -9,7 +9,7 @@ $bot.ready do |event|
 
   BlossomSlashSync.sync_global_application_commands(event.bot)
 
-  puts "#{EMOJI_STRINGS['stream']} Syncing server names to database..."
+  puts '📡 Syncing server names to database...'
   active_server_ids = event.bot.servers.keys
   event.bot.servers.each do |id, server|
     # Fetch current XP/Level so we don't reset them to 0
@@ -104,7 +104,7 @@ $bot.ready do |event|
           # Wipe it from the active database
           DB.delete_giveaway(gw_id)
         rescue StandardError => e
-          puts "#{EMOJI_STRINGS['error']} Cleaned up broken giveaway #{gw_id} - #{e.message}"
+          puts "⚠️ Cleaned up broken giveaway #{gw_id} — #{e.message}"
           DB.delete_giveaway(gw_id) # Delete broken ones so they don't loop forever
         end
       end

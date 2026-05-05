@@ -29,6 +29,9 @@ module BlossomSlashDefinitions
       cmds << row
     end
 
+    # --- Edit commands below, then: ruby components/_gen_slash_definitions.rb ---
+    # (If you remove =begin/=end, these register live with Discord — keep sync + gen workflow instead.)
+    
     # =========================
     # CORE & UTILITY
     # =========================
