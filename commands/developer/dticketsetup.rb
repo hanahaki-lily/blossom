@@ -6,7 +6,7 @@
 
 TICKET_CATEGORY_ID = 1499998847491903588
 TICKET_SERVER_ID   = 1499998845873033316
-TICKET_STAFF_ROLE  = 1472692333588779143
+TICKET_STAFF_ROLE  = 1499998845902520445
 
 SUPPORT_TICKET_OPTIONS = [
   { value: 'general',    label: 'General Support',    emoji: '💬', desc: 'General questions or help with the server' },
