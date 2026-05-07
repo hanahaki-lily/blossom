@@ -302,6 +302,7 @@ $bot.ready do |event|
       sleep(600) # Check every 10 minutes
 
       begin
+        CACHE.sweep_expired!
         week_start = current_week_start
         existing = DB.get_weekly_challenges(week_start)
         unless existing

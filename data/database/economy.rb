@@ -272,8 +272,99 @@ module DatabaseEconomy
   def get_investment(uid)
     row = @db.exec_params("SELECT principal, invested_at FROM investments WHERE user_id = $1", [uid]).first
     return nil unless row
-    { 'principal' => row['principal'].to_i, 'invested_at' => Time.parse(row['invested_at']) }
+    # pg may return TIMESTAMP as Time/DateTime; Time.parse(Time) raises — stringify like votes/social.
+    invested_at = Time.parse(row['invested_at'].to_s)
+    { 'principal' => row['principal'].to_i, 'invested_at' => invested_at }
   end
+
+  # Atomically ensure no open investment, deduct coins, insert row. Avoids races and failed INSERT after spend.
+  # Returns { ok: true, balance: Integer } or { error: :exists | :insufficient | :invalid | :conflict }
+  def begin_investment_atomic(uid, amount)
+    amt = amount.to_i
+    return { error: :invalid } if amt <= 0
+
+    result = { error: :insufficient }
+    begin
+      @db.transaction do |conn|
+        if conn.exec_params('SELECT 1 FROM investments WHERE user_id = $1', [uid]).first
+          result = { error: :exists }
+          raise EconomyTransferFailed
+        end
+
+        row_out = conn.exec_params(
+          'UPDATE global_users SET coins = coins - $1 WHERE user_id = $2 AND coins >= $1 RETURNING coins',
+          [amt, uid]
+        ).first
+        unless row_out
+          result = { error: :insufficient }
+          raise EconomyTransferFailed
+        end
+
+        balance = row_out['coins'].to_i
+        begin
+          conn.exec_params(
+            'INSERT INTO investments (user_id, principal, invested_at) VALUES ($1, $2, NOW())',
+            [uid, amt]
+          )
+        rescue PG::UniqueViolation
+          result = { error: :conflict }
+          raise EconomyTransferFailed
+        end
+        result = { ok: true, balance: balance }
+      end
+    rescue EconomyTransferFailed
+      # result set above
+    end
+    result
+  end
+
+  # Single transaction: lock row, payout from principal + invested_at (same math as calculate_investment_value),
+  # DELETE investment, credit coins. No orphan delete without pay or coins without delete.
+  # Returns { ok: true, balance:, value: {...} } or { error: :none } if no open investment.
+  def withdraw_investment_atomic(uid)
+    result = { error: :none }
+    begin
+      @db.transaction do |conn|
+        row = conn.exec_params(
+          'SELECT principal, invested_at FROM investments WHERE user_id = $1 FOR UPDATE',
+          [uid]
+        ).first
+        unless row
+          result = { error: :none }
+          raise EconomyTransferFailed
+        end
+
+        principal = row['principal'].to_i
+        invested_at = Time.parse(row['invested_at'].to_s)
+        value = withdrawal_investment_totals(principal, invested_at)
+
+        conn.exec_params('DELETE FROM investments WHERE user_id = $1', [uid])
+
+        cred = conn.exec_params(
+          'INSERT INTO global_users (user_id, coins) VALUES ($1, $2) ON CONFLICT (user_id) DO UPDATE SET coins = global_users.coins + $3 RETURNING coins',
+          [uid, value[:total], value[:total]]
+        ).first
+        raise EconomyTransferFailed unless cred
+
+        result = { ok: true, balance: cred['coins'].to_i, value: value }
+      end
+    rescue EconomyTransferFailed
+      # as above
+    end
+    result
+  end
+
+  def withdrawal_investment_totals(principal, invested_at)
+    hours_elapsed = (Time.now - invested_at) / 3600.0
+    return { principal: principal, profit: 0, total: principal, hours: 0 } if hours_elapsed < 0
+
+    raw_profit = (principal * ((1 + INVEST_RATE_PER_HOUR)**hours_elapsed) - principal).round
+    max_profit = (principal * INVEST_PROFIT_CAP).round
+    profit = [raw_profit, max_profit].min
+    { principal: principal, profit: profit, total: principal + profit, hours: hours_elapsed }
+  end
+
+  private :withdrawal_investment_totals
 
   def create_investment(uid, amount)
     @db.exec_params(

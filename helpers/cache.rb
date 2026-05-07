@@ -74,6 +74,14 @@ class BlossomCache
       { total: @store.size, active: active, expired: expired }
     end
   end
+
+  # Expired rows are only removed on the next read of that key; sweep so one-off keys cannot grow without bound.
+  def sweep_expired!
+    now = Time.now
+    @mutex.synchronize do
+      @store.delete_if { |_, v| v[:expires] <= now }
+    end
+  end
 end
 
 # Global cache instance

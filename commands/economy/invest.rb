@@ -49,14 +49,46 @@ def execute_invest(event, amount_str)
     ]}])
   end
 
-  # Deduct coins and create investment
-  DB.add_coins(uid, -amount)
-  DB.create_investment(uid, amount)
+  outcome = DB.begin_investment_atomic(uid, amount)
+  if outcome[:error] == :exists || outcome[:error] == :conflict
+    existing = DB.get_investment(uid)
+    if existing
+      value = calculate_investment_value(existing['principal'], existing['invested_at'])
+      return send_cv2(event, [{ type: 17, accent_color: 0xFF0000, components: [
+        { type: 10, content: "## #{EMOJI_STRINGS['s_coin']} Investment Portfolio" },
+        { type: 14, spacing: 1 },
+        { type: 10, content: "You already have an active investment! Withdraw first before starting a new one.\n\n**Principal:** #{existing['principal']} #{EMOJI_STRINGS['s_coin']}\n**Current Value:** #{value[:total]} #{EMOJI_STRINGS['s_coin']} *(+#{value[:profit]} profit)*\n**Time Invested:** #{format_time_delta(value[:hours] * 3600)}" }
+      ]}])
+    end
+    return send_cv2(event, [{ type: 17, accent_color: 0xFF0000, components: [
+      { type: 10, content: "## #{EMOJI_STRINGS['s_coin']} Investment Portfolio" },
+      { type: 14, spacing: 1 },
+      { type: 10, content: 'Something raced your invest request — try `/portfolio` or invest again in a second.' }
+    ]}])
+  end
+
+  if outcome[:error] == :insufficient
+    return send_cv2(event, [{ type: 17, accent_color: 0xFF0000, components: [
+      { type: 10, content: "## #{EMOJI_STRINGS['s_coin']} Investment Portfolio" },
+      { type: 14, spacing: 1 },
+      { type: 10, content: "You only have **#{DB.get_coins(uid)}** #{EMOJI_STRINGS['s_coin']} — balance changed before the invest went through. Skill issue or server lag, pick your excuse." }
+    ]}])
+  end
+
+  unless outcome[:ok]
+    return send_cv2(event, [{ type: 17, accent_color: 0xFF0000, components: [
+      { type: 10, content: "## #{EMOJI_STRINGS['error']} Investment Error" },
+      { type: 14, spacing: 1 },
+      { type: 10, content: 'Could not start that investment. Try again or ping support if it keeps happening.' }
+    ]}])
+  end
+
+  new_bal = outcome[:balance]
 
   components = [{ type: 17, accent_color: 0x00FF00, components: [
     { type: 10, content: "## #{EMOJI_STRINGS['rich']} Investment Created!" },
     { type: 14, spacing: 1 },
-    { type: 10, content: "Invested **#{amount}** #{EMOJI_STRINGS['s_coin']} into the Neon Arcade portfolio!\n\n**Rate:** 0.5% per hour (compounding)\n**Max Return:** 2x your investment (#{amount * 2} #{EMOJI_STRINGS['s_coin']})\n\nUse `#{PREFIX}portfolio` to check your gains or `#{PREFIX}withdraw` to cash out anytime.\n\nRemaining Balance: **#{DB.get_coins(uid)}** #{EMOJI_STRINGS['s_coin']}.#{family_remark(uid, 'economy')}" }
+    { type: 10, content: "Invested **#{amount}** #{EMOJI_STRINGS['s_coin']} into the Neon Arcade portfolio!\n\n**Rate:** 0.5% per hour (compounding)\n**Max Return:** 2x your investment (#{amount * 2} #{EMOJI_STRINGS['s_coin']})\n\nUse `#{PREFIX}portfolio` to check your gains or `#{PREFIX}withdraw` to cash out anytime.\n\nRemaining Balance: **#{new_bal}** #{EMOJI_STRINGS['s_coin']}.#{family_remark(uid, 'economy')}" }
   ]}]
   send_cv2(event, components)
 end
@@ -117,8 +149,8 @@ def execute_withdraw(event)
     ]}])
   end
 
-  investment = DB.get_investment(uid)
-  unless investment
+  outcome = DB.withdraw_investment_atomic(uid)
+  if outcome[:error] == :none
     return send_cv2(event, [{ type: 17, accent_color: 0xFF0000, components: [
       { type: 10, content: "## #{EMOJI_STRINGS['s_coin']} Investment Portfolio" },
       { type: 14, spacing: 1 },
@@ -126,15 +158,22 @@ def execute_withdraw(event)
     ]}])
   end
 
-  value = calculate_investment_value(investment['principal'], investment['invested_at'])
-  DB.delete_investment(uid)
-  DB.add_coins(uid, value[:total])
+  unless outcome[:ok]
+    return send_cv2(event, [{ type: 17, accent_color: 0xFF0000, components: [
+      { type: 10, content: "## #{EMOJI_STRINGS['error']} Withdraw Error" },
+      { type: 14, spacing: 1 },
+      { type: 10, content: 'Could not cash out — try `/portfolio` and again in a moment. If it persists, yell at mama.' }
+    ]}])
+  end
+
+  value = outcome[:value]
+  new_bal = outcome[:balance]
   check_wealth_achievements(event.channel, uid)
 
   components = [{ type: 17, accent_color: 0x00FF00, components: [
     { type: 10, content: "## #{EMOJI_STRINGS['coins']} Investment Withdrawn!" },
     { type: 14, spacing: 1 },
-    { type: 10, content: "Cashed out your investment!\n\n**Principal:** #{value[:principal]} #{EMOJI_STRINGS['s_coin']}\n**Profit Earned:** +#{value[:profit]} #{EMOJI_STRINGS['s_coin']}\n**Total Withdrawn:** #{value[:total]} #{EMOJI_STRINGS['s_coin']}\n**Time Invested:** #{format_time_delta(value[:hours] * 3600)}\n\nNew Balance: **#{DB.get_coins(uid)}** #{EMOJI_STRINGS['s_coin']}.#{family_remark(uid, 'economy')}" }
+    { type: 10, content: "Cashed out your investment!\n\n**Principal:** #{value[:principal]} #{EMOJI_STRINGS['s_coin']}\n**Profit Earned:** +#{value[:profit]} #{EMOJI_STRINGS['s_coin']}\n**Total Withdrawn:** #{value[:total]} #{EMOJI_STRINGS['s_coin']}\n**Time Invested:** #{format_time_delta(value[:hours] * 3600)}\n\nNew Balance: **#{new_bal}** #{EMOJI_STRINGS['s_coin']}.#{family_remark(uid, 'economy')}" }
   ]}]
   send_cv2(event, components)
 end
@@ -170,7 +209,7 @@ end
 # TRIGGERS: Slash Commands
 # ------------------------------------------
 $bot.application_command(:invest) do |event|
-  amount = event.options['amount']
+  amount = event.options['amount'] || event.options[:amount]
   execute_invest(event, amount)
 end
 
