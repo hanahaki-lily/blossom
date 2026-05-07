@@ -34,6 +34,9 @@ $bot.ready do |event|
 
   # ---------------------------------
 
+  unless $blossom_ready_daemon_threads_started
+    $blossom_ready_daemon_threads_started = true
+
   # ------------------------------------------
   # 1. DYNAMIC STATUS UPDATER
   # ------------------------------------------
@@ -110,6 +113,8 @@ $bot.ready do |event|
       end
     end
   end
+
+  end # $blossom_ready_daemon_threads_started
 
   # ------------------------------------------
   # 3. APPLY GLOBAL BLACKLIST + PURGE BLACKLISTED USER DATA

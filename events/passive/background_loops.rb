@@ -6,6 +6,10 @@
 
 $bot.ready do |event|
 
+  # $bot.ready runs on initial connect AND every websocket resume — never spawn duplicate daemons.
+  next if $blossom_background_threads_started
+  $blossom_background_threads_started = true
+
   # --- GLOBAL HOURLY LOTTERY DRAW ---
   Thread.new do
     loop do
