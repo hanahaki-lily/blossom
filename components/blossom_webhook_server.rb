@@ -29,7 +29,8 @@ module BlossomWebhookServer
       server = WEBrick::HTTPServer.new(
         Port: port,
         BindAddress: bind,
-        Logger: WEBrick::Log.new($stdout),
+        # Port scanners hitting TLS/plain HTTP gibberish on wrong paths spam stdout; webhook handlers still use puts on errors.
+        Logger: WEBrick::Log.new(File::NULL),
         AccessLog: []
       )
 

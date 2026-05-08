@@ -150,7 +150,6 @@ $bot.ready do |event|
             multiplier: HAPPY_HOUR_MULTIPLIER,
             ends_at: Time.now + HAPPY_HOUR_DURATION
           }
-          puts "[HAPPY HOUR] \u{1F389} Coin multiplier event started! Ends at #{$happy_hour[:ends_at]}"
         end
       rescue => e
         puts "[HAPPY HOUR ERROR] #{e.message}"

@@ -44,10 +44,13 @@ $bot.ready do |event|
     # Set status immediately on startup, then refresh every 60 seconds
     loop do
       begin
-        server_count = event.bot.servers.size
-        total_members = event.bot.servers.values.sum { |server| server.member_count }
+        # Presence edits require an active gateway; during disconnect/reconnect the status thread can wake here first.
+        if event.bot.connected?
+          server_count = event.bot.servers.size
+          total_members = event.bot.servers.values.sum { |server| server.member_count }
 
-        event.bot.playing = "with #{total_members} users in #{server_count} arcades | #{PREFIX}help"
+          event.bot.playing = "with #{total_members} users in #{server_count} arcades | #{PREFIX}help"
+        end
       rescue => e
         puts "[STATUS] Update failed: #{e.message}"
       end

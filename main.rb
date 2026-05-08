@@ -4,6 +4,7 @@
 # ==========================================
 
 require 'discordrb'
+require_relative 'helpers/log_filter' # silence websocket churn + patched Discordrb::LOGGER filtering
 require 'dotenv/load'
 require 'json'
 require 'time'
