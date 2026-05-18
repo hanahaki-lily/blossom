@@ -119,21 +119,32 @@ $bot.message do |event|
     if config[:enabled]
       chan_id = config[:channel]
 
-      # Check if the server configured a specific channel for level-up spam
-      if chan_id && chan_id.to_i > 0
-        target_channel = event.bot.channel(chan_id.to_i, event.server)
-        
-        if target_channel
-          embed = Discordrb::Webhooks::Embed.new
-          embed.title = "#{EMOJI_STRINGS['up_arrow']} LEVEL UP!"
-          embed.description = "LETS GOOO #{event.user.mention}!! You hit **Level #{new_level}**! Absolute grinder."
-          embed.color = NEON_COLORS.sample
-          embed.add_field(name: 'XP to Next', value: "#{new_xp}/#{new_level * 100}", inline: true)
-          embed.add_field(name: 'Bank', value: "#{DB.get_coins(uid)} #{EMOJI_STRINGS['s_coin']}", inline: true)
+      begin
+        # Misconfigured/over-restricted level-up channels raise NoPermission; avoid discordrb traceback spam.
+        if chan_id && chan_id.to_i > 0
+          target_channel = event.bot.channel(chan_id.to_i, event.server)
 
-          target_channel.send_message(nil, false, embed)
+          if target_channel
+            embed = Discordrb::Webhooks::Embed.new
+            embed.title = "#{EMOJI_STRINGS['up_arrow']} LEVEL UP!"
+            embed.description = "LETS GOOO #{event.user.mention}!! You hit **Level #{new_level}**! Absolute grinder."
+            embed.color = NEON_COLORS.sample
+            embed.add_field(name: 'XP to Next', value: "#{new_xp}/#{new_level * 100}", inline: true)
+            embed.add_field(name: 'Bank', value: "#{DB.get_coins(uid)} #{EMOJI_STRINGS['s_coin']}", inline: true)
+
+            target_channel.send_message(nil, false, embed)
+          else
+            send_embed(
+              event,
+              title: "#{EMOJI_STRINGS['up_arrow']} LEVEL UP!",
+              description: "LETS GOOO #{event.user.mention}!! You hit **Level #{new_level}**! Absolute grinder.",
+              fields: [
+                { name: 'XP to Next', value: "#{new_xp}/#{new_level * 100}", inline: true },
+                { name: 'Bank', value: "#{DB.get_coins(uid)} #{EMOJI_STRINGS['s_coin']}", inline: true }
+              ]
+            )
+          end
         else
-          # Fallback: Send to the channel they just typed in if the custom channel is broken/deleted
           send_embed(
             event,
             title: "#{EMOJI_STRINGS['up_arrow']} LEVEL UP!",
@@ -144,17 +155,8 @@ $bot.message do |event|
             ]
           )
         end
-      else
-        # Fallback: Send to the channel they just typed in if no custom channel is set
-        send_embed(
-          event,
-          title: "#{EMOJI_STRINGS['up_arrow']} LEVEL UP!",
-          description: "LETS GOOO #{event.user.mention}!! You hit **Level #{new_level}**! Absolute grinder.",
-          fields: [
-            { name: 'XP to Next', value: "#{new_xp}/#{new_level * 100}", inline: true },
-            { name: 'Bank', value: "#{DB.get_coins(uid)} #{EMOJI_STRINGS['s_coin']}", inline: true }
-          ]
-        )
+      rescue Discordrb::Errors::NoPermission
+        nil
       end
     end
   end

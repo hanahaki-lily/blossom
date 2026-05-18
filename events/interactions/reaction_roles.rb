@@ -9,12 +9,15 @@ $bot.reaction_add do |event|
   # Skip bot reactions (use ID check since .bot_account? may not work on lightweight objects)
   next if event.user.id == event.bot.profile.id
 
+  # Use message_id from the payload — event.message triggers an API fetch (heavy; HTML error pages explode JSON.parse).
+  message_id = event.message_id
+
   # Try both the emoji name and the full unicode representation
   emoji_key = event.emoji.name
-  role_id = DB.get_reaction_role(event.server.id, event.message.id, emoji_key)
+  role_id = DB.get_reaction_role(event.server.id, message_id, emoji_key)
 
   # Also try the emoji's to_s in case of encoding differences
-  role_id ||= DB.get_reaction_role(event.server.id, event.message.id, event.emoji.to_s)
+  role_id ||= DB.get_reaction_role(event.server.id, message_id, event.emoji.to_s)
 
   next unless role_id
 
@@ -34,9 +37,11 @@ $bot.reaction_remove do |event|
   next unless event.server
   next if event.user.id == event.bot.profile.id
 
+  message_id = event.message_id
+
   emoji_key = event.emoji.name
-  role_id = DB.get_reaction_role(event.server.id, event.message.id, emoji_key)
-  role_id ||= DB.get_reaction_role(event.server.id, event.message.id, event.emoji.to_s)
+  role_id = DB.get_reaction_role(event.server.id, message_id, emoji_key)
+  role_id ||= DB.get_reaction_role(event.server.id, message_id, event.emoji.to_s)
 
   next unless role_id
 
